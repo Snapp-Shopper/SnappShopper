@@ -113,7 +113,10 @@ class Users extends DatabaseObject
     // Retrieve user by ID
     static public function findUserById($id)
     {
-        return self::findById($id);
+        $sql = "SELECT * FROM " . static::$table_name . " WHERE user_id = :id LIMIT 1";
+        $stmt = self::executeQuery($sql, ['id' => $id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? static::instantiate($result) : false;
     }
 
     // Validation for user fields

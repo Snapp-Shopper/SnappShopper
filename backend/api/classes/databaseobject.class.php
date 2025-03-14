@@ -37,6 +37,22 @@ class DatabaseObject
         return static::findBySql($sql);
     }
 
+    static public function findById($id)
+    {
+        $sql = "SELECT * FROM " . static::$table_name . " WHERE id = :id LIMIT 1";
+        $stmt = self::executeQuery($sql, ['id' => $id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? static::instantiate($result) : false;
+    }
+
+    static public function findByEmail($email)
+    {
+        $sql = "SELECT * FROM " . static::$table_name . " WHERE email = :email LIMIT 1";
+        $stmt = self::executeQuery($sql, ['email' => $email]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? static::instantiate($result) : false;
+    }
+
     // Count all records
     public static function countAll(): int
     {
