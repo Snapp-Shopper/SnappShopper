@@ -109,7 +109,7 @@ Logs in a user by verifying their email and password. If valid, a JWT token is g
 ### 3. **Get All Users**
 
 #### Endpoint:
-- `GET /users`
+- `GET /users/get.php`
 
 #### Description:
 Retrieves a list of all users.
@@ -147,7 +147,7 @@ Retrieves a list of all users.
 ### 4. **Get User by ID**
 
 #### Endpoint:
-- `GET /users/{user_id}`
+- `GET /users/get.php?user_id={user_id}`
 
 #### Description:
 Retrieves a user's details by their `user_id`.
