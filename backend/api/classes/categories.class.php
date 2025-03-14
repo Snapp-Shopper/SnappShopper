@@ -32,15 +32,15 @@ class Categories extends DatabaseObject
     }
 
     // Create or update a category
-    public function saveCategory()
+    static public function saveCategory()
     {
-        $errors = $this->validate();
+        $errors = self::validate();
 
         if (!empty($errors)) {
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
 
-        $saveQuery = $this->save();
+        $saveQuery = self::save();
 
         return $saveQuery
             ? ['status' => 'success', 'message' => 'Category saved successfully']
@@ -56,7 +56,10 @@ class Categories extends DatabaseObject
     // Find category by ID
     static public function findCategoryById($category_id)
     {
-        return self::findById($category_id);
+        $sql = "SELECT * FROM " . static::$table_name . " WHERE category_id = :category_id LIMIT 1";
+        $stmt = self::executeQuery($sql, ['category_id' => $category_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? static::instantiate($result) : false;
     }
 
     // Find subcategories of a category
