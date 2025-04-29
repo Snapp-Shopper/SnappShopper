@@ -11,4 +11,4 @@ if (file_exists(filename: __DIR__ . '/key.env')) {
 define("DB_SERVER", $env['DB_SERVER'] ?? 'localhost');
 define("DB_USER", $env['DB_USER'] ?? 'root');
 define("DB_PASS", $env['DB_PASS'] ?? '');
-define("DB_NAME", $env['DB_NAME'] ?? 'snapp_shopper');
+define("DB_NAME", $env['DB_NAME'] ?? 'snappshopper');
