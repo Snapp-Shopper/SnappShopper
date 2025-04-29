@@ -38,8 +38,8 @@ class Users extends DatabaseObject
         $this->email = $args['email'] ?? '';
         $this->password_hash = $args['password_hash'] ?? '';
         $this->phone_number = $args['phone_number'] ?? '';
-        $this->created_at = $args['created_at'] ?? null;
-        $this->updated_at = $args['updated_at'] ?? null;
+        $this->created_at = $args['created_at'] ?? date('Y-m-d H:i:s');
+        $this->updated_at = $args['updated_at'] ?? date('Y-m-d H:i:s');
         $this->last_loggedIn = $args['last_loggedIn'] ?? null;
     }
 
@@ -83,6 +83,15 @@ class Users extends DatabaseObject
             $passwordHash = new PasswordHash();
 
             if ($passwordHash->verify($password, $user->password_hash)) {
+
+                // ✅ Update last_loggedIn timestamp
+                $updateSql = "UPDATE " . static::$table_name . " SET last_loggedIn = :last_loggedIn WHERE user_id = :user_id";
+                self::executeQuery($updateSql, [
+                    'last_loggedIn' => date('Y-m-d H:i:s'),
+                    'user_id' => $user->user_id
+                ]);
+                
+                // ✅ Generate token
                 $tokenData = [
                     'user_id' => $user->user_id,
                     'first_name' => $user->first_name,
@@ -103,6 +112,88 @@ class Users extends DatabaseObject
 
         return ['status' => 'error', 'message' => 'User not found'];
     }
+
+    static public function forgotPassword($email)
+    {
+        // Check if user exists
+        $sql = "SELECT * FROM " . static::$table_name . " WHERE email = :email";
+        $stmt = self::executeQuery($sql, ['email' => $email]);
+        $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user_data) {
+            $user = static::instantiate($user_data);
+
+            // Generate secure token
+            $token = bin2hex(random_bytes(32));
+            $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+            // Store token and expiry in DB
+            $updateSql = "UPDATE " . static::$table_name . " SET reset_token = :token, reset_token_expires = :expires WHERE user_id = :user_id";
+            self::executeQuery($updateSql, [
+                'token' => $token,
+                'expires' => $expires,
+                'user_id' => $user->user_id
+            ]);
+
+            // Construct password reset link (change domain as needed)
+            $resetLink = "https://yourdomain.com/reset-password.php?token=" . urlencode($token);
+
+            // Optionally: send email here with $resetLink (pseudo-code)
+            // Mail::send($user->email, 'Password Reset', "Click here to reset: $resetLink");
+
+            return [
+                'status' => 'success',
+                'message' => 'Password reset link sent to your email.',
+                'reset_link' => $resetLink // Include this only for testing/dev
+            ];
+        }
+
+        return ['status' => 'error', 'message' => 'No account found with that email.'];
+    }
+
+    static public function resetPassword($token, $newPassword)
+    {
+        // Find user with valid token that hasn't expired
+        $sql = "SELECT * FROM " . static::$table_name . " 
+                WHERE reset_token = :token 
+                AND reset_token_expires > NOW()";
+                
+        $stmt = self::executeQuery($sql, ['token' => $token]);
+        $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user_data) {
+            $user = static::instantiate($user_data);
+
+            // Hash new password
+            $passwordHash = new PasswordHash();
+            $hashedPassword = $passwordHash->hash($newPassword);
+
+            // Update password and clear reset token
+            $updateSql = "UPDATE " . static::$table_name . " 
+                        SET password_hash = :password_hash, 
+                            reset_token = NULL, 
+                            reset_token_expires = NULL, 
+                            updated_at = :updated_at
+                        WHERE user_id = :user_id";
+
+            self::executeQuery($updateSql, [
+                'password_hash' => $hashedPassword,
+                'updated_at' => date('Y-m-d H:i:s'),
+                'user_id' => $user->user_id
+            ]);
+
+            return [
+                'status' => 'success',
+                'message' => 'Password reset successfully.'
+            ];
+        }
+
+        return [
+            'status' => 'error',
+            'message' => 'Invalid or expired reset token.'
+        ];
+    }
+
 
     // Retrieve all users
     static public function allUsers()
