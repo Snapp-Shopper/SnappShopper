@@ -6,6 +6,14 @@
     require_once('src/validation_functions.php');//defined database functions
     require_once('src/jwt_function.php');//defined jwt functions
 
+    require_once __DIR__ . '/libs/phpmailer/src/PHPMailer.php';
+    require_once __DIR__ . '/libs/phpmailer/src/SMTP.php';
+    require_once __DIR__ . '/libs/phpmailer/src/Exception.php';
+
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\Exception;
+    use PHPMailer\PHPMailer\SMTP;
+
     // Load all classes in the directory
     foreach (glob('classes/*.class.php') as $model) {
         include_once($model);

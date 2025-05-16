@@ -1,6 +1,6 @@
 <?php
 
-class Address extends DatabaseObject
+class address extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Addresses";
@@ -118,6 +118,61 @@ class Address extends DatabaseObject
 
         return $stmt ? new self($stmt[0]) : null;
     }
+
+    static public function findAddressById($id)
+    {
+        $sql = "SELECT * FROM " . static::$table_name . " WHERE address_id = :id LIMIT 1";
+        $stmt = self::executeQuery($sql, ['id' => $id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? static::instantiate($result) : false;
+    }
+
+    public function addressDelete()
+    {
+        $sql = "DELETE FROM " . static::$table_name . " WHERE address_id = :user_id LIMIT 1";
+        $stmt = self::executeQuery($sql, ['address_id' => $this->address_id]);
+
+        return $stmt
+            ? ['status' => 'success', 'message' => 'Address permanently deleted']
+            : ['status' => 'error', 'message' => 'Failed to delete address'];
+    }
+
+    static public function updateAddress($data)
+    {
+        // Check if address_id is provided
+        if (empty($data['address_id'])) {
+            return ['status' => 'error', 'message' => 'address id is required'];
+        }
+
+        $address = self::findAddressById($data['address_id']);
+
+        if (!$address) {
+            return ['status' => 'error', 'message' => 'Address not found for update'];
+        }
+
+        // Assign data to the object
+        $address->user_id = $data['user_id'] ?? $address->user_id;
+        $address->address_line1 = $data['address_line1'] ?? $address->address_line1;
+        $address->address_line2 = $data['address_line2'] ?? $address->address_line2;
+        $address->city = $data['city'] ?? $address->city;
+        $address->state = $data['state'] ?? $address->state;
+        $address->zip_code = $data['zip_code'] ?? $address->zip_code;
+        $address->country = $data['country'] ?? $address->country;
+        $address->is_default = $data['is_default'] ?? $address->is_default;
+        
+        // Validate and save
+        $errors = $address->validate();
+        if (!empty($errors)) {
+            return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
+        }
+
+        $saved = $address->save();
+
+        return $saved
+            ? ['status' => 'success', 'message' => 'Address updated successfully']
+            : ['status' => 'error', 'message' => 'Failed to update address'];
+    }
+
 }
 
 ?>

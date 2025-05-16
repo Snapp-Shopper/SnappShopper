@@ -1,6 +1,6 @@
 <?php
 
-class Users extends DatabaseObject
+class users extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Users";
@@ -38,7 +38,7 @@ class Users extends DatabaseObject
         $this->email = $args['email'] ?? '';
         $this->password_hash = $args['password_hash'] ?? '';
         $this->phone_number = $args['phone_number'] ?? '';
-        $this->created_at = $args['created_at'] ?? date('Y-m-d H:i:s');
+        $this->created_at = $args['created_at'] ?? null;
         $this->updated_at = $args['updated_at'] ?? date('Y-m-d H:i:s');
         $this->last_loggedIn = $args['last_loggedIn'] ?? null;
     }
@@ -46,7 +46,7 @@ class Users extends DatabaseObject
     // Register a new user
     static public function register($data)
     {
-        $passwordHash = new PasswordHash();
+        $passwordHash = new passwordHash();
         $hashedPassword = isset($data["password"]) ? $passwordHash->hash($data["password"]) : '';
 
         // Check if the user already exists
@@ -55,21 +55,75 @@ class Users extends DatabaseObject
             return ['status' => 'error', 'message' => 'Email already exists'];
         }
 
-        $data['password_hash'] = $hashedPassword; // Assign hashed password
-        unset($data["password"]); // Remove plain password from array
+        $verificationToken = bin2hex(random_bytes(16)); // Generates a 32-char token
+
+        $data['password_hash'] = $hashedPassword;
+        $data['is_verified'] = 0;
+        $data['verification_token'] = $verificationToken;
+        unset($data["password"]);
+
         $user = new self($data);
+        $user->created_at = date('Y-m-d H:i:s');
         $errors = $user->validate();
 
         if (!empty($errors)) {
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
 
-        $saveQuery = $user->save();
-
-        return $saveQuery
-            ? ['status' => 'success', 'message' => 'User registered successfully']
-            : ['status' => 'error', 'message' => 'Registration failed'];
+        if ($user->save()) {
+            // Send verification email
+            self::sendVerificationEmail($data["email"], $verificationToken);
+            return ['status' => 'success', 'message' => 'User registered. Please verify your email.'];
+        } else {
+            return ['status' => 'error', 'message' => 'Registration failed'];
+        }
     }
+
+    static public function updateUser($data)
+    {
+        // Check if user_id is provided
+        if (empty($data['user_id'])) {
+            return ['status' => 'error', 'message' => 'user id is required'];
+        }
+
+        $user = self::findUserById($data['user_id']);
+
+        if (!$user) {
+            return ['status' => 'error', 'message' => 'User not found for update'];
+        }
+
+        // Assign data to the object
+        $user->first_name = $data['first_name'] ?? $user->first_name;
+        $user->last_name = $data['last_name'] ?? $user->last_name;
+        $user->email = $data['email'] ?? $user->email;
+        $user->phone_number = $data['phone_number'] ?? $user->phone_number;
+        $user->password_hash = isset($data['password']) ? (new passwordHash())->hash($data['password']) : $user->password_hash;
+
+        // Validate and save
+        $errors = $user->validate();
+        if (!empty($errors)) {
+            return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
+        }
+
+        $saved = $user->save();
+
+        return $saved
+            ? ['status' => 'success', 'message' => 'User updated successfully']
+            : ['status' => 'error', 'message' => 'Failed to update user'];
+    }
+
+    static private function sendVerificationEmail($email, $token)
+    {
+        $verificationLink = "https://yourdomain.com/api/verify_email.php?token=$token";
+
+        $subject = "Verify your email address";
+        $message = "Click the link to verify your email: $verificationLink";
+        $headers = "From: no-reply@yourdomain.com\r\n";
+
+        // Use mail() or a proper mailer like PHPMailer
+        mail($email, $subject, $message, $headers);
+    }
+
 
     // Verify user login
     static public function login($email, $password)
@@ -80,7 +134,7 @@ class Users extends DatabaseObject
 
         if ($user_data) {
             $user = static::instantiate($user_data);
-            $passwordHash = new PasswordHash();
+            $passwordHash = new passwordHash();
 
             if ($passwordHash->verify($password, $user->password_hash)) {
 
@@ -165,7 +219,7 @@ class Users extends DatabaseObject
             $user = static::instantiate($user_data);
 
             // Hash new password
-            $passwordHash = new PasswordHash();
+            $passwordHash = new passwordHash();
             $hashedPassword = $passwordHash->hash($newPassword);
 
             // Update password and clear reset token
@@ -208,6 +262,24 @@ class Users extends DatabaseObject
         $stmt = self::executeQuery($sql, ['id' => $id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? static::instantiate($result) : false;
+    }
+
+    static public function findByToken($token)
+    {
+        $sql = "SELECT * FROM " .static::$table_name . " WHERE verification_token = :token LIMIT 1";
+        $stmt = self::executeQuery($sql, ['token' => $token]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? static::instantiate($result) : false;
+    }
+
+    public function userDelete()
+    {
+        $sql = "DELETE FROM " . static::$table_name . " WHERE user_id = :user_id LIMIT 1";
+        $stmt = self::executeQuery($sql, ['user_id' => $this->user_id]);
+
+        return $stmt
+            ? ['status' => 'success', 'message' => 'User permanently deleted']
+            : ['status' => 'error', 'message' => 'Failed to delete user'];
     }
 
     // Validation for user fields

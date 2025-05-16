@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Proceed with registration
-    $response = Users::register($data);
+    $response = users::register($data);
     echo json_encode($response);
     exit;
 }

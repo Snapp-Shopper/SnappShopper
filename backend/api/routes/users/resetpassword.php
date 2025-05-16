@@ -26,9 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Proceed with login
+    // Proceed with reset password
 
-    $response = Users::resetPassword($_POST['token'], $_POST['new_password']);
+    $response = users::resetPassword($_POST['token'], $_POST['new_password']);
     echo json_encode($response);
     exit;
 }

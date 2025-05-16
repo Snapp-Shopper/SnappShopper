@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     if ($_GET['user_id']) {
         # code...
-        $users = Users::findById($_GET['user_id']);
+        $users = users::findUserById($_GET['user_id']);
 
         if ($users) {
             echo json_encode(['success' => true, 'data' => $users]);
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         }
     }
     else{    
-        $users = Users::findAll();
+        $users = users::findAll();
 
         if ($users) {
             echo json_encode(['success' => true, 'data' => $users]);

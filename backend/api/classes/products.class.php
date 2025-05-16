@@ -106,7 +106,7 @@ class Products extends DatabaseObject
             $this->errors[] = "Price must be greater than zero.";
         }
 
-        if (!is_null($this->category_id) && !Categories::findById($this->category_id)) {
+        if (!is_null($this->category_id) && !categories::findById($this->category_id)) {
             $this->errors[] = "Invalid category ID.";
         }
 

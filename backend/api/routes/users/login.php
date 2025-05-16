@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Proceed with login
 
-    $response = Users::login($data['EMAIL'], password: $data['PASSWORD']);
+    $response = users::login($data['EMAIL'], password: $data['PASSWORD']);
     echo json_encode($response);
     exit;
 }
