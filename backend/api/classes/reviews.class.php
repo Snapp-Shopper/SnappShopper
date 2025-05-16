@@ -104,7 +104,7 @@ class Reviews extends DatabaseObject
     // Helper function to get the user who left the review
     public function getUserDetails()
     {
-        return Users::findUserById($this->user_id);
+        return users::findUserById($this->user_id);
     }
 
     // Helper function to get the product being reviewed

@@ -1,6 +1,6 @@
 <?php
 
-class PasswordHash
+class passwordHash
 {
   function hash($password)
   {

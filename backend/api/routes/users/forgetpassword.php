@@ -26,9 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Proceed with login
+    // Proceed with forgot password
 
-    $response = Users::forgotPassword($data['EMAIL']);
+    $response = users::forgotPassword($data['EMAIL']);
     echo json_encode($response);
     exit;
 }

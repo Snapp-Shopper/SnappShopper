@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     if ($_GET['category_id']) {
         # code...
-        $categories = Categories::findCategoryById($_GET['category_id']);
+        $categories = categories::findCategoryById($_GET['category_id']);
 
         if ($categories) {
             echo json_encode(['success' => true, 'data' => $categories]);
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         }
     }
     else{    
-        $categories = Categories::findAll();
+        $categories = categories::findAll();
 
         if ($categories) {
             echo json_encode(['success' => true, 'data' => $categories]);
