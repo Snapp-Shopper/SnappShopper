@@ -1,6 +1,6 @@
 <?php
 
-class UIDGenerator
+class uIDGenerator
 {
     private $now;
     private $default_permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

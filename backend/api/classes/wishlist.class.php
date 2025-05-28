@@ -1,6 +1,6 @@
 <?php
 
-class Wishlist extends DatabaseObject
+class wishlist extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Wishlist";

@@ -1,6 +1,6 @@
 <?php
 
-class RecentlyViewedItem extends DatabaseObject
+class recentlyViewedItem extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Recently_Viewed_Items";

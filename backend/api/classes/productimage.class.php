@@ -1,4 +1,5 @@
 <?php
+use Google\Cloud\Vision\V1\ImageAnnotatorClient;
 
 class productImage extends DatabaseObject
 {
@@ -11,7 +12,8 @@ class productImage extends DatabaseObject
         'product_id',
         'image_url',
         'alt_text',
-        'created_at'
+        'created_at',
+        'vision_labels'
     ];
 
     // Class properties for each column
@@ -20,6 +22,7 @@ class productImage extends DatabaseObject
     public $image_url;
     public $alt_text;
     public $created_at;
+    public $vision_labels = [];
 
     // Constructor
     public function __construct($args = [])
@@ -40,10 +43,39 @@ class productImage extends DatabaseObject
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
 
+        // 🧠 Run Vision API Label Detection
+        $imagePath = $this->image_url; // should be accessible locally or via HTTP
+        $labels = [];
+
+        try {
+            $vision = new ImageAnnotatorClient([
+                'credentials' => '/path/to/your-google-service-account.json'
+            ]);
+
+            if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
+                $imageData = file_get_contents($imagePath);
+            } else {
+                $imageData = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/' . $imagePath); // adjust path if needed
+            }
+
+            $response = $vision->labelDetection($imageData);
+            $annotation = $response->getLabelAnnotations();
+
+            foreach ($annotation as $label) {
+                $labels[] = strtolower($label->getDescription());
+            }
+
+            $this->vision_labels = implode(',', $labels);
+
+        } catch (Exception $e) {
+            // Fail gracefully
+            $this->vision_labels = null;
+        }
+
         $saveQuery = $this->save();
 
         return $saveQuery
-            ? ['status' => 'success', 'message' => 'Image saved successfully']
+            ? ['status' => 'success', 'message' => 'Image saved successfully with labels', 'labels' => $labels]
             : ['status' => 'error', 'message' => 'Failed to save image'];
     }
 
@@ -54,6 +86,43 @@ class productImage extends DatabaseObject
         $stmt = self::executeQuery($sql, ['product_id' => $product_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    function findMatchingProductsByLabels($searchLabels = []) {
+        $sql = "SELECT * FROM Product_Images";
+        $stmt = self::executeQuery($sql);
+        $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $matches = [];
+
+        foreach ($images as $img) {
+            $productLabels = explode(',', strtolower($img['vision_labels'] ?? ''));
+            $overlap = array_intersect($productLabels, $searchLabels);
+
+            if (count($overlap) >= 2) { // adjust match threshold
+                $product = products::findById($img['product_id']);
+                if ($product) {
+                    $matches[$product->product_id] = $product;
+                }
+            }
+        }
+
+        return array_values($matches);
+    }
+
+    static public function findBatchAfterId($lastId, $limit = 10) {
+        $sql = "SELECT * FROM " . static::$table_name . " 
+                WHERE image_id > :lastId 
+                ORDER BY image_id ASC 
+                LIMIT :limit";
+
+        $stmt = self::executeQuery($sql, [
+            'lastId' => $lastId,
+            'limit' => $limit
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 
     // Delete an image
     static public function deleteImage($image_id)

@@ -1,0 +1,1 @@
+1. alter table Product_Images and add column vision_labels (TEXT DEFAULT NULL) {check migrations folder for sql code}
