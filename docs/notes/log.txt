@@ -1,0 +1,7 @@
+🕓 Cron Setup (Linux/Mac)
+Run crontab -e and add:
+
+bash:
+    */5 * * * * php /full/path/to/cron_backfill_labels.php >> /full/path/to/backfill.log 2>&1
+
+This runs every 5 minutes and appends output to backfill.log.

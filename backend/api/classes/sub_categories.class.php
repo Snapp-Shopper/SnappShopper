@@ -1,6 +1,6 @@
 <?php
 
-class SubCategory extends DatabaseObject
+class subCategory extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Sub_Category";

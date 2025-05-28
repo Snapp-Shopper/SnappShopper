@@ -65,6 +65,10 @@ ALTER TABLE `product_images`
 --
 ALTER TABLE `product_images`
   ADD CONSTRAINT `product_images_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
+
+ALTER TABLE Product_Images
+ADD COLUMN vision_labels TEXT DEFAULT NULL;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

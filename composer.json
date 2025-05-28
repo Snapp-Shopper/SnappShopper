@@ -1,5 +1,8 @@
 {
     "require": {
-        "google/apiclient": "2.0"
+        "google/apiclient": "2.15",
+        "facebook/graph-sdk": "^5.1",
+        "firebase/php-jwt": "6.0",
+        "google/cloud-vision": "2.0"
     }
 }
