@@ -1,6 +1,6 @@
 <?php
 
-class Order_Item extends DatabaseObject
+class order_Item extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Order_Items";

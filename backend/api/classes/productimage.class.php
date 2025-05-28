@@ -1,6 +1,6 @@
 <?php
 
-class ProductImage extends DatabaseObject
+class productImage extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Product_Images";

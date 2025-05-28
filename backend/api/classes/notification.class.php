@@ -1,6 +1,6 @@
 <?php
 
-class Notification extends DatabaseObject
+class notification extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Notifications";
