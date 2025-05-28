@@ -1,6 +1,6 @@
 <?php
 
-class Cart extends DatabaseObject
+class cart extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Cart";
@@ -32,14 +32,14 @@ class Cart extends DatabaseObject
     public function addToCart($product_id, $quantity)
     {
         // Check if the product is already in the cart
-        $existingItem = CartItem::findItemInCart($this->cart_id, $product_id);
+        $existingItem = cartItem::findItemInCart($this->cart_id, $product_id);
 
         if ($existingItem) {
             // If the product is already in the cart, update the quantity
             return $existingItem->updateQuantity($quantity);
         } else {
             // Add the new product to the cart
-            $cartItem = new CartItem([
+            $cartItem = new cartItem([
                 'cart_id' => $this->cart_id,
                 'product_id' => $product_id,
                 'quantity' => $quantity
@@ -62,13 +62,13 @@ class Cart extends DatabaseObject
     // Retrieve all items in the cart
     public function getItemsInCart()
     {
-        return CartItem::findItemsByCartId($this->cart_id);
+        return cartItem::findItemsByCartId($this->cart_id);
     }
 
     // Update the quantity of a product in the cart
     public function updateItemQuantity($product_id, $quantity)
     {
-        $cartItem = CartItem::findItemInCart($this->cart_id, $product_id);
+        $cartItem = cartItem::findItemInCart($this->cart_id, $product_id);
         
         if ($cartItem) {
             return $cartItem->updateQuantity($quantity);

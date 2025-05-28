@@ -1,6 +1,6 @@
 <?php
 
-class CartItem extends DatabaseObject
+class cartItem extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Cart_Items";
