@@ -1,4 +1,5 @@
 <?php
+// Description: This endpoint handles Facebook login for users.
 require_once '../../initialize.php';
 require_once '../../vendor/autoload.php'; // for Facebook SDK
 

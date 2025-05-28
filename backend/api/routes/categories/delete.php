@@ -1,4 +1,5 @@
 <?php
+// Description: This endpoint deletes a category based on the category ID provided.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
      // Try to get form-data first

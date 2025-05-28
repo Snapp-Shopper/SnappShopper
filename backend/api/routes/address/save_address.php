@@ -1,5 +1,5 @@
 <?php
-
+// Description: This endpoint saves addresses for a user, and can set to default address if provided.
 require_once '../../initialize.php'; // Include the initialization file
 
 require_once '../../src/header.php'; // Include the header model

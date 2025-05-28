@@ -1,4 +1,5 @@
 <?php
+// Description: This endpoint handles the deletion of an address by its ID.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
      // Try to get form-data first

@@ -1,5 +1,5 @@
 <?php
-
+// Description: This endpoint retrieves addresses for a user, either all addresses or the default address based on the user ID provided.
 require_once '../../initialize.php'; // Include the initialization file
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {

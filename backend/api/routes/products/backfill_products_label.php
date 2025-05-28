@@ -1,4 +1,5 @@
 <?php
+// Description: This endpoint backs up product images by fetching labels using Google Vision API. It processes all product images, retrieves labels using Google Vision API, and updates the database.
 require_once '../../initialize.php';
 require '../../vendor/autoload.php'; // Google Vision
 

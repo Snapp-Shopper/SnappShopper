@@ -1,5 +1,5 @@
 <?php
-
+// Description: This endpoint handles update user requests by accepting user data and returning a response based on the update attempt.
 require_once '../../initialize.php'; // Include the initialization file
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

@@ -1,4 +1,5 @@
 <?php
+// Description: This endpoint handles email verification for users by checking a provided token.
 require_once '../../initialize.php';
 
 header('Content-Type: application/json');

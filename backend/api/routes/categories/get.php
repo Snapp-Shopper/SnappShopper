@@ -1,5 +1,5 @@
 <?php
-
+// Description: This endpoint retrieves categories based on the category ID provided or retrieves all categories if no ID is specified.
 require_once '../../initialize.php'; // Include the initialization file
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {

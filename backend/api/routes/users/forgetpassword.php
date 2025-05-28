@@ -1,5 +1,5 @@
 <?php
-
+// Description: This endpoint handles forgot password requests by accepting an email address and processing the request.
 require_once '../../initialize.php'; // Include the initialization file
 
 header('Access-Control-Allow-Origin: *');

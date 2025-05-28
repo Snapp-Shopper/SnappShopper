@@ -1,5 +1,5 @@
 <?php
-
+// Description: This endpoint handles user registration by accepting an email and password, and returning a response based on the registration attempt.
 require_once '../../initialize.php'; // Include the initialization file
 
 header('Access-Control-Allow-Origin: *');
