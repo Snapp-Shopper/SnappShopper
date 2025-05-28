@@ -1,5 +1,5 @@
 <?php
-
+// Description: This endpoint updates an existing category based on the data provided.
 require_once '../../initialize.php'; // Include the initialization file
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

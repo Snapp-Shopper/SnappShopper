@@ -1,4 +1,5 @@
 <?php
+// Description: This endpoint scans product images, using Google Vision API to extract labels and similar matches in the database.
 require_once '../../initialize.php';
 require '../../vendor/autoload.php'; // Google Cloud Vision library
 

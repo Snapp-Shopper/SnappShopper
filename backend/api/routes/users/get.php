@@ -1,5 +1,5 @@
 <?php
-
+// Description: This endpoint retrieves users based on the user ID provided or retrieves all users if no ID is specified.
 require_once '../../initialize.php'; // Include the initialization file
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {

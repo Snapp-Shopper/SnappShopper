@@ -1,4 +1,5 @@
 <?php
+// Description: This endpoint processes product images in batches, using Google Vision API to extract labels. It updates the productImage table with the labels for each image, tracking progress using a marker file.
 require_once '../../initialize.php';
 require '../../vendor/autoload.php';
 

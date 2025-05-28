@@ -1,5 +1,5 @@
 <?php
-
+// Description: This endpoint sets the default address based on the address ID provided.
 require_once '../../initialize.php'; // Include the initialization file
 
 require_once '../../src/header.php'; // Include the header model

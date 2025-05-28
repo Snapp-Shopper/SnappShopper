@@ -1,5 +1,5 @@
 <?php
-
+// Description: This endpoint handles reset password requests by accepting a token and password, and returning a response based on the reset password attempt.
 require_once '../../initialize.php'; // Include the initialization file
 
 header('Access-Control-Allow-Origin: *');

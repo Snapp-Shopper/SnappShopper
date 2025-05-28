@@ -1,4 +1,5 @@
 <?php
+// Description: This endpoint handles Apple login by verifying the identity token received from the client.
 require_once '../../initialize.php';
 require_once '../../vendor/autoload.php';
 

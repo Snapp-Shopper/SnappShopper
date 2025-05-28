@@ -1,4 +1,5 @@
 <?php
+// Description: This endpoint handles Google login registration.
 require_once '../../initialize.php'; // your setup file
 require_once '../../vendor/autoload.php'; // for Google client (if using Composer)
 
