@@ -1,6 +1,10 @@
 <?php
-$routesDir = __DIR__ . '/routes'; // adjust as needed
-$baseUrl = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']) . '/routes';
+$routesDir = realpath(__DIR__ . '/routes'); // go up one level to access routes
+if (!is_dir($routesDir)) {
+    die('Routes directory not found.');
+}
+$baseUrl = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') .
+    $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']) . '/routes';
 
 function getFileDescription($filePath) {
     $lines = file($filePath);
@@ -8,10 +12,12 @@ function getFileDescription($filePath) {
         if (preg_match('/\/\/\s*Description\s*:\s*(.+)/i', $line, $matches)) {
             return trim($matches[1]);
         }
-        if (preg_match('/^\s*[^\/\s]/', $line)) break;
+        // Stop only after finding actual executable code (not `<?php` or whitespace)
+        if (preg_match('/^\s*[^<\s\/]/', $line)) break;
     }
     return null;
 }
+
 
 function listEndpoints($dir, $baseUrl) {
     $output = [];
@@ -23,11 +29,12 @@ function listEndpoints($dir, $baseUrl) {
 
     foreach ($iterator as $file) {
         if ($file->isFile() && $file->getExtension() === 'php') {
-            $relativePath = str_replace('\\', '/', str_replace($dir . '/', '', $file->getPathname()));
-            $folder = dirname($relativePath);
-            $link = $baseUrl . '/' . $relativePath;
+            $absolutePath = $file->getPathname();
+            $relativePath = str_replace('\\', '/', str_replace($dir . '/', '', $absolutePath));
+            $folder = dirname($relativePath); // just the subfolder like "users", "products"
+            $link = $baseUrl . '/' . $folder;
 
-            $description = getFileDescription($file->getPathname());
+            $description = getFileDescription($absolutePath);
 
             if (!isset($output[$folder])) {
                 $output[$folder] = [];
@@ -43,6 +50,7 @@ function listEndpoints($dir, $baseUrl) {
 
     return $output;
 }
+
 
 $endpoints = listEndpoints($routesDir, $baseUrl);
 ?>
