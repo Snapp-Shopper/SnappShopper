@@ -15,7 +15,11 @@ class users extends DatabaseObject
         'phone_number',
         'created_at',
         'updated_at',
-        'last_loggedIn'
+        'last_loggedIn',
+        'reset_token',
+        'reset_token_expires',
+        'is_verified',
+        'verification_token'
     ];
 
     // Class properties for each column
@@ -28,6 +32,10 @@ class users extends DatabaseObject
     public $created_at;
     public $updated_at;
     public $last_loggedIn;
+    public $reset_token;
+    public $reset_token_expires;
+    public $is_verified;
+    public $verification_token;
 
     // Constructor
     public function __construct($args = [])
@@ -41,6 +49,10 @@ class users extends DatabaseObject
         $this->created_at = $args['created_at'] ?? null;
         $this->updated_at = $args['updated_at'] ?? date('Y-m-d H:i:s');
         $this->last_loggedIn = $args['last_loggedIn'] ?? null;
+        $this->reset_token = $args['reset_token'] ?? null;
+        $this->reset_token_expires = $args['reset_token_expires'] ?? null;
+        $this->is_verified = $args['is_verified'] ?? 0;
+        $this->verification_token = $args['verification_token'] ?? null;
     }
 
     // Register a new user
@@ -116,9 +128,19 @@ class users extends DatabaseObject
     {
         $verificationLink = "https://yourdomain.com/api/verify_email.php?token=$token";
 
-        $subject = "Verify your email address";
-        $message = "Click the link to verify your email: $verificationLink";
-        $headers = "From: no-reply@yourdomain.com\r\n";
+        $subject = "Verify Your Email Address";
+        $message = "
+            <html>
+            <head><title>Email Verification</title></head>
+            <body>
+                <p>Thank you for registering!</p>
+                <p>Please <a href=\"$verificationLink\">click here to verify your email</a>.</p>
+            </body>
+            </html>
+        ";
+        $headers  = "MIME-Version: 1.0\r\n";
+        $headers .= "Content-type: text/html; charset=UTF-8\r\n";
+        $headers .= "From: no-reply@yourdomain.com\r\n";
 
         // Use mail() or a proper mailer like PHPMailer
         mail($email, $subject, $message, $headers);

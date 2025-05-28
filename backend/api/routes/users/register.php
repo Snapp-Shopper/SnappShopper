@@ -26,6 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
+    if (!isset($data['email']) || !isset($data['password'])) {
+        echo json_encode(['status' => 'error', 'message' => 'Email and password are required.']);
+        exit;
+    }
+
     // Proceed with registration
     $response = users::register($data);
     echo json_encode($response);
