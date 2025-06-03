@@ -1,0 +1,128 @@
+import React, { useEffect, useRef, useState } from 'react';
+
+const EmailVerification = () => {
+    const [timer, setTimer] = useState(15); // 15 seconds
+    const [code, setCode] = useState(['', '', '', '']);
+    const [isTimerActive, setIsTimerActive] = useState(true);
+    const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+
+    useEffect(() => {
+        let interval;
+        if (isTimerActive && timer > 0) {
+            interval = setInterval(() => {
+                setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
+            }, 1000);
+        } else if (timer === 0) {
+            setIsTimerActive(false);
+        }
+
+        return () => clearInterval(interval);
+    }, [timer, isTimerActive]);
+
+    const formatTime = (seconds) => {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    };
+
+    const handleInputChange = (index, value) => {
+        if (value.length <= 1 && /^[0-9]*$/.test(value)) {
+            const newCode = [...code];
+            newCode[index] = value;
+            setCode(newCode);
+
+            // Auto-focus next input if value is entered
+            if (value && index < 3) {
+                inputRefs[index + 1].current.focus();
+            }
+        }
+    };
+
+    const handleKeyDown = (index, e) => {
+        // Focus previous input on backspace if current input is empty
+        if (e.key === 'Backspace' && !code[index] && index > 0) {
+            inputRefs[index - 1].current.focus();
+        }
+    };
+
+    const handleResendEmail = () => {
+        // Here you would add the actual resend email functionality
+        console.log('Resending email...');
+
+        // Reset timer and activate it
+        setTimer(15);
+        setIsTimerActive(true);
+    };
+
+    const isCodeComplete = code.every(digit => digit !== '');
+
+    return (
+        <>
+            <main className="flex-grow flex items-center justify-center px-4 py-12">
+                <div className="max-w-md w-full bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                    <div className="text-center mb-8">
+                        <h2 className="text-2xl font-semibold text-gray-900 mb-2">Email Verification</h2>
+                        <p className="text-gray-600">A code has been sent to your email address</p>
+                    </div>
+
+                    <div className="flex justify-center gap-3 mb-8">
+                        {inputRefs.map((ref, index) => (
+                            <input
+                                key={index}
+                                ref={ref}
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={1}
+                                value={code[index]}
+                                onChange={(e) => handleInputChange(index, e.target.value)}
+                                onKeyDown={(e) => handleKeyDown(index, e)}
+                                className="size-12 text-center text-xl font-semibold bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-colors"
+                                autoComplete="off"
+                            />
+                        ))}
+                    </div>
+
+                    <div className="text-center mb-8">
+                        {timer > 0 ? (
+                            <p className="text-sm text-gray-700">
+                                Didn't receive a code? 
+                                <span className="text-blue-600 font-medium"> Resend in {formatTime(timer)}</span>
+                            </p>
+                        ) : (
+                            <p className="text-sm text-gray-700">
+                                Didn't receive a code? 
+                                <button
+                                    onClick={handleResendEmail}
+                                    className="text-blue-600 hover:text-blue-700 font-medium ml-1 transition-colors focus:outline-none focus:underline"
+                                >
+                                    Resend email
+                                </button>
+                            </p>
+                        )}
+                    </div>
+
+                    <button
+                        className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white py-3 px-4 rounded-full font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        disabled={!isCodeComplete}
+                    >
+                        <span>Verify your Email Address</span>
+                        <svg 
+                            className="size-5" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round"
+                        >
+                            <path d="M5 12h14" />
+                            <path d="m12 5 7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </main>
+        </>
+    );
+};
+
+export default EmailVerification;
