@@ -16,6 +16,7 @@ export const AppRouter = () => {
         <Route path="account/reset-password" element={<ResetPassword />} />
         <Route path="account/email-verification" element={<EmailVerification />} />
         <Route path="account/registration" element={<Registration />} />
+        {/* <Route path="account/verification-success" element={<VerificationSuccess />} /> */}
       </Route>
     </Routes>
   );
