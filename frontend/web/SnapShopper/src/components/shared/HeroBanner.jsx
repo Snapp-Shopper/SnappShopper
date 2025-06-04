@@ -8,7 +8,7 @@ const HeroBanner = () => {
 
   return (
     <>
-      <div className="bg-gray-900 text-white py-12 p-6">
+      <div className="bg-zinc-900 text-white py-12 p-6">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center md:text-left mb-8">
             <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center">
@@ -23,7 +23,7 @@ const HeroBanner = () => {
               <div className="flex items-center bg-white rounded-full p-2">
                 <div className="flex-shrink-0 pl-2 pr-3">
                   <FiCamera
-                    className="h-6 w-6 text-gray-400 mr-2 cursor-pointer hover:text-blue-500 transition-colors"
+                    className="h-6 w-6 text-zinc-400 mr-2 cursor-pointer hover:text-blue-500 transition-colors"
                     onClick={imageSearchModal.openModal}
                   />
                 </div>
@@ -38,7 +38,7 @@ const HeroBanner = () => {
                 </button>
               </div>
             </div>
-            <p className="text-center text-gray-400 mt-2 text-sm">
+            <p className="text-center text-zinc-400 mt-2 text-sm">
               Upload an image to find your desired product instantly!
             </p>
           </div>
