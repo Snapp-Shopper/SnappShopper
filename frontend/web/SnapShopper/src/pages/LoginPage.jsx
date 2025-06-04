@@ -2,14 +2,14 @@ import React, { useState } from 'react'
 import { BsApple } from 'react-icons/bs';
 import { FaFacebook } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
-import { FiEye } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useLoading } from '../context/LoadingContext';
 import Spinner from '../components/shared/Spinner';
+import EyeIcon from '../components/EyeIcon';
 
 const LoginPage = () => {
-    const [showPassword, setShowPassword] = useState(false);
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const navigate = useNavigate();
     const { login, isLoading } = useAuth();
     const [errors, setErrors] = useState({});
@@ -118,7 +118,7 @@ const LoginPage = () => {
                         <div className="relative">
                             <input
                                 id="password"
-                                type={showPassword ? "text" : "password"}
+                                type={passwordVisible ? "text" : "password"}
                                 className="w-full py-2.5 px-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 placeholder="Enter Password"
                                 value={formData.password}
@@ -127,9 +127,9 @@ const LoginPage = () => {
                             <button
                                 type="button"
                                 className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 transition-colors"
-                                onClick={() => setShowPassword(!showPassword)}
+                                onClick={() => setPasswordVisible(!passwordVisible)}
                             >
-                                <FiEye className="size-5 text-gray-400" />
+                                <EyeIcon visible={passwordVisible} />
                             </button>
                         </div>
                         {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
