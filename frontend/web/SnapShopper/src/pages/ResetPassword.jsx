@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FiEye } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 
 const ResetPassword = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);

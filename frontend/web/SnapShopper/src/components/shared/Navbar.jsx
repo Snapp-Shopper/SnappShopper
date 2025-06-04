@@ -52,21 +52,21 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-white shadow py-3 px-4">
+      <nav className="bg-white shadow-md border-b border-gray-100 py-3 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between">
           {/* Logo and Mobile Menu Button */}
           <div className="flex items-center justify-between w-full md:w-auto">
             <Link className="flex items-center" to={"/"}>
-              <svg className="h-8 w-8 text-black" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="h-8 w-8 text-gray-900" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M21 5l-3-3H6L3 5v14l3 3h12l3-3V5zm-2 11h-4v4H9v-4H5V8h4V4h6v4h4v8z" />
               </svg>
-              <span className="ml-2 font-bold text-black">SNAPPSHOPPER</span>
+              <span className="ml-2 font-bold text-gray-900 text-lg">SNAPPSHOPPER</span>
             </Link>
             
             <button 
               onClick={toggleMobileMenu}
               type="button" 
-              className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors duration-200"
               aria-controls="navbar-default" 
               aria-expanded={mobileMenuOpen}
             >
@@ -83,19 +83,21 @@ const Navbar = () => {
           <div className={`${mobileMenuOpen ? 'block' : 'hidden'} w-full md:flex md:items-center md:w-auto md:space-x-8 mt-4 md:mt-0`}>
             <div className="flex flex-col md:flex-row md:items-center md:space-x-8">
               <Link to="home"
-                className="px-4 py-2 text-blue-600 font-medium rounded-full transition-all duration-200 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 mb-2 md:mb-0">
+                className="px-4 py-2.5 text-blue-600 font-medium rounded-full transition-all duration-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 mb-2 md:mb-0">
                 Home
               </Link>
 
               <div className="relative mb-2 md:mb-0">
                 <button
                   data-category-button
-                  className="w-full md:w-auto text-left px-4 py-2 font-medium rounded-full transition-all 
-                  duration-200 hover:text-blue-600 hover:bg-blue-100 focus:outline-none
+                  className="w-full md:w-auto text-left px-4 py-2.5 font-medium text-gray-700 rounded-full transition-all 
+                  duration-200 hover:text-blue-600 hover:bg-blue-50 focus:outline-none
                   focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 flex items-center justify-between"
                   onClick={categoriesDropdown.toggleDropdown}>
                   <span>Categories</span>
-                  <svg className="h-4 w-4 inline ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg className="h-4 w-4 inline ml-1 transition-transform duration-200" 
+                       style={{ transform: categoriesDropdown.isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                       viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M6 9l6 6 6-6" />
                   </svg>
                 </button>
@@ -115,17 +117,17 @@ const Navbar = () => {
 
             {/* Search Bar - Full width on mobile */}
             <div className="w-full md:w-96 mb-2 md:mb-0">
-              <div className="flex items-center border rounded-full px-4 py-2">
+              <div className="flex items-center border border-gray-300 bg-white rounded-full px-4 py-2.5 shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all duration-200">
                 <FiCamera 
-                  className="h-6 w-6 text-gray-400 mr-2 cursor-pointer hover:text-blue-500 transition-colors"
+                  className="h-5 w-5 text-gray-400 mr-3 cursor-pointer hover:text-blue-500 transition-colors duration-200"
                   onClick={imageSearchModal.openModal} 
                 />
                 <input
                   type="text"
                   placeholder="Search products..."
-                  className="w-full outline-none text-sm"
+                  className="w-full outline-none text-sm text-gray-900 placeholder:text-gray-500 bg-transparent"
                 />
-                <svg className="h-6 w-6 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="h-5 w-5 text-gray-400 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -136,10 +138,10 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   data-notification-button
-                  className="focus:outline-none flex items-center cursor-pointer"
+                  className="focus:outline-none flex items-center cursor-pointer p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                   onClick={notificationDropdown.toggleDropdown}>
-                  <FaBell className="h-6 w-6 text-gray-600 hover:text-blue-600 focus:text-blue-600" />
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">9</span>
+                  <FaBell className="h-5 w-5 text-gray-600 hover:text-blue-600 focus:text-blue-600" />
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center font-medium shadow-sm">9</span>
                 </button>
 
                 {notificationDropdown.isOpen && (
@@ -151,9 +153,9 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   data-cart-button
-                  className="focus:outline-none flex items-center cursor-pointer"
+                  className="focus:outline-none flex items-center cursor-pointer p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                   onClick={cartDropdown.toggleDropdown}>
-                  <FaShoppingCart className="h-6 w-6 text-gray-600 hover:text-blue-600 focus:text-blue-600" />
+                  <FaShoppingCart className="h-5 w-5 text-gray-600 hover:text-blue-600 focus:text-blue-600" />
                 </button>
 
                 {cartDropdown.isOpen && (
@@ -164,14 +166,16 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   data-signin-button
-                  className="flex items-center cursor-pointer"
+                  className="flex items-center cursor-pointer p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                   onClick={signInDropdown.toggleDropdown}
                 >
                   <div className="flex items-center space-x-2 hover:text-blue-600">
-                    <FaUser className="h-6 w-6 text-gray-600" />
-                    <span className="text-gray-700 hidden md:inline">Hello, Sign in</span>
+                    <FaUser className="h-5 w-5 text-gray-600" />
+                    <span className="text-gray-700 text-sm font-medium hidden md:inline">Hello, Sign in</span>
                   </div>
-                  <svg className="h-4 w-4 ml-1 text-gray-600 hidden md:inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg className="h-4 w-4 ml-1 text-gray-600 hidden md:inline transition-transform duration-200" 
+                       style={{ transform: signInDropdown.isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                       viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M6 9l6 6 6-6" />
                   </svg>
                 </button>

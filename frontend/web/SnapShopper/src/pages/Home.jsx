@@ -1,4 +1,5 @@
 import React from 'react'
+import HeroBanner from '../components/shared/HeroBanner'
 
 const Home = () => {
   return (

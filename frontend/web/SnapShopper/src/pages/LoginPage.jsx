@@ -4,9 +4,9 @@ import { FaFacebook } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { FiEye } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { useLoading } from '../../context/LoadingContext';
-import Spinner from '../../components/shared/Spinner';
+import { useAuth } from '../hooks/useAuth';
+import { useLoading } from '../context/LoadingContext';
+import Spinner from '../components/shared/Spinner';
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);

@@ -3,10 +3,10 @@ import { BsApple } from "react-icons/bs";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
 import toast from "react-hot-toast";
-import Spinner from "../../components/shared/Spinner";
-import { useLoading } from "../../context/LoadingContext";
+import Spinner from "../components/shared/Spinner";
+import { useLoading } from "../context/LoadingContext";
 
 const Registration = () => {
   const navigate = useNavigate();
