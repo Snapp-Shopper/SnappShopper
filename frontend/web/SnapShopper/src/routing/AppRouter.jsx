@@ -7,6 +7,7 @@ import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
 import Registration from "../pages/Registration";
 import Home from "../pages/Home";
+import AccountPage from "../pages/AccountPage";
 
 export const AppRouter = () => {
   return (
@@ -17,6 +18,7 @@ export const AppRouter = () => {
         <Route path="account/forgot-password" element={<ForgotPassword />} />
         <Route path="account/reset-password" element={<ResetPassword />} />
         <Route path="account/email-verification" element={<EmailVerification />}/>
+        <Route path="account/profile" element={<AccountPage />} />
         
         {/* <Route path="account/verification-success" element={<VerificationSuccess />} /> */}
         <Route index element={<Home />} />
