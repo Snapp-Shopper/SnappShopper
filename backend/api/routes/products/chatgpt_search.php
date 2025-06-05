@@ -1,0 +1,64 @@
+<?php
+// Description: Searches for products using ChatGPT-processed natural language query
+require_once '../../initialize.php';
+require_once '../../helpers/OpenAIHelper.php';
+
+header('Content-Type: application/json');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['status' => 'error', 'message' => 'Only POST allowed']);
+    exit;
+}
+
+$data = json_decode(file_get_contents('php://input'), true);
+$query = $data['query'] ?? '';
+
+if (!$query) {
+    echo json_encode(['status' => 'error', 'message' => 'Missing search query']);
+    exit;
+}
+
+// === Step 1: Let ChatGPT generate search tags
+$tags = OpenAIHelper::getSearchLabels($query);
+if (!is_array($tags)) {
+    echo json_encode(['status' => 'error', 'message' => 'Failed to generate tags from ChatGPT']);
+    exit;
+}
+
+// === Step 2: Match using tags
+$matches = [];
+$images = productImage::findAll();
+
+foreach ($images as $img) {
+    if (!empty($img['vision_labels'])) {
+        $productLabels = explode(',', strtolower($img['vision_labels']));
+        if (count(array_intersect($productLabels, $tags)) >= 2) {
+            $product = products::findProductById($img['product_id']);
+            if ($product) {
+                $matches[$product->product_id] = $product;
+            }
+        }
+    }
+}
+
+// === Final Output ===
+if (!empty($matches)) {
+    echo json_encode([
+        'status' => 'success',
+        'query' => $query,
+        'tags_used' => $tags,
+        'results' => array_values($matches)
+    ]);
+    exit;
+}
+
+// === Fallback: Recommend Random Products (or Top Picks)
+$recommended = products::getRecommended(6); // New method: get 6 random or recent
+echo json_encode([
+    'status' => 'fallback',
+    'message' => 'No exact matches. Showing recommended products instead.',
+    'query' => $query,
+    'tags_used' => $tags,
+    'results' => $recommended
+]);
+exit;

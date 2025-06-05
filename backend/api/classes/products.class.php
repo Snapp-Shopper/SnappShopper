@@ -93,6 +93,26 @@ class products extends DatabaseObject
         return ['status' => 'error', 'message' => 'Failed to update stock'];
     }
 
+    // Get recommended products (fallback)
+    static public function getRecommended($limit = 6)
+    {
+        require_once __DIR__ . '/../helpers/CacheHelper.php';
+
+        $cacheKey = "recommended_products_{$limit}";
+        $cached = CacheHelper::get($cacheKey, 3600); // 1 hour cache
+
+        if ($cached) return $cached;
+
+        $sql = "SELECT * FROM " . static::$table_name . " ORDER BY created_at DESC LIMIT :limit";
+        $stmt = self::executeQuery($sql, ['limit' => $limit]);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        CacheHelper::set($cacheKey, $result);
+        return $result;
+    }
+
+
+
     // Validation for product fields
     protected function validate()
     {

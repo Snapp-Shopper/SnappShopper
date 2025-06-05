@@ -12,8 +12,12 @@ define('MARKER_FILE', __DIR__ . '/last_image_id.txt'); // File to track progress
 
 // === Initialize Vision API ===
 $vision = new ImageAnnotatorClient([
-    'credentials' => GOOGLE_CREDENTIALS_PATH
+    'credentials' => GOOGLE_CREDENTIALS
 ]);
+if (!defined('GOOGLE_CREDENTIALS')) {
+    http_response_code(500);
+    exit('Google credentials not configured.');
+}
 
 // === Load last processed ID ===
 $lastId = file_exists(MARKER_FILE) ? (int)file_get_contents(MARKER_FILE) : 0;

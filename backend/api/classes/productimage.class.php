@@ -49,8 +49,12 @@ class productImage extends DatabaseObject
 
         try {
             $vision = new ImageAnnotatorClient([
-                'credentials' => '/path/to/your-google-service-account.json'
+                'credentials' => GOOGLE_CREDENTIALS
             ]);
+            if (empty($imagePath)) {
+                return ['status' => 'error', 'message' => 'Image path cannot be empty'];
+            }
+
 
             if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
                 $imageData = file_get_contents($imagePath);

@@ -6,8 +6,13 @@ require '../../vendor/autoload.php'; // Google Vision
 use Google\Cloud\Vision\V1\ImageAnnotatorClient;
 
 $vision = new ImageAnnotatorClient([
-    'credentials' => 'path/to/your-google-credentials.json'
+    'credentials' => GOOGLE_CREDENTIALS
 ]);
+// Ensure the credentials constant is defined
+if (!defined('GOOGLE_CREDENTIALS')) {
+    http_response_code(500);
+    exit('Google credentials not configured.');
+}
 
 $images = productImage::findAll(); // Should return all image rows (as associative arrays)
 
