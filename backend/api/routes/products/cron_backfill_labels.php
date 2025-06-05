@@ -6,7 +6,6 @@ require '../../vendor/autoload.php';
 use Google\Cloud\Vision\V1\ImageAnnotatorClient;
 
 // === Config ===
-define('GOOGLE_CREDENTIALS_PATH', 'path/to/your-google-credentials.json');
 define('BATCH_SIZE', 10); // How many images to process per run
 define('MARKER_FILE', __DIR__ . '/last_image_id.txt'); // File to track progress
 
