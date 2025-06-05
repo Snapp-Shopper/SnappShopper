@@ -21,8 +21,7 @@ $identityToken = $data['identity_token'];
 
 try {
     // Step 1: Fetch Apple public keys
-    $appleKeyUrl = 'https://appleid.apple.com/auth/keys';
-    $appleKeys = json_decode(file_get_contents($appleKeyUrl), true);
+    $appleKeys = json_decode(file_get_contents(APPLE_KEY_URL), true);
 
     // Step 2: Decode & verify JWT with Apple public keys
     $decodedToken = JWT::decode($identityToken, JWK::parseKeySet($appleKeys), ['RS256']);

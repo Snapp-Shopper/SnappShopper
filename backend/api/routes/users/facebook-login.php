@@ -20,8 +20,8 @@ $fbAccessToken = $data['accessToken'];
 
 try {
     $fb = new Facebook([
-        'app_id' => 'YOUR_FACEBOOK_APP_ID',
-        'app_secret' => 'YOUR_FACEBOOK_APP_SECRET',
+        'app_id' => FACEBOOK_APP_ID,
+        'app_secret' => FACEBOOK_APP_SECRET,
         'default_graph_version' => 'v18.0',
     ]);
 

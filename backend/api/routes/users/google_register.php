@@ -19,7 +19,7 @@ $token = $data['token'];
 
 try {
     // Validate token with Google
-    $client = new \Google_Client(['client_id' => 'YOUR_GOOGLE_CLIENT_ID']);
+    $client = new \Google_Client(['client_id' => GOOGLE_CLIENT_ID]);
     $payload = $client->verifyIdToken($token);
 
     if ($payload) {
