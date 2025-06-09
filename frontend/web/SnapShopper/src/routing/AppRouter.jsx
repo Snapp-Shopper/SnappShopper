@@ -8,6 +8,7 @@ import ResetPassword from "../pages/ResetPassword";
 import Registration from "../pages/Registration";
 import Home from "../pages/Home";
 import AccountPage from "../pages/AccountPage";
+import Cart from "../pages/Cart";
 
 export const AppRouter = () => {
   return (
@@ -23,6 +24,7 @@ export const AppRouter = () => {
         {/* <Route path="account/verification-success" element={<VerificationSuccess />} /> */}
         <Route index element={<Home />} />
         <Route path="home" element={<Home />} />
+        <Route path="user/cart" element={<Cart />} />
       </Route>
     </Routes>
   );

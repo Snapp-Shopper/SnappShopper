@@ -51,7 +51,7 @@ const PersonalInfo = () => {
                   <option>Female</option>
                   <option>Other</option>
                 </select>
-                <LuChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                {/* <LuChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" /> */}
               </div>
             ) : (
               <input

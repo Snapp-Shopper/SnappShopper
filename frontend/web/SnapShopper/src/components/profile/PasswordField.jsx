@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import { FiEdit3 } from "react-icons/fi";
-import { LuChevronDown, LuEye, LuEyeOff, LuUser } from "react-icons/lu";
 import EyeIcon from "../EyeIcon";
 
 const PasswordField = ({ label, placeholder, id, value, onChange }) => {
   const [showPassword, setShowPassword] = useState(false);
-  
+
   return (
     <div className="space-y-2">
       <label htmlFor={id} className="block text-sm font-medium text-gray-700">
