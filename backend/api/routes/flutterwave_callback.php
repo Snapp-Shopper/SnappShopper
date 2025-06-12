@@ -1,4 +1,51 @@
 <?php
+/**
+ * @openapi
+ * /api/users/apple-log:
+ *   post:
+ *     summary: Apple login
+ *     description: Authenticates a user using an Apple identity token. Registers the user if not already present.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - identity_token
+ *             properties:
+ *               identity_token:
+ *                 type: string
+ *                 description: Identity token from Apple Sign-In
+ *               first_name:
+ *                 type: string
+ *                 description: User's first name (optional, usually provided on first sign-in)
+ *               last_name:
+ *                 type: string
+ *                 description: User's last name (optional, usually provided on first sign-in)
+ *     responses:
+ *       200:
+ *         description: Apple login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Apple login successful
+ *                 user:
+ *                   type: object
+ *                 token:
+ *                   type: string
+ *       400:
+ *         description: Missing or invalid identity token
+ *       500:
+ *         description: Internal error or verification failure
+ */
 require_once('../initialize.php');
 require_once('../src/flutterwave_config.php');
 

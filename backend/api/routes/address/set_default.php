@@ -1,4 +1,78 @@
 <?php
+/**
+ * @openapi
+ * /address/set_default.php:
+ *   post:
+ *     summary: Set an address as the default address by its ID
+ *     tags:
+ *       - Address
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               address_id:
+ *                 type: integer
+ *                 description: ID of the address to set as default
+ *             required:
+ *               - address_id
+ *     responses:
+ *       200:
+ *         description: Address set as default successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Address set as default
+ *       400:
+ *         description: Missing or invalid address_id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: address_id is required.
+ *       404:
+ *         description: Address not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Address not found
+ *       405:
+ *         description: Invalid request method
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid request method.
+ */
+
 // Description: This endpoint sets the default address based on the address ID provided.
 require_once '../../initialize.php'; // Include the initialization file
 

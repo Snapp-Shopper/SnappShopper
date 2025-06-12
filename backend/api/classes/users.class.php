@@ -126,7 +126,7 @@ class users extends DatabaseObject
 
     static private function sendVerificationEmail($email, $token)
     {
-        $verificationLink = "https://yourdomain.com/api/verify_email.php?token=$token";
+        $verificationLink = "https://test.api.snappshopper.com/api/routes/verify_email.php?token=$token";
 
         $subject = "Verify Your Email Address";
         $message = "

@@ -1,42 +1,72 @@
 <?php
-// Description: This endpoint handles user login by accepting an email and password, and returning a response based on the login attempt.
-require_once '../../initialize.php'; // Include the initialization file
+/**
+ * @openapi
+ * /users/login.php:
+ *   post:
+ *     summary: Login user
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       401:
+ *         description: Invalid credentials
+ */
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Description: This endpoint handles user login by accepting an email and password and returning a response based on the login attempt.
 
-    // Try to get form-data first
-    $data = $_POST;
+    require_once '../../initialize.php';
 
-    // If $_POST is empty, try to decode raw JSON input
-    if (empty($data)) {
-        $rawData = file_get_contents('php://input');
-        $data = json_decode($rawData, true); // true = return associative arrayging line to check the raw data
-    }
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: POST');
+    header('Content-Type: application/json');
 
-    if (empty($data)) {
-        // Still empty? Then it's invalid input
+    // Only POST allowed
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         echo json_encode([
             'status' => 'error',
-            'message' => 'No valid data received.'
+            'message' => 'Invalid request method.'
         ]);
         exit;
     }
 
-    // Proceed with login
+    // Get form-data or JSON body
+    $data = $_POST;
 
-    $response = users::login($data['EMAIL'], password: $data['PASSWORD']);
+    if (empty($data)) {
+        $rawData = file_get_contents('php://input');
+        $data = json_decode($rawData, true);
+    }
+
+    // Validate input
+    if (empty($data['email']) || empty($data['password'])) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Email and password are required.'
+        ]);
+        exit;
+    }
+
+    // Normalize keys (in case of uppercased POST fields)
+    $email = strtolower(trim($data['email']));
+    $password = $data['password'];
+
+    // Attempt login
+    $response = users::login($email, $password);
     echo json_encode($response);
     exit;
-}
-else {
-    // If not a POST request, reject it
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Invalid request method.'
-    ]);
-    exit;
-}

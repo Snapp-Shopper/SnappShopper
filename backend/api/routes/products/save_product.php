@@ -1,12 +1,65 @@
 <?php
-// Description: Saves or updates a product with image upload + Vision tagging
+/**
+ * @openapi
+ * /products/save_product.php:
+ *   post:
+ *     summary: Save or update a product with optional multiple image uploads
+ *     tags:
+ *       - Products
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               product_id:
+ *                 type: integer
+ *                 description: Product ID for update; omit or null for new product
+ *               name:
+ *                 type: string
+ *                 description: Product name
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *                 format: float
+ *               image:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: One or more product images to upload
+ *             required:
+ *               - name
+ *     responses:
+ *       200:
+ *         description: Product saved successfully with image upload results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ *                 product_id:
+ *                   type: integer
+ *                 images:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       status:
+ *                         type: string
+ *                       message:
+ *                         type: string
+ */
 
 require_once '../../initialize.php';
 require_once '../../vendor/autoload.php';
 require_once '../../helpers/ImageHelper.php';
-
-
-use Google\Cloud\Vision\V1\ImageAnnotatorClient;
 
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
@@ -17,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Support JSON and form-data
+// Support JSON or form-data POST
 $data = $_POST;
 if (empty($data)) {
     $raw = file_get_contents('php://input');
@@ -29,12 +82,13 @@ if (empty($data)) {
     exit;
 }
 
-// === Step 1: Save Product ===
+// === Step 1: Save or update product ===
 $product = new products($data);
 $product->updated_at = date('Y-m-d H:i:s');
 if (empty($product->product_id)) {
     $product->created_at = date('Y-m-d H:i:s');
 }
+
 $productResult = $product->saveProduct();
 
 if ($productResult['status'] !== 'success') {
@@ -42,11 +96,12 @@ if ($productResult['status'] !== 'success') {
     exit;
 }
 
-// === Step 2: Handle Multiple Image Uploads ===
+// === Step 2: Handle multiple image uploads ===
 $uploadedImages = [];
 $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 $maxSize = 5 * 1024 * 1024; // 5MB
 $uploadDir = '../../uploads/products/';
+
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0777, true);
 }
@@ -78,7 +133,6 @@ if (!empty($_FILES['image']) && is_array($_FILES['image']['name'])) {
         $destination = $uploadDir . $newName;
 
         if (ImageHelper::resizeAndCompress($tmpName, $destination)) {
-
             $relativePath = str_replace('../../', '', $destination);
             $image = new productImage([
                 'product_id' => $product->product_id,

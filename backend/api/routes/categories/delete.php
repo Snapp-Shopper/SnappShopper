@@ -1,4 +1,41 @@
 <?php
+/**
+ * @openapi
+ * /categories/delete.php:
+ *   post:
+ *     summary: Delete a category by ID
+ *     tags:
+ *       - Categories
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - category_id
+ *             properties:
+ *               category_id:
+ *                 type: string
+ *                 description: The ID of the category to delete
+ *     responses:
+ *       200:
+ *         description: Category deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Missing or invalid category_id
+ *       404:
+ *         description: Category not found
+ */
+
 // Description: This endpoint deletes a category based on the category ID provided.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 

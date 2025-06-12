@@ -1,4 +1,75 @@
 <?php
+/**
+ * @openapi
+ * /products/vision_search.php:
+ *   post:
+ *     summary: Scan a user-uploaded image or image URL using Google Vision API to find matching products
+ *     tags:
+ *       - Products
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               search_image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image file uploaded by user
+ *               image_url:
+ *                 type: string
+ *                 format: uri
+ *                 description: URL of the image to scan (alternative to file upload)
+ *     responses:
+ *       200:
+ *         description: Products matched successfully or no matches found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     status:
+ *                       type: string
+ *                       enum: [success]
+ *                     matched_by:
+ *                       type: object
+ *                       properties:
+ *                         visual:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                           description: Product IDs matched by visual similarity
+ *                         tags:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                           description: Product IDs matched by label tags
+ *                     products:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         description: Product object matched (as returned by products::findProductById)
+ *                     source:
+ *                       type: string
+ *                       enum: [upload, url]
+ *                       description: Source of the scanned image
+ *                 - type: object
+ *                   properties:
+ *                     status:
+ *                       type: string
+ *                       enum: [error]
+ *                     message:
+ *                       type: string
+ *       400:
+ *         description: No valid image source provided
+ *       405:
+ *         description: Method not allowed
+ *       500:
+ *         description: Server configuration error or Google credentials missing
+ */
+
 // Description: This endpoint scans a user-uploaded image or URL using Google Vision API and matches labels/similar products
 
 require_once '../../initialize.php';

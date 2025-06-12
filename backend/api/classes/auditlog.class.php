@@ -1,6 +1,6 @@
 <?php
 
-class AuditLog extends DatabaseObject
+class auditLog extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Audit_Logs";

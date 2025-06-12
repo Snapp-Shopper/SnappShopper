@@ -1,4 +1,70 @@
 <?php
+/**
+ * @openapi
+ * /products/chatgpt_search.php:
+ *   post:
+ *     summary: Search for products using a natural language query processed by ChatGPT
+ *     tags:
+ *       - Products
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - query
+ *             properties:
+ *               query:
+ *                 type: string
+ *                 description: Natural language search query
+ *     responses:
+ *       200:
+ *         description: Search results returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     status:
+ *                       type: string
+ *                       enum: [success]
+ *                     query:
+ *                       type: string
+ *                     tags_used:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     results:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         description: Product object (as returned by products::findProductById)
+ *                 - type: object
+ *                   properties:
+ *                     status:
+ *                       type: string
+ *                       enum: [fallback]
+ *                     message:
+ *                       type: string
+ *                     query:
+ *                       type: string
+ *                     tags_used:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     results:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         description: Recommended product object (as returned by products::getRecommended)
+ *       400:
+ *         description: Missing or invalid search query
+ *       405:
+ *         description: Method not allowed
+ */
+
 // Description: Searches for products using ChatGPT-processed natural language query
 require_once '../../initialize.php';
 require_once '../../helpers/OpenAIHelper.php';

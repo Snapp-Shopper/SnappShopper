@@ -1,4 +1,87 @@
 <?php
+/**
+ * @openapi
+ * /address/save_address.php:
+ *   post:
+ *     summary: Save a new address for a user, optionally set as default
+ *     tags:
+ *       - Address
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user_id:
+ *                 type: integer
+ *                 description: ID of the user owning the address
+ *               address_line1:
+ *                 type: string
+ *                 description: Primary address line
+ *               address_line2:
+ *                 type: string
+ *                 description: Secondary address line (optional)
+ *               city:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *               zip_code:
+ *                 type: string
+ *               country:
+ *                 type: string
+ *               is_default:
+ *                 type: boolean
+ *                 description: Set this address as the default for the user
+ *             required:
+ *               - user_id
+ *               - address_line1
+ *               - city
+ *               - state
+ *               - zip_code
+ *               - country
+ *     responses:
+ *       200:
+ *         description: Address saved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Address saved successfully.
+ *       400:
+ *         description: Invalid or missing input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: No valid data received.
+ *       405:
+ *         description: Invalid request method
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid request method.
+ */
+
 // Description: This endpoint saves addresses for a user, and can set to default address if provided.
 require_once '../../initialize.php'; // Include the initialization file
 

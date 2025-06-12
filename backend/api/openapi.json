@@ -1,0 +1,14 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "SnappShopper API",
+        "version": "1.0.0",
+        "description": "Auto-generated OpenAPI documentation for SnappShopper endpoints."
+    },
+    "servers": [
+        {
+            "url": "http://localhost/snappshopper/backend/api/routes"
+        }
+    ],
+    "paths": []
+}

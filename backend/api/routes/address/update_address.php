@@ -1,4 +1,82 @@
 <?php
+/**
+ * @openapi
+ * /address/update_address.php:
+ *   post:
+ *     summary: Update an existing address
+ *     tags:
+ *       - Address
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               address_id:
+ *                 type: integer
+ *                 description: ID of the address to update
+ *               user_id:
+ *                 type: integer
+ *                 description: ID of the user the address belongs to
+ *               address_line1:
+ *                 type: string
+ *               address_line2:
+ *                 type: string
+ *               city:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *               zip_code:
+ *                 type: string
+ *               country:
+ *                 type: string
+ *               is_default:
+ *                 type: boolean
+ *             required:
+ *               - address_id
+ *     responses:
+ *       200:
+ *         description: Address updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Address updated successfully.
+ *       400:
+ *         description: Invalid input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: No valid data received.
+ *       405:
+ *         description: Invalid request method
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid request method.
+ */
+
 // Description: This endpoint updates an existing address based on the data provided.
 require_once '../../initialize.php'; // Include the initialization file
 
