@@ -67,7 +67,7 @@ class users extends DatabaseObject
             return ['status' => 'error', 'message' => 'Email already exists'];
         }
 
-        $verificationToken = bin2hex(random_bytes(16)); // Generates a 32-char token
+        $verificationToken = random_int(100000, 999999); // Generates a 32-char token
 
         $data['password_hash'] = $hashedPassword;
         $data['is_verified'] = 0;
@@ -85,9 +85,31 @@ class users extends DatabaseObject
         if ($user->save()) {
             // Send verification email
             self::sendVerificationEmail($data["email"], $verificationToken);
-            return ['status' => 'success', 'message' => 'User registered. Please verify your email.'];
+            return ['status' => 'success', 'message' => 'User registered. Check your email for the verification code.'];
         } else {
             return ['status' => 'error', 'message' => 'Registration failed'];
+        }
+    }
+
+     static public function resendToken($email) {
+        $user = self::findByEmail($email);
+        if (!$user) {
+            return ['status' => 'error', 'message' => 'User not found'];
+        }
+
+        if ($user->is_verified) {
+            return ['status' => 'error', 'message' => 'User already verified'];
+        }
+
+        $code = random_int(100000, 999999);
+        $user->verification_token = $code;
+        $user->updated_at = date('Y-m-d H:i:s');
+
+        if ($user->save()) {
+            self::sendVerificationEmail($user->email, $code);
+            return ['status' => 'success', 'message' => 'Verification code resent'];
+        } else {
+            return ['status' => 'error', 'message' => 'Failed to resend code'];
         }
     }
 
@@ -126,26 +148,39 @@ class users extends DatabaseObject
 
     static private function sendVerificationEmail($email, $token)
     {
-        $verificationLink = "https://test.api.snappshopper.com/api/routes/verify_email.php?token=$token";
+        $subject = "Your SnappShopper Verification Code";
+        $message = "<html><body>
+                    <p>Your verification code is: <strong>$token</strong></p>
+                    <p>Please enter this code in the app to verify your email address.</p>
+                    </body></html>";
 
-        $subject = "Verify Your Email Address";
-        $message = "
-            <html>
-            <head><title>Email Verification</title></head>
-            <body>
-                <p>Thank you for registering!</p>
-                <p>Please <a href=\"$verificationLink\">click here to verify your email</a>.</p>
-            </body>
-            </html>
-        ";
         $headers  = "MIME-Version: 1.0\r\n";
         $headers .= "Content-type: text/html; charset=UTF-8\r\n";
-        $headers .= "From: no-reply@yourdomain.com\r\n";
+        $headers .= "From: no-reply@snappshopper.com\r\n";
 
-        // Use mail() or a proper mailer like PHPMailer
         mail($email, $subject, $message, $headers);
     }
 
+     static public function verifyCode($email, $code) {
+        $user = self::findByEmail($email);
+        if (!$user) {
+            return ['status' => 'error', 'message' => 'User not found'];
+        }
+
+        if ($user->is_verified) {
+            return ['status' => 'success', 'message' => 'User already verified'];
+        }
+
+        if ((string)$user->verification_token === (string)$code) {
+            $user->is_verified = 1;
+            $user->verification_token = null;
+            $user->updated_at = date('Y-m-d H:i:s');
+            $user->save();
+            return ['status' => 'success', 'message' => 'Email verified successfully'];
+        }
+
+        return ['status' => 'error', 'message' => 'Invalid verification code'];
+    }
 
     // Verify user login
     static public function login($email, $password)

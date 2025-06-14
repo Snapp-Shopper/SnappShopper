@@ -26,22 +26,22 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 
 // === 4. Load Class Definitions ===
-foreach (glob(__DIR__ . '/classes/*.class.php') as $model) {
-    include_once($model);
-}
+// Load all classes in the directory
+    foreach (glob('classes/*.class.php') as $model) {
+        include_once($model);
+    }
 
-// === 5. Custom Autoloader (in case new classes added later)
-function my_autoload($class)
-{
-    if (preg_match('/\A\w+\Z/', $class)) {
-        $file = __DIR__ . '/classes/' . $class . '.class.php';
-        if (file_exists($file)) {
-            include $file;
+    //Autoload Class Definitions
+    function my_autoload($class)
+    {
+        if (preg_match('/\A\w+\Z/',$class)) {
+            $file_name = __DIR__ . '/';
+            $file_name .= 'classes/'.$class.'.class.php';
+            if(file_exists($file_name)){
+                include($file_name);
+            }
         }
     }
-}
-spl_autoload_register('my_autoload');
-
-// === 6. Setup Database Connection
-$database = db_connect();
-DatabaseObject::setDatabase($database);
+    spl_autoload_register('my_autoload');
+    $database= db_connect();
+    databaseobject::setDatabase($database);
