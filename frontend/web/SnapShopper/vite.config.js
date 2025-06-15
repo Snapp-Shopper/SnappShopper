@@ -9,7 +9,8 @@ export default defineConfig({
       '/api': {
         target: 'https://test.api.snappshopper.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api/routes'),
+        rewrite: (path) => `/api/routes${path.replace(/^\/api/, '')}`,
+        logLevel: 'debug', 
       },
     },
   },

@@ -5,9 +5,9 @@ import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import toast from "react-hot-toast";
-import Spinner from "../components/shared/Spinner";
 import { useLoading } from "../context/LoadingContext";
 import EyeIcon from "../components/EyeIcon";
+import ButtonSpinner from "../components/ButtonSpinner";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -37,52 +37,6 @@ const Registration = () => {
     });
   }
 
-  // async function handleSubmit(e) {
-  //   e.preventDefault();
-
-  //   // Basic validation
-  //   const newErrors = {};
-  //   if (!formData.first_name.trim()) newErrors.first_name = "First name is required";
-  //   if (!formData.last_name.trim()) newErrors.last_name = "Last name is required";
-  //   if (!formData.email.trim()) newErrors.email = "Email is required";
-  //   if (!formData.password) newErrors.password = "Password is required";
-  //   if (formData.password !== formData.confirmPassword) {
-  //     newErrors.confirmPassword = "Passwords do not match";
-  //   }
-
-  //   if (Object.keys(newErrors).length > 0) {
-  //     setErrors(newErrors);
-  //     return;
-  //   }
-
-  //   setIsLoading(true);
-
-  //   try {
-  //     const response = await register(
-  //       formData.first_name,
-  //       formData.last_name,
-  //       formData.email,
-  //       formData.password,
-  //       formData.phone_number
-  //     );
-
-  //     // Simulate a delay for loading (optional)
-  //     setTimeout(() => {
-  //       setIsLoading(false);
-  //       if (response.status === 'success') {
-  //         console.log(response)
-  //         toast.success("Registration successful! Verify your email.");
-  //         // navigate("account/email-verification"); // Redirect to verification page
-  //       }
-  //       else if (response.message === 'Email already exists') toast.error('Email already exists')
-  //     }, 3000); // Default loading time of 3 seconds
-  //   } catch (error) {
-  //     setIsLoading(false); // Stop loading
-  //     // toast.error(error.response?.data?.Message || "Registration failed.");
-  //     console.log(error)
-  //   }
-  // }
-
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -106,29 +60,76 @@ const Registration = () => {
     setIsLoading(true);
 
     try {
-      const response = await callApi(
-        register,
+      const response = await register(
         formData.first_name,
         formData.last_name,
         formData.email,
         formData.password,
         formData.phone_number
       );
-      if (response.status === "success") {
-        toast.success("Registration successful! Verify your email.");
-        navigate("/account/email-verification");
+
+      if (response && response.status) {
+        // Check if response and response.data exist
+        if (response.status === "success") {
+          toast.success("Registration successful! Please verify your email.");
+          navigate("/account/email-verification");
+        } else if (response.status === "error") {
+          const errorMessage =
+            response.message || "Registration failed due to an unknown issue.";
+          toast.error(errorMessage); // Display the toast here
+
+          setErrors((prev) => ({ ...prev, general: errorMessage })); // Also update local state
+        } else {
+          // Fallback for unexpected response structures that are still 200 OK
+          toast.error("An unexpected response was received from the server.");
+          setErrors((prev) => ({
+            ...prev,
+            general: "An unexpected response was received from the server.",
+          }));
+        }
       } else {
-        toast.error(response.message);
+        // Fallback if response or response.data is null/undefined for some reason
+        toast.error("Check network connection or server status...");
+        setErrors((prev) => ({
+          ...prev,
+          general: "Check network connection or server status...",
+        }));
       }
     } catch (error) {
-      console.error(error); // Handle error appropriately
+      //console.error("Registration error:", error); // Log the full error object for debugging
+
+      let displayErrorMessage = "Registration failed. Please try again.";
+      let fieldErrors = {};
+
+      if (error.response) {
+        // The request was made and the server responded
+        if (
+          error.response.data &&
+          typeof error.response.data === "object" &&
+          error.response.data.message
+        ) {
+          displayErrorMessage = error.response.data.message;
+        } else {
+          displayErrorMessage = `Server Error: ${error.response.status}`;
+        }
+      } else if (error.request) {
+        displayErrorMessage =
+          "No response from server. Check network connection or server status.";
+      } else {
+        displayErrorMessage = error.message;
+      }
+      setErrors((prev) => ({
+        ...prev,
+        general: displayErrorMessage,
+        ...fieldErrors,
+      }));
+    } finally {
+      setIsLoading(false); // Stop loading regardless of success or failure
     }
   }
 
   return (
     <>
-      {isLoading && <Spinner />}
-
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 w-full max-w-md mx-auto my-6">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -138,7 +139,7 @@ const Registration = () => {
             Already have an account?
             <Link
               to={"/account/login"}
-              className="text-blue-600 font-medium hover:text-blue-700 transition-colors ml-1"
+              className="font-medium underline text-blue-600 hover:text-blue-700 transition-colors"
             >
               Sign In
             </Link>
@@ -302,28 +303,8 @@ const Registration = () => {
             )}
           </div>
 
-          {/* <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium py-2.5 px-4 rounded-full flex items-center justify-center gap-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            disabled={isLoading}
-          >
-            {isLoading ? "Processing..." : "Create an Account"}
-            <svg
-              className="size-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
-              ></path>
-            </svg>
-          </button> */}
           {isLoading ? (
-            "Processing..."
+            <ButtonSpinner />
           ) : (
             <button
               type="submit"
