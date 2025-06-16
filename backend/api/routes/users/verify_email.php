@@ -5,6 +5,8 @@
  *   get:
  *     summary: Verify email
  *     description: Verifies a user's email address by validating a token sent via email.
+ *     tags:
+ *       - Users
  *     parameters:
  *       - in: query
  *         name: token

@@ -5,6 +5,8 @@
  *   post:
  *     summary: Google login
  *     description: Authenticates a user using a Google ID token. If the user doesn't exist, they are registered.
+ *     tags:
+ *       - Users
  *     requestBody:
  *       required: true
  *       content:

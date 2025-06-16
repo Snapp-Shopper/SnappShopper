@@ -1,255 +1,329 @@
-## API Documentation for Users Class
+/**
+ * api/users/login.php:
+ *   post:
+ *     summary: Login user
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       401:
+ *         description: Invalid credentials
+ */
 
-### Overview
-This API handles user registration, login, and management. It supports functionality such as registering a new user, logging in, retrieving all users, and validating user information.
+/**
+ * api/users/register.php:
+ *   post:
+ *     summary: Register a new user
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - first_name
+ *               - last_name
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful registration
+ *       400:
+ *         description: Missing or invalid data
+ */
 
-### Authentication
-All API endpoints require authentication via a token. The token should be passed in the `Authorization` header as a Bearer token.
+/**
+ * api/users/forgotpassword.php:
+ *   post:
+ *     summary: Forgot password
+ *     description: Accepts an email address and initiates a password reset process.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - EMAIL
+ *             properties:
+ *               EMAIL:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *                 description: The email address of the user requesting a password reset
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - EMAIL
+ *             properties:
+ *               EMAIL:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: Password reset process initiated or status message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Password reset link sent
+ *       400:
+ *         description: Missing or invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: No valid data received.
+ *       405:
+ *         description: Method Not Allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid request method.
+ */
 
----
+/**
+ * api/users/delete.php:
+ *   post:
+ *     summary: Delete a user
+ *     description: Deletes a user based on the provided user ID. Accepts either form-data or raw JSON.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - user_id
+ *             properties:
+ *               user_id:
+ *                 type: integer
+ *                 description: ID of the user to delete
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - user_id
+ *             properties:
+ *               user_id:
+ *                 type: integer
+ *                 description: ID of the user to delete
+ *     responses:
+ *       200:
+ *         description: User deleted or operation result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: User deleted successfully
+ *       400:
+ *         description: Invalid input or user not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: user_id is required
+ *       405:
+ *         description: Method Not Allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Method Not Allowed
+ */
 
-### 1. **Register User**
+ /**
+ * api/users/get.php:
+ *   get:
+ *     summary: Retrieve users
+ *     description: |
+ *       Fetch user data. 
+ *       If `user_id` is provided as a query parameter, returns the user with that ID.
+ *       Otherwise, returns all users.
+ *     parameters:
+ *       - in: query
+ *         name: user_id
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: ID of the user to retrieve
+ *     responses:
+ *       200:
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     success:
+ *                       type: boolean
+ *                       example: true
+ *                     data:
+ *                       type: object
+ *                       description: User object or list of users
+ *                 - type: object
+ *                   properties:
+ *                     success:
+ *                       type: boolean
+ *                       example: false
+ *                     message:
+ *                       type: string
+ *                       example: No data found
+ *       405:
+ *         description: Method Not Allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Method Not Allowed
+ */
 
-#### Endpoint:
-- `POST /users/register`
-
-#### Description:
-Registers a new user by accepting the user's details, validating them, and storing the information in the database. The password is hashed before storage.
-
-#### Request Body:
-```json
-{
-  "first_name": "John",
-  "last_name": "Doe",
-  "email": "john.doe@example.com",
-  "password": "securePassword123",
-  "phone_number": "123-456-7890"
-}
-```
-
-#### Response:
-- Success:
-  ```json
-  {
-    "status": "success",
-    "message": "User registered successfully"
-  }
-  ```
-
-- Error:
-  ```json
-  {
-    "status": "error",
-    "message": "Validation failed",
-    "errors": [
-      "First name cannot be blank.",
-      "Last name cannot be blank.",
-      "Email must be a valid format.",
-      "Password cannot be blank."
-    ]
-  }
-  ```
-
----
-
-### 2. **Login User**
-
-#### Endpoint:
-- `POST /users/login`
-
-#### Description:
-Logs in a user by verifying their email and password. If valid, a JWT token is generated and returned.
-
-#### Request Body:
-```json
-{
-  "email": "john.doe@example.com",
-  "password": "securePassword123"
-}
-```
-
-#### Response:
-- Success:
-  ```json
-  {
-    "status": "success",
-    "message": "Login successful",
-    "user": {
-      "user_id": 1,
-      "first_name": "John",
-      "last_name": "Doe",
-      "email": "john.doe@example.com",
-      "phone_number": "123-456-7890",
-      "created_at": "2025-01-01T12:00:00",
-      "updated_at": "2025-01-01T12:00:00",
-      "last_loggedIn": "2025-01-01T12:00:00"
-    },
-    "token": "JWT_Token_Here"
-  }
-  ```
-
-- Error (Invalid Password):
-  ```json
-  {
-    "status": "error",
-    "message": "Invalid password"
-  }
-  ```
-
-- Error (User Not Found):
-  ```json
-  {
-    "status": "error",
-    "message": "User not found"
-  }
-  ```
-
----
-
-### 3. **Get All Users**
-
-#### Endpoint:
-- `GET /users/get.php`
-
-#### Description:
-Retrieves a list of all users.
-
-#### Response:
-```json
-{
-  "users": [
-    {
-      "user_id": 1,
-      "first_name": "John",
-      "last_name": "Doe",
-      "email": "john.doe@example.com",
-      "phone_number": "123-456-7890",
-      "created_at": "2025-01-01T12:00:00",
-      "updated_at": "2025-01-01T12:00:00",
-      "last_loggedIn": "2025-01-01T12:00:00"
-    },
-    {
-      "user_id": 2,
-      "first_name": "Jane",
-      "last_name": "Smith",
-      "email": "jane.smith@example.com",
-      "phone_number": "987-654-3210",
-      "created_at": "2025-01-02T12:00:00",
-      "updated_at": "2025-01-02T12:00:00",
-      "last_loggedIn": "2025-01-02T12:00:00"
-    }
-  ]
-}
-```
-
----
-
-### 4. **Get User by ID**
-
-#### Endpoint:
-- `GET /users/get.php?user_id={user_id}`
-
-#### Description:
-Retrieves a user's details by their `user_id`.
-
-#### Response:
-```json
-{
-  "user_id": 1,
-  "first_name": "John",
-  "last_name": "Doe",
-  "email": "john.doe@example.com",
-  "phone_number": "123-456-7890",
-  "created_at": "2025-01-01T12:00:00",
-  "updated_at": "2025-01-01T12:00:00",
-  "last_loggedIn": "2025-01-01T12:00:00"
-}
-```
-
----
-
-### 5. **Update User Information**
-
-#### Endpoint:
-- `PUT /users/{user_id}`
-
-#### Description:
-Updates a user's details (such as phone number, first name, last name, etc.).
-
-#### Request Body:
-```json
-{
-  "first_name": "Updated Name",
-  "last_name": "Updated Last Name",
-  "phone_number": "111-222-3333"
-}
-```
-
-#### Response:
-- Success:
-  ```json
-  {
-    "status": "success",
-    "message": "User updated successfully"
-  }
-  ```
-
-- Error (Validation Failed):
-  ```json
-  {
-    "status": "error",
-    "message": "Validation failed",
-    "errors": [
-      "First name cannot be blank.",
-      "Phone number must be valid."
-    ]
-  }
-  ```
-
----
-
-### 6. **Delete User**
-
-#### Endpoint:
-- `DELETE /users/{user_id}`
-
-#### Description:
-Deletes a user by their `user_id`.
-
-#### Response:
-- Success:
-  ```json
-  {
-    "status": "success",
-    "message": "User deleted successfully"
-  }
-  ```
-
-- Error:
-  ```json
-  {
-    "status": "error",
-    "message": "User not found"
-  }
-  ```
-
----
-
-### 7. **Helper Functions for Validation**
-
-These helper functions are used for validating user data before performing actions such as registration or updating:
-
-- `is_blank($value)`: Checks if a value is empty or not set.
-- `has_valid_email_format($email)`: Validates if an email address is in the correct format.
-
----
-
-### Notes
-
-1. **Password Hashing**: All passwords are securely hashed using the `PasswordHash` class before being saved in the database. No plain-text passwords are stored.
-   
-2. **JWT Token**: After successful login, a JWT token is generated and returned to the user. This token must be used for authenticated requests.
-
----
-
-This API allows you to manage users efficiently, handling the registration, login, retrieval, and deletion of users within your e-commerce system. It ensures secure password handling with hashing and provides comprehensive error handling for validation.
+/**
+ * /users/resetpassword.php:
+ *   post:
+ *     summary: Reset password
+ *     description: Resets a user's password using a valid reset token and a new password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - new_password
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 example: abcd1234resetToken
+ *               new_password:
+ *                 type: string
+ *                 format: password
+ *                 example: newSecurePassword123
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - new_password
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 example: abcd1234resetToken
+ *               new_password:
+ *                 type: string
+ *                 format: password
+ *                 example: newSecurePassword123
+ *     responses:
+ *       200:
+ *         description: Password successfully reset
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Password has been updated
+ *       400:
+ *         description: Invalid input or token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid token or missing data
+ *       405:
+ *         description: Method not allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid request method.
+ */

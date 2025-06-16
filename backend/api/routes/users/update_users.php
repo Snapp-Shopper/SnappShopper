@@ -5,6 +5,8 @@
  *   post:
  *     summary: Update user
  *     description: Updates a user's details using the provided data. Accepts both JSON and form-data.
+ *     tags:
+ *       - Users
  *     requestBody:
  *       required: true
  *       content:

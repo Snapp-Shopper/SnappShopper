@@ -5,6 +5,8 @@
  *   post:
  *     summary: Forgot password
  *     description: Accepts an email address and initiates a password reset process.
+ *     tags:
+ *       - Users
  *     requestBody:
  *       required: true
  *       content:

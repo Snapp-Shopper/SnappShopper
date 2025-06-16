@@ -10,5 +10,2463 @@
             "url": "http://localhost/snappshopper/backend/api/routes"
         }
     ],
-    "paths": []
+    "paths": {
+        "/address/delete.php": {
+            "post": {
+                "summary": "Delete an address by ID",
+                "tags": [
+                    "Address"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "address_id": {
+                                        "type": "integer",
+                                        "description": "ID of the address to delete"
+                                    }
+                                },
+                                "required": [
+                                    "address_id"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Address deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Address deleted successfully."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or address not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "address_id is required"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/address/get.php": {
+            "get": {
+                "summary": "Retrieve addresses for a user",
+                "tags": [
+                    "Address"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "user_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true,
+                        "description": "User ID to retrieve addresses for"
+                    },
+                    {
+                        "in": "query",
+                        "name": "action",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "getDefault"
+                            ]
+                        },
+                        "required": false,
+                        "description": "Use 'getDefault' to retrieve the default address only"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Addresses retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "description": "Address object"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "No data found"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing required parameters",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "user_id parameter is required"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/address/save_address.php": {
+            "post": {
+                "summary": "Save a new address for a user, optionally set as default",
+                "tags": [
+                    "Address"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "description": "ID of the user owning the address"
+                                    },
+                                    "address_line1": {
+                                        "type": "string",
+                                        "description": "Primary address line"
+                                    },
+                                    "address_line2": {
+                                        "type": "string",
+                                        "description": "Secondary address line (optional)"
+                                    },
+                                    "city": {
+                                        "type": "string"
+                                    },
+                                    "state": {
+                                        "type": "string"
+                                    },
+                                    "zip_code": {
+                                        "type": "string"
+                                    },
+                                    "country": {
+                                        "type": "string"
+                                    },
+                                    "is_default": {
+                                        "type": "boolean",
+                                        "description": "Set this address as the default for the user"
+                                    }
+                                },
+                                "required": [
+                                    "user_id",
+                                    "address_line1",
+                                    "city",
+                                    "state",
+                                    "zip_code",
+                                    "country"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Address saved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Address saved successfully."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing input data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No valid data received."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid request method",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid request method."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/address/set_default.php": {
+            "post": {
+                "summary": "Set an address as the default address by its ID",
+                "tags": [
+                    "Address"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "address_id": {
+                                        "type": "integer",
+                                        "description": "ID of the address to set as default"
+                                    }
+                                },
+                                "required": [
+                                    "address_id"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Address set as default successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Address set as default"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid address_id",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "address_id is required."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Address not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Address not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid request method",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid request method."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/address/update_address.php": {
+            "post": {
+                "summary": "Update an existing address",
+                "tags": [
+                    "Address"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "address_id": {
+                                        "type": "integer",
+                                        "description": "ID of the address to update"
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "description": "ID of the user the address belongs to"
+                                    },
+                                    "address_line1": {
+                                        "type": "string"
+                                    },
+                                    "address_line2": {
+                                        "type": "string"
+                                    },
+                                    "city": {
+                                        "type": "string"
+                                    },
+                                    "state": {
+                                        "type": "string"
+                                    },
+                                    "zip_code": {
+                                        "type": "string"
+                                    },
+                                    "country": {
+                                        "type": "string"
+                                    },
+                                    "is_default": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "address_id"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Address updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Address updated successfully."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No valid data received."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid request method",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid request method."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/cache.php": {
+            "get": {
+                "summary": "Manage cache keys (list, get, clear)",
+                "tags": [
+                    "Developer"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "action",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "list",
+                                "get",
+                                "clear"
+                            ]
+                        },
+                        "required": true,
+                        "description": "The cache action to perform"
+                    },
+                    {
+                        "in": "query",
+                        "name": "key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": false,
+                        "description": "The cache key to get or clear (required for get and optional for clear)"
+                    },
+                    {
+                        "in": "header",
+                        "name": "Authorization",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "Admin API token for authorization"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cache operation result",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "Status of the operation",
+                                            "example": "success"
+                                        },
+                                        "cache_keys": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "description": "List of cache keys (only for list action)"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "description": "Cache data (only for get action)"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Operation message"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid parameters",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Missing key"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - invalid or missing token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Invalid action parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/logs.php": {
+            "get": {
+                "summary": "View or download the latest developer logs",
+                "description": "Allows an authorized admin to view the last 200 lines of dev logs, download the full log file, or clear the log file.",
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "action",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "view",
+                                "download",
+                                "clear"
+                            ]
+                        },
+                        "required": false,
+                        "description": "Action to perform on the logs (default is \"view\")"
+                    },
+                    {
+                        "in": "header",
+                        "name": "Authorization",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "Admin API token for authorization"
+                    },
+                    {
+                        "in": "query",
+                        "name": "token",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": false,
+                        "description": "Alternative way to provide the admin API token via query param (not recommended)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Result of the requested log action",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "success"
+                                                },
+                                                "lines": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": "The last 200 lines of the log file (for \"view\" action)"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "success"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Log file cleared."
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "error"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Log file not found."
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "description": "Raw log file contents (for \"download\" action)"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - invalid or missing token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid action requested",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid action"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/delete.php": {
+            "post": {
+                "summary": "Delete a category by ID",
+                "tags": [
+                    "Categories"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "category_id": {
+                                        "type": "string",
+                                        "description": "The ID of the category to delete"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Category deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid category_id"
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                }
+            }
+        },
+        "/categories/get.php": {
+            "get": {
+                "summary": "Retrieve categories by ID or all categories if no ID is provided",
+                "tags": [
+                    "Categories"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "category_id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": false,
+                        "description": "The ID of the category to retrieve"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Categories retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "description": "Single category object"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    },
+                                                    "description": "List of all categories"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "No data found"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/save.php": {
+            "post": {
+                "summary": "Save a new category",
+                "tags": [
+                    "Categories"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "category_name": {
+                                        "type": "string",
+                                        "description": "Name of the category"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "Optional description of the category"
+                                    }
+                                },
+                                "required": [
+                                    "category_name"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Category saved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category saved successfully."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No valid data received."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/update_categories.php": {
+            "post": {
+                "summary": "Update an existing category",
+                "tags": [
+                    "Categories"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "category_id": {
+                                        "type": "integer",
+                                        "description": "ID of the category to update"
+                                    },
+                                    "category_name": {
+                                        "type": "string",
+                                        "description": "Updated name of the category"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "Updated description of the category"
+                                    }
+                                },
+                                "required": [
+                                    "category_id",
+                                    "category_name"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Category updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category updated successfully."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No valid data received."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid request method",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid request method."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/products/chatgpt_search.php": {
+            "post": {
+                "summary": "Search for products using a natural language query processed by ChatGPT",
+                "tags": [
+                    "Products"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "query"
+                                ],
+                                "properties": {
+                                    "query": {
+                                        "type": "string",
+                                        "description": "Natural language search query"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Search results returned successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "success"
+                                                    ]
+                                                },
+                                                "query": {
+                                                    "type": "string"
+                                                },
+                                                "tags_used": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "results": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "description": "Product object (as returned by products::findProductById)"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "fallback"
+                                                    ]
+                                                },
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "query": {
+                                                    "type": "string"
+                                                },
+                                                "tags_used": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "results": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "description": "Recommended product object (as returned by products::getRecommended)"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid search query"
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    }
+                }
+            }
+        },
+        "/products/save_product.php": {
+            "post": {
+                "summary": "Save or update a product with optional multiple image uploads",
+                "tags": [
+                    "Products"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer",
+                                        "description": "Product ID for update; omit or null for new product"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Product name"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "image": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        },
+                                        "description": "One or more product images to upload"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product saved successfully with image upload results",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "product_id": {
+                                            "type": "integer"
+                                        },
+                                        "images": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "message": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/products/vision_search.php": {
+            "post": {
+                "summary": "Scan a user-uploaded image or image URL using Google Vision API to find matching products",
+                "tags": [
+                    "Products"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "search_image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Image file uploaded by user"
+                                    },
+                                    "image_url": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "URL of the image to scan (alternative to file upload)"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Products matched successfully or no matches found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "success"
+                                                    ]
+                                                },
+                                                "matched_by": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "visual": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": "Product IDs matched by visual similarity"
+                                                        },
+                                                        "tags": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": "Product IDs matched by label tags"
+                                                        }
+                                                    }
+                                                },
+                                                "products": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "description": "Product object matched (as returned by products::findProductById)"
+                                                    }
+                                                },
+                                                "source": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "upload",
+                                                        "url"
+                                                    ],
+                                                    "description": "Source of the scanned image"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "error"
+                                                    ]
+                                                },
+                                                "message": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No valid image source provided"
+                    },
+                    "405": {
+                        "description": "Method not allowed"
+                    },
+                    "500": {
+                        "description": "Server configuration error or Google credentials missing"
+                    }
+                }
+            }
+        },
+        "/users/apple-login.php": {
+            "post": {
+                "summary": "Apple login",
+                "description": "Authenticates a user using an Apple identity token. Registers the user if not already present.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "identity_token"
+                                ],
+                                "properties": {
+                                    "identity_token": {
+                                        "type": "string",
+                                        "description": "Identity token from Apple Sign-In"
+                                    },
+                                    "first_name": {
+                                        "type": "string",
+                                        "description": "User's first name (optional, usually provided on first sign-in)"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "description": "User's last name (optional, usually provided on first sign-in)"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Apple login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Apple login successful"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid identity token"
+                    },
+                    "500": {
+                        "description": "Internal error or verification failure"
+                    }
+                }
+            }
+        },
+        "/users/delete.php": {
+            "post": {
+                "summary": "Delete a user",
+                "description": "Deletes a user based on the provided user ID. Accepts either form-data or raw JSON.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "description": "ID of the user to delete"
+                                    }
+                                }
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "description": "ID of the user to delete"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User deleted or operation result",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User deleted successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or user not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "user_id is required"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Method Not Allowed"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/facebook-login.php": {
+            "post": {
+                "summary": "Facebook login",
+                "description": "Authenticates a user using a Facebook access token. If the user does not exist, a new one is created.",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "accessToken"
+                                ],
+                                "properties": {
+                                    "accessToken": {
+                                        "type": "string",
+                                        "example": "EAAJZCdZC9u1oMBABZCbZB..."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Facebook login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Facebook login successful"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Access token missing or email not provided"
+                    },
+                    "500": {
+                        "description": "Internal server error or Facebook API error"
+                    }
+                }
+            }
+        },
+        "/users/forgotpassword.php": {
+            "post": {
+                "summary": "Forgot password",
+                "description": "Accepts an email address and initiates a password reset process.",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "EMAIL"
+                                ],
+                                "properties": {
+                                    "EMAIL": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com",
+                                        "description": "The email address of the user requesting a password reset"
+                                    }
+                                }
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "EMAIL"
+                                ],
+                                "properties": {
+                                    "EMAIL": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset process initiated or status message",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password reset link sent"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid input",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No valid data received."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid request method."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/get.php": {
+            "get": {
+                "summary": "Retrieve users",
+                "description": "Fetch user data. \nIf `user_id` is provided as a query parameter, returns the user with that ID.\nOtherwise, returns all users.\ntags:\n- Users\n",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "user_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": false,
+                        "description": "ID of the user to retrieve"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "description": "User object or list of users"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "No data found"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Method Not Allowed"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/google_register.php": {
+            "post": {
+                "summary": "Google login",
+                "description": "Authenticates a user using a Google ID token. If the user doesn't exist, they are registered.",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "token"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "description": "Google ID token obtained after login"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Google login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Google login successful"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or token"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/users/login.php": {
+            "post": {
+                "summary": "Login user",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful"
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
+        "/users/register.php": {
+            "post": {
+                "summary": "Register a new user",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "first_name",
+                                    "last_name"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "first_name": {
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful registration"
+                    },
+                    "400": {
+                        "description": "Missing or invalid data"
+                    }
+                }
+            }
+        },
+        "/users/resendCode.php": {
+            "post": {
+                "summary": "Resend verification code",
+                "description": "Resends a verification code to the user's email address.",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Verification code resent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Verification code resent successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or missing email",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email is required."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/resetpassword.php": {
+            "post": {
+                "summary": "Reset password",
+                "description": "Resets a user's password using a valid reset token and a new password.",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "token",
+                                    "new_password"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "abcd1234resetToken"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newSecurePassword123"
+                                    }
+                                }
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "token",
+                                    "new_password"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "abcd1234resetToken"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newSecurePassword123"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password successfully reset",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password has been updated"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid token or missing data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid request method."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/update_users.php": {
+            "post": {
+                "summary": "Update user",
+                "description": "Updates a user's details using the provided data. Accepts both JSON and form-data.",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+123456789"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Example St, City"
+                                    }
+                                }
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "john@example.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+123456789"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Example St, City"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User updated successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to missing or invalid data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No valid data received"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid request method",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid request method"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/verifycode.php": {
+            "post": {
+                "summary": "Verify user email using a code",
+                "description": "Verifies a user's email address using a 4-digit code previously sent to their email.",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "email",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "1234"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email verified successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email verified successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing input",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email and verification code are required."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Code is incorrect or expired",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid or expired verification code."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/verify_email.php": {
+            "get": {
+                "summary": "Verify email",
+                "description": "Verifies a user's email address by validating a token sent via email.",
+                "tags": [
+                    "Users"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Verification token sent to the user's email"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email verified successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email verified successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Token not provided or invalid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No token provided"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Invalid or expired token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid or expired token"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update verification status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Verification failed"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

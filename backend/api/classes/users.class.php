@@ -67,7 +67,7 @@ class users extends DatabaseObject
             return ['status' => 'error', 'message' => 'Email already exists'];
         }
 
-        $verificationToken = random_int(100000, 999999); // Generates a 32-char token
+        $verificationToken = random_int(1000, 9999); // Generates a 32-char token
 
         $data['password_hash'] = $hashedPassword;
         $data['is_verified'] = 0;
@@ -101,7 +101,7 @@ class users extends DatabaseObject
             return ['status' => 'error', 'message' => 'User already verified'];
         }
 
-        $code = random_int(100000, 999999);
+        $code = random_int(1000, 9999);
         $user->verification_token = $code;
         $user->updated_at = date('Y-m-d H:i:s');
 

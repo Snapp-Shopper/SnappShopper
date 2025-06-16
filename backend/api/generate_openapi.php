@@ -10,7 +10,7 @@ $routesDir = realpath(__DIR__ . '/routes');
 $outputFile = realpath(__DIR__ . '/openapi.json');
 
 if (!is_dir($routesDir)) {
-    exit("❌ Routes directory not found at: $routesDir\n");
+    exit("\u274c Routes directory not found at: $routesDir\n");
 }
 
 $baseOpenAPI = [
@@ -26,9 +26,8 @@ $baseOpenAPI = [
     'paths' => []
 ];
 
-echo "🔍 Scanning folder: $routesDir\n";
+echo "\ud83d\udd0d Scanning folder: $routesDir\n";
 
-// Recursively scan all PHP files
 $iterator = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator($routesDir, RecursiveDirectoryIterator::SKIP_DOTS),
     RecursiveIteratorIterator::LEAVES_ONLY
@@ -40,44 +39,43 @@ foreach ($iterator as $file) {
     $filePath = $file->getPathname();
     $contents = file_get_contents($filePath);
 
-    echo "📄 Checking: " . $filePath . "\n";
+    echo "\ud83d\udcc4 Checking: $filePath\n";
 
-    // Look for docblock
     if (preg_match('/\/\*\*(.*?)\*\//s', $contents, $commentBlock)) {
         $doc = $commentBlock[1];
+        echo "\u2705 Found docblock in " . $file->getFilename() . "\n";
 
-        if (preg_match('/@openapi(.*?)(\n\s*(\*\/|\?>))?/s', $doc, $apiBlock)) {
-            echo "✅ Found @openapi block in " . $file->getFilename() . "\n";
+       if (preg_match('/@openapi\\s*((?:\\n|.)*?)$/', $doc, $apiBlock))
+ {
+            echo "\u2705 Found @openapi block in " . $file->getFilename() . "\n";
 
-            $yaml = trim($apiBlock[1]);
-
-            // Clean leading asterisks
-            $yamlLines = explode("\n", $yaml);
+            $yamlLines = explode("\n", $apiBlock[1]);
             $clean = array_map(function ($line) {
-                return ltrim(preg_replace('/^\s*\*\s?/', '', $line));
+                // Remove just the `*` and the first space after it, if present
+                return preg_replace('/^\s*\*\s?/', '', $line);
             }, $yamlLines);
 
             $yamlString = implode("\n", $clean);
-            echo "📝 YAML block detected:\n$yamlString\n";
+            echo "\ud83d\udcdd YAML block detected:\n$yamlString\n";
 
             try {
                 $parsed = Yaml::parse($yamlString);
                 if (is_array($parsed)) {
-                    echo "✅ YAML parsed successfully\n";
+                    echo "\u2705 YAML parsed successfully\n";
                     $baseOpenAPI['paths'] = array_merge_recursive($baseOpenAPI['paths'], $parsed);
                 } else {
-                    echo "⚠️ Parsed YAML is not an array\n";
+                    echo "\u26a0\ufe0f Parsed YAML is not an array\n";
                 }
             } catch (Exception $e) {
-                echo "❌ YAML parse error in " . $file->getFilename() . ": " . $e->getMessage() . "\n";
+                echo "\u274c YAML parse error in " . $file->getFilename() . ": " . $e->getMessage() . "\n";
             }
         } else {
-            echo "⚠️ No @openapi block found in " . $file->getFilename() . "\n";
+            echo "\u26a0\ufe0f No @openapi block found in " . $file->getFilename() . "\n";
         }
     } else {
-        echo "⚠️ No docblock found in " . $file->getFilename() . "\n";
+        echo "\u26a0\ufe0f No docblock found in " . $file->getFilename() . "\n";
     }
 }
 
 file_put_contents($outputFile, json_encode($baseOpenAPI, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-echo "✅ openapi.json generated successfully at: $outputFile\n";
+echo "\u2705 openapi.json generated successfully at: $outputFile\n";

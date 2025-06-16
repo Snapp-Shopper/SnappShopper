@@ -8,6 +8,8 @@
  *       Fetch user data. 
  *       If `user_id` is provided as a query parameter, returns the user with that ID.
  *       Otherwise, returns all users.
+ *       tags:
+ *       - Users
  *     parameters:
  *       - in: query
  *         name: user_id

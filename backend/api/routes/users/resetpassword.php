@@ -5,6 +5,8 @@
  *   post:
  *     summary: Reset password
  *     description: Resets a user's password using a valid reset token and a new password.
+ *     tags:
+ *       - Users
  *     requestBody:
  *       required: true
  *       content:

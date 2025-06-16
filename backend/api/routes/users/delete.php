@@ -5,6 +5,8 @@
  *   post:
  *     summary: Delete a user
  *     description: Deletes a user based on the provided user ID. Accepts either form-data or raw JSON.
+ *     tags:
+ *       - Users
  *     requestBody:
  *       required: true
  *       content:

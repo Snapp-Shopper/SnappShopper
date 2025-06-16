@@ -5,6 +5,8 @@
  *   post:
  *     summary: Facebook login
  *     description: Authenticates a user using a Facebook access token. If the user does not exist, a new one is created.
+ *     tags:
+ *       - Users
  *     requestBody:
  *       required: true
  *       content:
