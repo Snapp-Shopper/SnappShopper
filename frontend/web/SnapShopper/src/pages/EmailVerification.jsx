@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useLoading } from "../context/LoadingContext";
 import ButtonSpinner from "../components/ButtonSpinner";
+import { formatTime } from "../utils/DateTimeFormatter";
 
 const EmailVerification = () => {
   const [timer, setTimer] = useState(15); // 15 seconds
@@ -27,12 +28,6 @@ const EmailVerification = () => {
 
     return () => clearInterval(interval);
   }, [timer, isTimerActive]);
-
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
-  };
 
   const handleInputChange = (index, value) => {
     if (value.length <= 1 && /^[0-9]*$/.test(value)) {
