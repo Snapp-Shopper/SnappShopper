@@ -32,6 +32,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
+        console.log(response);
+        console.log(error)
         const errorMessage = error.response?.data?.message || "An unexpected error occurred."; 
 
         if (error.response && error.response?.status === 401) {

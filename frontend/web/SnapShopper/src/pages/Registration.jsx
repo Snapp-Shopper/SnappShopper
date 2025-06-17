@@ -87,7 +87,8 @@ const Registration = () => {
             general: "An unexpected response was received from the server.",
           }));
         }
-      } else {
+      } 
+      else {
         // Fallback if response or response.data is null/undefined for some reason
         toast.error("Check network connection or server status...");
         setErrors((prev) => ({
@@ -139,9 +140,7 @@ const Registration = () => {
             Already have an account?
             <Link
               to={"/account/login"}
-              className="font-medium underline text-blue-600 hover:text-blue-700 transition-colors"
-            >
-              Sign In
+              className="font-medium underline text-blue-600 hover:text-blue-700 transition-colors"> Sign In
             </Link>
           </p>
         </div>

@@ -45,18 +45,36 @@ const LoginPage = () => {
     }
 
     setIsLoading(true);
+
     try {
-      const isSuccess = await login(formData.email, formData.password);
-      setTimeout(() => {
-        setIsLoading(false);
-        if (isSuccess) {
-          // toast.success("Authentication successful!");
-          navigate("/home"); // Navigate to Home after successful login
-          console.log("successful");
+      const response = await login(formData.email, formData.password);
+       if (response && response.status) {
+        // Check if response and response.data exist
+        if (response.status === "success") {
+          toast.success("Authentication Successful!");
+          navigate("/home");
+        } else if (response.status === "error") {
+          const errorMessage =
+            response.message || "Registration failed due to an unknown issue.";
+          toast.error(errorMessage); // Display the toast here
+
+          setErrors((prev) => ({ ...prev, general: errorMessage })); // Also update local state
         } else {
-          //toast.error("Invalid credentials. Please try again.");
+          // Fallback for unexpected response structures that are still 200 OK
+          toast.error("An unexpected response was received from the server.");
+          setErrors((prev) => ({
+            ...prev,
+            general: "An unexpected response was received from the server.",
+          }));
         }
-      }, 3000);
+      } else {
+        // Fallback if response or response.data is null/undefined for some reason
+        toast.error("Check network connection or server status...");
+        setErrors((prev) => ({
+          ...prev,
+          general: "Check network connection or server status...",
+        }));
+      }
     } catch (err) {
       setIsLoading(false);
       const errorMessage =

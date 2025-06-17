@@ -81,22 +81,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (
-    first_name,
-    last_name,
-    email,
-    password,
-    phone_number
-  ) => {
+  const register = async (first_name, last_name, email, password, phone_number) => {
     setIsLoading(true);
     try {
-      const response = await AuthService.register(
-        first_name,
-        last_name,
-        email,
-        password,
-        phone_number
-      );
+      const response = await AuthService.register(first_name, last_name, email, password,);
       return response.data;
     } catch (error) {
       //toast.error(error.response?.data?.Message || "Registration failed");
