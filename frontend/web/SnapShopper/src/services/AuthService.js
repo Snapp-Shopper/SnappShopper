@@ -5,8 +5,8 @@ class AuthService {
         return await api.post('/users/login.php', { email, password });
     }
 
-    static async register(first_name, last_name, email, password, ) {
-        return await api.post('/users/register.php', { email, password, first_name, last_name });
+    static async register(first_name, last_name, email, password, phone_number) {
+        return await api.post('/users/register.php', { email, password, first_name, last_name, phone_number });
     }
 
     static async changePassword(email, currentPassword, newPassword, confirmNewPassword) {

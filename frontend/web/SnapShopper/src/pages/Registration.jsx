@@ -69,18 +69,16 @@ const Registration = () => {
       );
 
       if (response && response.status) {
-        // Check if response and response.data exist
         if (response.status === "success") {
           toast.success("Registration successful! Please verify your email.");
           navigate("/account/email-verification");
         } else if (response.status === "error") {
           const errorMessage =
             response.message || "Registration failed due to an unknown issue.";
-          toast.error(errorMessage); // Display the toast here
+          toast.error(errorMessage); 
 
-          setErrors((prev) => ({ ...prev, general: errorMessage })); // Also update local state
+          setErrors((prev) => ({ ...prev, general: errorMessage })); 
         } else {
-          // Fallback for unexpected response structures that are still 200 OK
           toast.error("An unexpected response was received from the server.");
           setErrors((prev) => ({
             ...prev,
@@ -89,7 +87,6 @@ const Registration = () => {
         }
       } 
       else {
-        // Fallback if response or response.data is null/undefined for some reason
         toast.error("Check network connection or server status...");
         setErrors((prev) => ({
           ...prev,
@@ -100,32 +97,31 @@ const Registration = () => {
       //console.error("Registration error:", error); // Log the full error object for debugging
 
       let displayErrorMessage = "Registration failed. Please try again.";
-      let fieldErrors = {};
 
-      if (error.response) {
-        // The request was made and the server responded
-        if (
-          error.response.data &&
-          typeof error.response.data === "object" &&
-          error.response.data.message
-        ) {
+       if (error.response) {
+        //console.log("Error response:", error.response);
+        if (error.response.data && error.response.data.message) {
           displayErrorMessage = error.response.data.message;
+        } else if (error.response.data && typeof error.response.data === 'string') {
+          displayErrorMessage = error.response.data;
         } else {
           displayErrorMessage = `Server Error: ${error.response.status}`;
         }
       } else if (error.request) {
-        displayErrorMessage =
-          "No response from server. Check network connection or server status.";
+        //console.log("Error request:", error.request);
+        displayErrorMessage = "No response from server. Check network connection.";
       } else {
+       // console.log("Error message:", error.message);
         displayErrorMessage = error.message;
       }
+      
+      toast.error(displayErrorMessage);
       setErrors((prev) => ({
         ...prev,
         general: displayErrorMessage,
-        ...fieldErrors,
       }));
     } finally {
-      setIsLoading(false); // Stop loading regardless of success or failure
+      setIsLoading(false);
     }
   }
 
