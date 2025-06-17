@@ -71,13 +71,15 @@ const Registration = () => {
       if (response && response.status) {
         if (response.status === "success") {
           toast.success("Registration successful! Please verify your email.");
-          navigate("/account/email-verification");
+          navigate("/account/email-verification", {
+            state: { email: formData.email },
+          });
         } else if (response.status === "error") {
           const errorMessage =
             response.message || "Registration failed due to an unknown issue.";
-          toast.error(errorMessage); 
+          toast.error(errorMessage);
 
-          setErrors((prev) => ({ ...prev, general: errorMessage })); 
+          setErrors((prev) => ({ ...prev, general: errorMessage }));
         } else {
           toast.error("An unexpected response was received from the server.");
           setErrors((prev) => ({
@@ -85,8 +87,7 @@ const Registration = () => {
             general: "An unexpected response was received from the server.",
           }));
         }
-      } 
-      else {
+      } else {
         toast.error("Check network connection or server status...");
         setErrors((prev) => ({
           ...prev,
@@ -94,27 +95,26 @@ const Registration = () => {
         }));
       }
     } catch (error) {
-      //console.error("Registration error:", error); // Log the full error object for debugging
-
       let displayErrorMessage = "Registration failed. Please try again.";
 
-       if (error.response) {
-        //console.log("Error response:", error.response);
+      if (error.response) {
         if (error.response.data && error.response.data.message) {
           displayErrorMessage = error.response.data.message;
-        } else if (error.response.data && typeof error.response.data === 'string') {
+        } else if (
+          error.response.data &&
+          typeof error.response.data === "string"
+        ) {
           displayErrorMessage = error.response.data;
         } else {
           displayErrorMessage = `Server Error: ${error.response.status}`;
         }
       } else if (error.request) {
-        //console.log("Error request:", error.request);
-        displayErrorMessage = "No response from server. Check network connection.";
+        displayErrorMessage =
+          "No response from server. Check network connection.";
       } else {
-       // console.log("Error message:", error.message);
         displayErrorMessage = error.message;
       }
-      
+
       toast.error(displayErrorMessage);
       setErrors((prev) => ({
         ...prev,
@@ -136,7 +136,10 @@ const Registration = () => {
             Already have an account?
             <Link
               to={"/account/login"}
-              className="font-medium underline text-blue-600 hover:text-blue-700 transition-colors"> Sign In
+              className="font-medium underline text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              {" "}
+              Sign In
             </Link>
           </p>
         </div>

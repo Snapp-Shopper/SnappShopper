@@ -87,8 +87,6 @@ export const AuthProvider = ({ children }) => {
       const response = await AuthService.register(first_name, last_name, email, password, phone_number);
       return response.data;
     } catch (error) {
-      //console.error("Registration error:", error);
-      //throw error;
       throw new Error(error.response?.message || "Registration failed");
     } finally {
       setIsLoading(false);
@@ -145,14 +143,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const OTPVerification = async (otp) => {
+  const OTPVerification = async (email, otp) => {
     setIsLoading(true);
     try {
-      const response = await AuthService.OTPVerification(otp);
-      toast.success("OTP Verified Successfully");
+      const response = await AuthService.OTPVerification(email, otp);
       return response.data;
     } catch (error) {
-      toast.error(error.response?.data?.Message || "OTP Verification failed");
+      throw new Error(error.response?.data?.message || "OTP Verification failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const ResendOtpCode = async (email) => {
+    setIsLoading(true);
+    try {
+      const response = await AuthService.resendOtpCode(email);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Request failed");
     } finally {
       setIsLoading(false);
     }
@@ -196,6 +205,7 @@ export const AuthProvider = ({ children }) => {
     forgotPassword,
     OTPVerification,
     logout,
+    ResendOtpCode,
   };
 
   return (

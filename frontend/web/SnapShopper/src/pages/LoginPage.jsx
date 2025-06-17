@@ -48,19 +48,18 @@ const LoginPage = () => {
 
     try {
       const response = await login(formData.email, formData.password);
-       if (response && response.status) {
-        // Check if response and response.data exist
+      if (response && response.status) {
         if (response.status === "success") {
           toast.success("Authentication Successful!");
           navigate("/home");
         } else if (response.status === "error") {
           const errorMessage =
-            response.message || "Registration failed due to an unknown issue.";
-          toast.error(errorMessage); // Display the toast here
+            response.message ||
+            "Authentication failed due to an unknown issue.";
+          toast.error(errorMessage);
 
-          setErrors((prev) => ({ ...prev, general: errorMessage })); // Also update local state
+          setErrors((prev) => ({ ...prev, general: errorMessage }));
         } else {
-          // Fallback for unexpected response structures that are still 200 OK
           toast.error("An unexpected response was received from the server.");
           setErrors((prev) => ({
             ...prev,
@@ -68,19 +67,38 @@ const LoginPage = () => {
           }));
         }
       } else {
-        // Fallback if response or response.data is null/undefined for some reason
         toast.error("Check network connection or server status...");
         setErrors((prev) => ({
           ...prev,
           general: "Check network connection or server status...",
         }));
       }
-    } catch (err) {
-      setIsLoading(false);
-      const errorMessage =
-        err.response?.data?.message || "Login failed. Please try again.";
-      setErrors(errorMessage);
-      //toast.error(errorMessage);
+    } catch (error) {
+      let displayErrorMessage = "Authentication failed. Please try again.";
+
+      if (error.response) {
+        if (error.response.data && error.response.data.message) {
+          displayErrorMessage = error.response.data.message;
+        } else if (
+          error.response.data &&
+          typeof error.response.data === "string"
+        ) {
+          displayErrorMessage = error.response.data;
+        } else {
+          displayErrorMessage = `Server Error: ${error.response.status}`;
+        }
+      } else if (error.request) {
+        displayErrorMessage =
+          "No response from server. Check network connection.";
+      } else {
+        displayErrorMessage = error.message;
+      }
+
+      toast.error(displayErrorMessage);
+      setErrors((prev) => ({
+        ...prev,
+        general: displayErrorMessage,
+      }));
     } finally {
       setIsLoading(false);
     }
