@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { syncCartToAPI } = useContext(CartContext);
+
   //const { syncCartToAPI = () => {} } = useContext(CartContext) || {};
 
   // useEffect(() => {
@@ -56,6 +57,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await AuthService.login(email, password);
       if (response.status === 200) {
+
+        console.log(response);
+
         const user = response.user;
         const token = response.jwToken;
         console.log("user:", user);
@@ -68,12 +72,10 @@ export const AuthProvider = ({ children }) => {
         await syncCartToAPI(); // Sync local cart with API
         return true;
       } else {
-        // toast.error(response.data?.error || "Login failed");
         console.log(response);
         return false;
       }
     } catch (error) {
-      // toast.error(error.response?.data?.Message || "Login failed");
       console.log(response);
       return false;
     } finally {
@@ -143,10 +145,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const OTPVerification = async (email, otp) => {
+  const OTPVerification = async (email, code) => {
     setIsLoading(true);
     try {
-      const response = await AuthService.OTPVerification(email, otp);
+      const response = await AuthService.OTPVerification(email, code);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || "OTP Verification failed");

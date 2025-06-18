@@ -48,8 +48,8 @@ const LoginPage = () => {
 
     try {
       const response = await login(formData.email, formData.password);
-      if (response && response.status) {
-        if (response.status === "success") {
+      if (response) {
+        if (response === true) {
           toast.success("Authentication Successful!");
           navigate("/home");
         } else if (response.status === "error") {

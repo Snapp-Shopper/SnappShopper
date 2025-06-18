@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useLoading } from "../context/LoadingContext";
 import ButtonSpinner from "../components/ButtonSpinner";
 import { formatTime } from "../utils/DateTimeFormatter";
+import toast from "react-hot-toast";
 
 const EmailVerification = () => {
   const [timer, setTimer] = useState(15); // 15 seconds
@@ -11,6 +12,7 @@ const EmailVerification = () => {
   const [isTimerActive, setIsTimerActive] = useState(true);
   const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const { OTPVerification, ResendOtpCode, isLoading } = useAuth();
+  const [errors, setErrors] = useState({});
   const { setIsLoading } = useLoading();
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,10 +51,8 @@ const EmailVerification = () => {
     }
   };
 
-  const handleResendEmail = async () => {
+  const handleResendEmail = async (e) => {
     e.preventDefault();
-
-    setIsLoading(true);
 
     try {
       const response = await ResendOtpCode(userEmail);
@@ -91,8 +91,6 @@ const EmailVerification = () => {
           "Failed to resend email. Try again later."
       );
       console.error("Resend email error:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -223,7 +221,7 @@ const EmailVerification = () => {
             <ButtonSpinner />
           ) : (
             <button
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white py-3 px-4 rounded-full font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white py-3 px-4 rounded-full font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor"
               disabled={!isCodeComplete || isLoading}
               onClick={handleSubmit}
             >

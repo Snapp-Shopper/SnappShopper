@@ -9,8 +9,8 @@ class AuthService {
     return await api.post("/users/register.php", { email, password, first_name, last_name, phone_number});
   }
 
-  static async OTPVerification(email, otp) {
-    return await api.post("/users/verifyCode.php", { email, otp });
+  static async OTPVerification(email, code) {
+    return await api.post("/users/verifyCode.php", { email, code });
   }
 
   static async resendOtpCode(email) {

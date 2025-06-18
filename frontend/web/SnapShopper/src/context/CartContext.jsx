@@ -63,7 +63,7 @@ export const CartProvider = ({children}) => {
                 //addToCart,
                 //removeFromCart,
                 //updateCart,
-                //syncCartToAPI
+                syncCartToAPI
             }}
         >
             {children}
