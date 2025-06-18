@@ -179,7 +179,7 @@ const LoginPage = () => {
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 transition-colors"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 transition-colors cursor-pointer"
                 onClick={() => setPasswordVisible(!passwordVisible)}
               >
                 <EyeIcon visible={passwordVisible} />
@@ -195,7 +195,7 @@ const LoginPage = () => {
           ) : (
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium py-2.5 px-4 rounded-full flex items-center justify-center gap-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium py-2.5 px-4 rounded-full flex items-center justify-center gap-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer"
               disabled={isLoading}
             >
               Sign In

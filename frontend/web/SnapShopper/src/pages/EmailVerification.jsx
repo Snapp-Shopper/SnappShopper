@@ -209,7 +209,7 @@ const EmailVerification = () => {
                 Didn't receive a code?
                 <button
                   onClick={handleResendEmail}
-                  className="text-blue-600 hover:text-blue-700 font-medium ml-1 transition-colors focus:outline-none focus:underline"
+                  className="text-blue-600 hover:text-blue-700 font-medium ml-1 transition-colors focus:outline-none focus:underline cursor-pointer"
                 >
                   Resend email
                 </button>
@@ -221,7 +221,7 @@ const EmailVerification = () => {
             <ButtonSpinner />
           ) : (
             <button
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white py-3 px-4 rounded-full font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor"
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white py-3 px-4 rounded-full font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer"
               disabled={!isCodeComplete || isLoading}
               onClick={handleSubmit}
             >
