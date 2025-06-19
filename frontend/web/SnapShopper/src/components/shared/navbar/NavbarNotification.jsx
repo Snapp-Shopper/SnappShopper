@@ -4,7 +4,7 @@ const NavbarNotification = ({ notificationDropdownRef }) => {
   return (
     <div
       ref={notificationDropdownRef}
-      className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 border border-gray-200"
+      className="absolute right-0 mt-2 w-80 sm:w-80 w-[calc(100vw-2rem)] max-w-sm bg-white rounded-lg shadow-lg z-50 border border-gray-200"
     >
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
