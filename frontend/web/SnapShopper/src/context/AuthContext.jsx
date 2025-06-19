@@ -57,13 +57,9 @@ export const AuthProvider = ({ children }) => {
 
         await syncCartToAPI(); // Sync local cart with API
         return response.data;
-      } else {
-       // console.log(response);
-        return false;
       }
     } catch (error) {
-      console.log(response);
-      return false;
+      throw new Error(error.response?.message || "Authentication failed");
     } finally {
       setIsLoading(false);
     }
