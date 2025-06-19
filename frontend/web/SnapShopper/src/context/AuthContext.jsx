@@ -12,33 +12,38 @@ export const AuthProvider = ({ children }) => {
   const { syncCartToAPI } = useContext(CartContext);
 
   useEffect(() => {
-    setIsLoading(true); // Start loading before checking storage
+  const loadStoredAuth = () => {
+    setIsLoading(true); // Begin loading state
 
     // const storedUser = localStorage.getItem("authUser");
     //const storedUserToken = localStorage.getItem("authToken");
 
     const storedUser = sessionStorage.getItem("authUser");
-    const storedUserToken = sessionStorage.getItem("authToken");
+    const storedToken = sessionStorage.getItem("authToken");
 
-    if (
+    const isValidData =
       storedUser &&
-      storedUserToken &&
+      storedToken &&
       storedUser !== "undefined" &&
-      storedUser !== "null"
-    ) {
+      storedUser !== "null";
+
+    if (isValidData) {
       try {
         setAuthUser(JSON.parse(storedUser));
-        setAuthToken(storedUserToken);
+        setAuthToken(storedToken);
       } catch (error) {
-        //console.error("Error parsing stored user data:", error);
-        // Optionally, you might want to clear the invalid data from sessionStorage
+        // If parsing fails, clear corrupted data
         sessionStorage.removeItem("authUser");
         sessionStorage.removeItem("authToken");
       }
     }
 
-    setIsLoading(false); // Stop loading after checking storage
-  }, []);
+    setIsLoading(false); // Done loading
+  };
+
+  loadStoredAuth();
+}, []);
+
 
   const login = async (email, password) => {
     setIsLoading(true);
