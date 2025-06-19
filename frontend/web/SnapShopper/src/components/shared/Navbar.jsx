@@ -98,8 +98,8 @@ const Navbar = () => {
         </div> */}
 
         {/* Main Navbar */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 md:px-8">
+          <div className="flex items-center justify-between h-16 lg:h-20 gap-2">
             
             {/* Logo Section */}
             <div className="flex items-center flex-shrink-0">
@@ -118,8 +118,8 @@ const Navbar = () => {
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8 flex-1 justify-center max-w-2xl">
-              
+            <div className="hidden md:flex items-center flex-1 justify-center">
+               <div className="flex items-center space-x-6 ml-8">
               {/* Home Link */}
               <Link to="/home"
                 className="relative px-4 py-2 text-blue-600 font-medium rounded-full transition-all duration-300 
@@ -186,10 +186,11 @@ const Navbar = () => {
                   </div>
                 </div>
               </div>
+              </div>
             </div>
 
             {/* Right Side Icons */}
-            <div className="flex items-center space-x-2 lg:space-x-4">
+            <div className="flex items-center space-x-2 flex-shrink-0">
               
               {/* Mobile Search Icon */}
               <button className="md:hidden p-2 text-zinc-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
@@ -237,7 +238,7 @@ const Navbar = () => {
                   onClick={signInDropdown.toggleDropdown}
                 >
                   <FaUser className="h-5 w-5" />
-                  <span className="text-sm font-medium hidden lg:inline">Hello, Sign in</span>
+                  <span className="text-sm font-medium hidden xl:inline whitespace-nowrap">Hello, Sign in</span>
                   <svg className={`h-4 w-4 hidden lg:inline transition-transform duration-300 ${
                     signInDropdown.isOpen ? 'rotate-180' : 'rotate-0'
                   }`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

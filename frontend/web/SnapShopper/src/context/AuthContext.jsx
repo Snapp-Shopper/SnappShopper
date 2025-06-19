@@ -158,14 +158,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const ResendOtpCode = async (email) => {
-    setIsLoading(true);
+    //setIsLoading(true);
     try {
       const response = await AuthService.resendOtpCode(email);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || "Request failed");
     } finally {
-      setIsLoading(false);
+      //setIsLoading(false);
     }
   };
 

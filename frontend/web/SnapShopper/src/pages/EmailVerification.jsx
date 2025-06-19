@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useLoading } from "../context/LoadingContext";
 import ButtonSpinner from "../components/ButtonSpinner";
-import { formatTime } from "../utils/DateTimeFormatter";
 import toast from "react-hot-toast";
+import ResendEmailButton from "../components/account/ResendEmailButton";
 
 const EmailVerification = () => {
   const [timer, setTimer] = useState(15); // 15 seconds
@@ -60,7 +60,6 @@ const EmailVerification = () => {
       if (response && response.status) {
         if (response.status === "success") {
           toast.success(response.message || "Email verified successfully!");
-          navigate("/account/login");
         } else if (response.status === "error") {
           const errorMessage =
             response.message ||
@@ -196,25 +195,7 @@ const EmailVerification = () => {
           </div>
 
           <div className="text-center mb-8">
-            {timer > 0 ? (
-              <p className="text-sm text-gray-700">
-                Didn't receive a code?
-                <span className="text-blue-600 font-medium">
-                  {" "}
-                  Resend in {formatTime(timer)}
-                </span>
-              </p>
-            ) : (
-              <p className="text-sm text-gray-700">
-                Didn't receive a code?
-                <button
-                  onClick={handleResendEmail}
-                  className="text-blue-600 hover:text-blue-700 font-medium ml-1 transition-colors focus:outline-none focus:underline cursor-pointer"
-                >
-                  Resend email
-                </button>
-              </p>
-            )}
+            <ResendEmailButton timer={timer} handleResendEmail={handleResendEmail}/>
           </div>
 
           {isLoading ? (
