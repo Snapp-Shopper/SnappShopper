@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
         setAuthUser(JSON.parse(storedUser));
         setAuthToken(storedUserToken);
       } catch (error) {
-        console.error("Error parsing stored user data:", error);
+        //console.error("Error parsing stored user data:", error);
         // Optionally, you might want to clear the invalid data from sessionStorage
         sessionStorage.removeItem("authUser");
         sessionStorage.removeItem("authToken");
@@ -151,7 +151,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     // if (!authUser || !authToken) {
     //     console.warn("User is already logged out.");
     //     return false;
