@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { LuSettings } from 'react-icons/lu';
 import PasswordField from './PasswordField';
+import { Link } from 'react-router-dom';
 
 const AccountSecurity = () => {
   const [passwords, setPasswords] = useState({
@@ -43,9 +44,10 @@ const AccountSecurity = () => {
         />
         
         <div className="text-right">
-          <button className="text-red-500 text-sm hover:text-red-700 transition-colors duration-200">
+          <Link to={"/account/forgot-password"}
+          className="text-red-500 text-sm hover:text-red-700 transition-colors duration-200">
             Forgot Password?
-          </button>
+          </Link>
         </div>
         
         <PasswordField 

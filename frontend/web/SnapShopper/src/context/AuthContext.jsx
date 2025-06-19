@@ -18,8 +18,10 @@ export const AuthProvider = ({ children }) => {
     // const storedUser = localStorage.getItem("authUser");
     //const storedUserToken = localStorage.getItem("authToken");
 
-    const storedUser = sessionStorage.getItem("authUser");
-    const storedToken = sessionStorage.getItem("authToken");
+    const storedUser = localStorage.getItem("authUser");
+    const storedToken = localStorage.getItem("authToken");
+
+    console.log("Stored User", storedUser)
 
     const isValidData =
       storedUser &&
@@ -33,8 +35,8 @@ export const AuthProvider = ({ children }) => {
         setAuthToken(storedToken);
       } catch (error) {
         // If parsing fails, clear corrupted data
-        sessionStorage.removeItem("authUser");
-        sessionStorage.removeItem("authToken");
+        localStorage.removeItem("authUser");
+        localStorage.removeItem("authToken");
       }
     }
 
@@ -53,12 +55,11 @@ export const AuthProvider = ({ children }) => {
 
         const user = response.data.user;
         const token = response.data.token;
-        // console.log("user:", user);
-        // console.log("Token:", token);
+        
         setAuthUser(user);
         setAuthToken(token);
-        sessionStorage.setItem("authUser", JSON.stringify(user));
-        sessionStorage.setItem("authToken", token);
+        localStorage.setItem("authUser", JSON.stringify(user));
+        localStorage.setItem("authToken", token);
 
         await syncCartToAPI(); // Sync local cart with API
         return response.data;
@@ -164,8 +165,8 @@ export const AuthProvider = ({ children }) => {
 
     setIsLoading(true);
     try {
-      sessionStorage.removeItem("authUser");
-      sessionStorage.removeItem("authToken");
+      localStorage.removeItem("authUser");
+      localStorage.removeItem("authToken");
 
       setAuthUser(null);
       setAuthToken(null);
