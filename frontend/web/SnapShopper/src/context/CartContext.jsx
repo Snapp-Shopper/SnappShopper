@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react'
 import CartService from '../services/CartService';
+import { loadCartFromLocalStorage } from '../utils/LocalStorage';
 
 const CartContext = createContext();
 
@@ -9,19 +10,12 @@ export const CartProvider = ({children}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [hasFetched, setHasFetched] = useState(false);
 
-    const loadCartFromLocalStorage = () => {
-        const savedCart = JSON.parse(sessionStorage.getItem("guestCart")) || [];
-        setCartItems(savedCart);
-        setCartCount(savedCart.length);
-        //setCartCount(savedCart.reduce((acc, item) => acc + item.quantity, 0));
-    };
-
     useEffect(() => {
         const token = sessionStorage.getItem("authToken");
         if (token) {
             //fetchCartItems();
         } else {
-            loadCartFromLocalStorage();
+            loadCartFromLocalStorage(setCartItems, setCartCount);
         }
     }, []);
 
@@ -42,7 +36,6 @@ export const CartProvider = ({children}) => {
     const syncCartToAPI = async () => {
         const guestCart = JSON.parse(sessionStorage.getItem("guestCart")) || [];
         if (guestCart.length === 0) return;
-
         try {
             for (const item of guestCart) {
                 await CartService.addToCart({ foodId: item.id, quantity: item.quantity });

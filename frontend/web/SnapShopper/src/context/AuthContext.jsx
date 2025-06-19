@@ -11,18 +11,6 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { syncCartToAPI } = useContext(CartContext);
 
-  //const { syncCartToAPI = () => {} } = useContext(CartContext) || {};
-
-  // useEffect(() => {
-  //     const storedUser = localStorage.getItem("authUser");
-  //     const storedUserToken = localStorage.getItem("authToken");
-
-  //     if (storedUser && storedUserToken) {
-  //         setAuthUser(JSON.parse(storedUser));
-  //         setAuthToken(storedUserToken);
-  //     }
-  // }, []);
-
   useEffect(() => {
     setIsLoading(true); // Start loading before checking storage
 
@@ -58,21 +46,19 @@ export const AuthProvider = ({ children }) => {
       const response = await AuthService.login(email, password);
       if (response.status === 200) {
 
-        console.log(response);
-
-        const user = response.user;
-        const token = response.jwToken;
-        console.log("user:", user);
-        console.log("Token:", token);
+        const user = response.data.user;
+        const token = response.data.token;
+        // console.log("user:", user);
+        // console.log("Token:", token);
         setAuthUser(user);
         setAuthToken(token);
         sessionStorage.setItem("authUser", JSON.stringify(user));
         sessionStorage.setItem("authToken", token);
 
         await syncCartToAPI(); // Sync local cart with API
-        return true;
+        return response.data;
       } else {
-        console.log(response);
+       // console.log(response);
         return false;
       }
     } catch (error) {

@@ -7,6 +7,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useLoading } from "../context/LoadingContext";
 import EyeIcon from "../components/EyeIcon";
 import ButtonSpinner from "../components/ButtonSpinner";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -48,16 +49,13 @@ const LoginPage = () => {
 
     try {
       const response = await login(formData.email, formData.password);
-      if (response) {
-        if (response === true) {
+      if (response && response.status) {
+        if (response.status === 'success') {
           toast.success("Authentication Successful!");
           navigate("/home");
         } else if (response.status === "error") {
-          const errorMessage =
-            response.message ||
-            "Authentication failed due to an unknown issue.";
+          const errorMessage = response.message || "Authentication failed due to an unknown issue.";
           toast.error(errorMessage);
-
           setErrors((prev) => ({ ...prev, general: errorMessage }));
         } else {
           toast.error("An unexpected response was received from the server.");
