@@ -36,7 +36,6 @@ const Navbar = () => {
     loggingOut,
   } = useNavbarLogic();
 
-  console.log("Auth User", authUser);
   return (
     <>
       <nav
