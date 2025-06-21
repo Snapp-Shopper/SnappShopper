@@ -11,9 +11,9 @@ const EmailVerification = () => {
   const [code, setCode] = useState(["", "", "", ""]);
   const [isTimerActive, setIsTimerActive] = useState(true);
   const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
-  const { OTPVerification, ResendOtpCode, isLoading } = useAuth();
+  const { OTPVerification, ResendOtpCode } = useAuth();
   const [errors, setErrors] = useState({});
-  const { setIsLoading } = useLoading();
+  const { isLoading, setIsLoading } = useLoading();
   const navigate = useNavigate();
   const location = useLocation();
   const userEmail = location.state?.email;
@@ -105,7 +105,7 @@ const EmailVerification = () => {
       return;
     }
 
-    setIsLoading(true);
+    //setIsLoading(true);
     try {
       const response = await OTPVerification(userEmail, fullCode);
       if (response && response.status) {
@@ -159,8 +159,6 @@ const EmailVerification = () => {
         ...prev,
         general: displayErrorMessage,
       }));
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -195,7 +193,10 @@ const EmailVerification = () => {
           </div>
 
           <div className="text-center mb-8">
-            <ResendEmailButton timer={timer} handleResendEmail={handleResendEmail}/>
+            <ResendEmailButton
+              timer={timer}
+              handleResendEmail={handleResendEmail}
+            />
           </div>
 
           {isLoading ? (

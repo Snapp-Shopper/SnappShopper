@@ -12,9 +12,9 @@ import toast from "react-hot-toast";
 const LoginPage = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+  const { login } = useAuth();
   const [errors, setErrors] = useState({});
-  const { setIsLoading } = useLoading();
+  const { isLoading, setIsLoading } = useLoading();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -45,16 +45,16 @@ const LoginPage = () => {
       return;
     }
 
-    setIsLoading(true);
-
     try {
       const response = await login(formData.email, formData.password);
       if (response && response.status) {
-        if (response.status === 'success') {
+        if (response.status === "success") {
           toast.success("Authentication Successful!");
           navigate("/home");
         } else if (response.status === "error") {
-          const errorMessage = response.message || "Authentication failed due to an unknown issue.";
+          const errorMessage =
+            response.message ||
+            "Authentication failed due to an unknown issue.";
           toast.error(errorMessage);
           setErrors((prev) => ({ ...prev, general: errorMessage }));
         } else {
@@ -97,8 +97,6 @@ const LoginPage = () => {
         ...prev,
         general: displayErrorMessage,
       }));
-    } finally {
-      setIsLoading(false);
     }
   }
 

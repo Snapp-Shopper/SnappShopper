@@ -2,13 +2,15 @@ import { createContext, useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import toast from "react-hot-toast";
 import CartContext from "./CartContext";
+import { useLoading } from "./LoadingContext";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);
   const [authToken, setAuthToken] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  //const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, setIsLoading } = useLoading();
   const { syncCartToAPI } = useContext(CartContext);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
         const user = response.data.user;
         const token = response.data.token;
-        
+
         setAuthUser(user);
         setAuthToken(token);
         localStorage.setItem("authUser", JSON.stringify(user));
@@ -187,7 +189,6 @@ export const AuthProvider = ({ children }) => {
   const contextValue = {
     authUser,
     authToken,
-    isLoading,
     login,
     register,
     changePassword,

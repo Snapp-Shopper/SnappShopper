@@ -11,8 +11,8 @@ import ButtonSpinner from "../components/ButtonSpinner";
 
 const Registration = () => {
   const navigate = useNavigate();
-  const { register, isLoading } = useAuth();
-  const { setIsLoading } = useLoading();
+  const { register } = useAuth();
+  const { isLoading, setIsLoading } = useLoading();
   const [errors, setErrors] = useState({});
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
@@ -57,7 +57,7 @@ const Registration = () => {
       return;
     }
 
-    setIsLoading(true);
+    //setIsLoading(true);
 
     try {
       const response = await register(
@@ -120,8 +120,6 @@ const Registration = () => {
         ...prev,
         general: displayErrorMessage,
       }));
-    } finally {
-      setIsLoading(false);
     }
   }
 

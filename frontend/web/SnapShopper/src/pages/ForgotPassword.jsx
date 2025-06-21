@@ -1,6 +1,33 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
-const ForgotPassword = () => {
+const ForgotPassword = ({isProfilePage = false}) => {
+
+    // const [email, setEmail] = useState("");
+    // //const [isLoading, setIsLoading] = useState(false);
+    // const { forgotPassword } = useAuth();
+    // const navigate = useNavigate();
+
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+
+    //     if (!email) {
+    //         toast.error("Please enter your email address.");
+    //         return;
+    //     }
+
+    //     setIsLoading(true);
+    //     try {
+    //         await forgotPassword(email);
+    //         navigate("/login");
+    //     } catch (error) {
+    //         toast.error(error.response?.data?.Message || "Password reset failed.");
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
+
     return (
         <div className="w-full max-w-md mx-auto bg-white rounded-lg border border-gray-200 p-8 my-6 shadow-sm">
             <h2 className="text-2xl font-semibold text-center mb-2 text-gray-900">Forgot Password</h2>

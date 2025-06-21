@@ -10,17 +10,17 @@ import { AuthProvider } from "./context/AuthContext";
 function App() {
   return (
     <>
-      <CartProvider>
-        <AuthProvider>
-          <LoadingProvider>
+      <LoadingProvider>
+        <CartProvider>
+          <AuthProvider>
             <BrowserRouter>
               {/* <Spinner /> */}
               <AppRouter />
               <Toaster />
             </BrowserRouter>
-          </LoadingProvider>
-        </AuthProvider>
-      </CartProvider>
+          </AuthProvider>
+        </CartProvider>
+      </LoadingProvider>
     </>
   );
 }
