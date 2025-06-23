@@ -9,6 +9,7 @@ import Registration from "../pages/Registration";
 import Home from "../pages/Home";
 import AccountPage from "../pages/AccountPage";
 import Cart from "../pages/Cart";
+import ProtectedRoute from "./ProtectedRoute";
 
 export const AppRouter = () => {
   return (
@@ -18,13 +19,25 @@ export const AppRouter = () => {
         <Route path="account/registration" element={<Registration />} />
         <Route path="account/forgot-password" element={<ForgotPassword />} />
         <Route path="account/reset-password" element={<ResetPassword />} />
-        <Route path="account/email-verification" element={<EmailVerification />}/>
-        <Route path="account/profile" element={<AccountPage />} />
+        <Route
+          path="account/email-verification"
+          element={<EmailVerification />}
+        />
         
         {/* <Route path="account/verification-success" element={<VerificationSuccess />} /> */}
         <Route index element={<Home />} />
         <Route path="home" element={<Home />} />
         <Route path="user/cart" element={<Cart />} />
+
+        {/* Protected Routes */}
+        <Route
+          path="account/profile"
+          element={
+            <ProtectedRoute>
+              <AccountPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
     </Routes>
   );

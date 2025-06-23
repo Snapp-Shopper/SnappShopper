@@ -3,6 +3,7 @@ import { FiEdit3 } from "react-icons/fi";
 import { LuChevronDown, LuUser } from "react-icons/lu";
 import AuthContext from "../../context/AuthContext";
 import { useLoading } from "../../context/LoadingContext";
+import UserService from "../../services/UserService";
 
 const PersonalInfo = () => {
   const { authUser } = useContext(AuthContext);
@@ -39,7 +40,7 @@ const PersonalInfo = () => {
         } catch (error) {
           console.error("Failed to fetch user details", error);
         } finally {
-          setLoading(false);
+          setIsLoading(false);
         }
       }
     };
