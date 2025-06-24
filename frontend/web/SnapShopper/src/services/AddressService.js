@@ -1,30 +1,34 @@
 import api from "../api/axiosInstance";
 
 class AddressService {
-    static async getAddressById(addressId) {
-        return await api.get(`/api/v1/Address/${id}`);
-    }
+  static async deleteAddress(address_id) {
+    return await api.post(`/address/delete.php`, address_id);
+  }
 
-    static async getAllUserAddresses(userId = null) {
-        const url = userId ? `/api/v1/Address/user/${userId}` : `/api/v1/Address/user`;
-        return await api.get(url);
-    }
+  // static async getAddressById(addressId) {
+  //     return await api.get(`/api/v1/Address/${id}`);
+  // }
 
-    static async saveAddress(address) {
-        return await api.put("/api/v1/Address", address);
-    }
+  static async getAllUserAddresses(user_id) {
+    return await api.get(`/address/get.php?user_id=${user_id}`);
+  }
 
-    static async deleteAddress(id) {
-        return await api.delete(`/api/v1/Address/${id}`);
-    }
+  static async getUserDefaultAddresses(userId) {
+    return await api.get(
+      `/address/get.php?user_id=${userId}&action=getDefault`
+    );
+  }
 
-    static async setAsDedault(address) {
-        return await api.put("/api/v1/Address/default", address);
-    }
+  static async saveAddress(address) {
+    return await api.post("/address/save_address.php", address);
+  }
 
-    static async getUserDefaultAddresses(userId = null) {
-        const url = userId ? `/api/v1/Address/default/user/${userId}` : `/api/v1/Address/default/user`;
-        return await api.get(url);
+  static async updateAddress(address) {
+    return await api.post("/address/update_address.php", address);
+  }
+
+    static async setAsDedault(addressId) {
+      return await api.post("/address/set_default.php", { address_id: addressId });
     }
 }
 

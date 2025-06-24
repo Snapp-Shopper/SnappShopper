@@ -51,11 +51,13 @@ const AddressCard = ({
       <div className="text-sm text-gray-600 space-y-1">
         <p className="flex items-center">
           <LuMapPin className="w-4 h-4 mr-2" />
-          {address.street}
+          {address.address_line1},
+          {address.address_line2 && <span>{address.address_line2}</span>}
+          {address.city}, {address.state},{address.country}
         </p>
         <p className="flex items-center">
           <LuMail className="w-4 h-4 mr-2" />
-          Zipcode: {address.zipcode}
+          {address.zip_code}
         </p>
         <p className="flex items-center">
           <LuPhone className="w-4 h-4 mr-2" />
