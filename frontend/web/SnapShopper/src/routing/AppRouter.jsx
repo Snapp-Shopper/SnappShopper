@@ -10,6 +10,14 @@ import Home from "../pages/Home";
 import AccountPage from "../pages/AccountPage";
 import Cart from "../pages/Cart";
 import ProtectedRoute from "./ProtectedRoute";
+import Addressbook from "../components/profile/Addressbook";
+import AccountSecurity from "../components/profile/AccountSecurity";
+import PersonalInfo from "../components/profile/PersonalInfo";
+import UserOrders from "../components/profile/UserOrders";
+import UserCart from "../components/profile/UserCart";
+import UserFavorites from "../components/profile/UserFavorites";
+import UserPaymentMethods from "../components/profile/UserPaymentMethods";
+import UserBrowsingHistory from "../components/profile/UserBrowsingHistory";
 
 export const AppRouter = () => {
   return (
@@ -23,21 +31,30 @@ export const AppRouter = () => {
           path="account/email-verification"
           element={<EmailVerification />}
         />
-        
+
         {/* <Route path="account/verification-success" element={<VerificationSuccess />} /> */}
         <Route index element={<Home />} />
         <Route path="home" element={<Home />} />
         <Route path="user/cart" element={<Cart />} />
 
         {/* Protected Routes */}
-        <Route
-          path="account/profile"
-          element={
-            <ProtectedRoute>
-              <AccountPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="account/profile" element={<ProtectedRoute><AccountPage /></ProtectedRoute>}>
+          {/* Index route: Renders PersonalInfo when on /account/profile */}
+          <Route index element={<PersonalInfo />} />
+          {/* Specific nested routes for each section */}
+          <Route path="personal-info" element={<PersonalInfo />} />
+          <Route path="addresses" element={<Addressbook />} />
+          <Route path="security" element={<AccountSecurity />} />
+          <Route path="orders" element={<UserOrders />} />
+          <Route path="shopping-cart" element={<UserCart />} />
+          <Route path="favorites" element={<UserFavorites />} />
+          <Route path="payment-methods" element={<UserPaymentMethods />} />
+          <Route path="browsing-history" element={<UserBrowsingHistory />} />
+
+          {/* Fallback for unknown sub-paths under /account/profile */}
+          <Route path="*" element={<PersonalInfo />} />
+        </Route>
+
       </Route>
     </Routes>
   );

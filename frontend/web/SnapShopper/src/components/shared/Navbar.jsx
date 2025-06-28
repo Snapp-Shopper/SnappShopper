@@ -39,9 +39,8 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`bg-white border-b border-zinc-200 sticky top-0 z-50 transition-all duration-300 ${
-          scrolled ? "shadow-lg backdrop-blur-sm bg-white/95" : "shadow-sm"
-        }`}
+        className={`bg-white border-b border-zinc-200 sticky top-0 z-50 transition-all duration-300 ${scrolled ? "shadow-lg backdrop-blur-sm bg-white/95" : "shadow-sm"
+          }`}
       >
         {/* Top Bar - Hidden on small screens */}
         {/* <div className="hidden lg:block bg-zinc-50 border-b border-zinc-100">
@@ -103,14 +102,13 @@ const Navbar = () => {
                   <button
                     className="flex items-center px-4 py-2 font-medium text-zinc-700 rounded-full transition-all 
                            duration-300 hover:text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 
-                           focus:ring-blue-300 focus:ring-offset-2 group"
+                           focus:ring-blue-300 focus:ring-offset-2 group cursor-pointer"
                     onClick={categoriesDropdown.toggleDropdown}
                   >
                     <span>Categories</span>
                     <svg
-                      className={`ml-2 h-4 w-4 transition-transform duration-300 ${
-                        categoriesDropdown.isOpen ? "rotate-180" : "rotate-0"
-                      }`}
+                      className={`ml-2 h-4 w-4 transition-transform duration-300 ${categoriesDropdown.isOpen ? "rotate-180" : "rotate-0"
+                        }`}
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -135,17 +133,15 @@ const Navbar = () => {
                 {/* Enhanced Search Bar */}
                 <div className="flex-1 max-w-lg">
                   <div
-                    className={`relative flex items-center transition-all duration-300 ${
-                      searchFocused ? "transform scale-105" : ""
-                    }`}
+                    className={`relative flex items-center transition-all duration-300 ${searchFocused ? "transform scale-105" : ""
+                      }`}
                   >
                     <div
                       className={`flex items-center w-full border rounded-full px-4 py-2.5 bg-white 
-                                 transition-all duration-300 ${
-                                   searchFocused
-                                     ? "border-blue-500 ring-2 ring-blue-500/20 shadow-lg"
-                                     : "border-zinc-300 shadow-sm hover:border-zinc-400"
-                                 }`}
+                                 transition-all duration-300 ${searchFocused
+                          ? "border-blue-500 ring-2 ring-blue-500/20 shadow-lg"
+                          : "border-zinc-300 shadow-sm hover:border-zinc-400"
+                        }`}
                     >
                       <FiCamera
                         className="h-5 w-5 text-zinc-400 mr-3 cursor-pointer hover:text-blue-500 
@@ -224,7 +220,7 @@ const Navbar = () => {
               <div className="relative hidden sm:block">
                 <button
                   className="flex items-center space-x-2 p-2 text-zinc-600 hover:text-blue-600 hover:bg-blue-50 
-                           rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                           rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 cursor-pointer"
                   onClick={signInDropdown.toggleDropdown}
                 >
                   <FaUser className="h-5 w-5" />
@@ -232,9 +228,8 @@ const Navbar = () => {
                     Hello, {authUser ? authUser.first_name : "Sign in"}
                   </span>
                   <svg
-                    className={`h-4 w-4 hidden lg:inline transition-transform duration-300 ${
-                      signInDropdown.isOpen ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`h-4 w-4 hidden lg:inline transition-transform duration-300 ${signInDropdown.isOpen ? "rotate-180" : "rotate-0"
+                      }`}
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -281,19 +276,31 @@ const Navbar = () => {
         {/* Enhanced Mobile Menu */}
         <div
           className={`fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-white shadow-2xl z-50 
-                        transform transition-transform duration-300 ease-in-out md:hidden ${
-                          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-                        }`}
+                        transform transition-transform duration-300 ease-in-out md:hidden ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+            }`}
         >
           {/* Mobile Menu Header */}
           <div className="flex items-center justify-between p-6 border-b border-zinc-200">
             <div className="flex items-center">
               <FaUser className="h-6 w-6 text-zinc-600 mr-3" />
               <div>
-                <div className="font-semibold text-zinc-900">
+                {/* <div className="font-semibold text-zinc-900">
                   Hello, Sign in
                 </div>
-                <div className="text-sm text-zinc-500">Manage your account</div>
+                <div className="text-sm text-zinc-500">Manage your account</div> */}
+
+                {authUser ? (
+                  <>
+                    <div className="font-semibold text-zinc-900">
+                      Hi, {authUser && (authUser.first_name || authUser.name || 'User')}
+                    </div>
+                    <div className="text-sm text-zinc-500">Manage your account</div>
+                  </>
+                ) : (
+                  <div className="font-semibold text-zinc-900">
+                    Hello, Sign in
+                  </div>
+                )}
               </div>
             </div>
             <button
@@ -333,14 +340,13 @@ const Navbar = () => {
 
             <button
               className="flex items-center justify-between w-full py-3 px-4 text-zinc-700 font-medium 
-                       hover:bg-zinc-50 rounded-lg transition-colors"
+                       hover:bg-zinc-50 rounded-lg transition-colors cursor-pointer"
               onClick={categoriesDropdown.toggleDropdown}
             >
               <span>Categories</span>
               <svg
-                className={`h-5 w-5 transition-transform duration-300 ${
-                  categoriesDropdown.isOpen ? "rotate-180" : "rotate-0"
-                }`}
+                className={`h-5 w-5 transition-transform duration-300 ${categoriesDropdown.isOpen ? "rotate-180" : "rotate-0"
+                  }`}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"

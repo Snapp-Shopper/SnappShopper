@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
           setAuthUser(JSON.parse(storedUser));
           setAuthToken(storedToken);
         } catch (error) {
-         // console.error("Error parsing stored auth data:", error);
+          // console.error("Error parsing stored auth data:", error);
           // If parsing fails, clear corrupted data
           localStorage.removeItem("authUser");
           localStorage.removeItem("authToken");
@@ -206,6 +206,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateAuthUser = (newUserData) => {
+    setAuthUser(newUserData);
+    localStorage.setItem("authUser", JSON.stringify(newUserData));
+    //toast.success("Profile updated successfully!"); // Optional: show toast here or in calling component
+  };
+
   const contextValue = {
     authUser,
     authToken,
@@ -218,6 +224,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     ResendOtpCode,
     isAuthLoading,
+    updateAuthUser,
   };
 
   return (

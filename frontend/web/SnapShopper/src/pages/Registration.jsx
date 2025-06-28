@@ -7,7 +7,7 @@ import { useAuth } from "../hooks/useAuth";
 import toast from "react-hot-toast";
 import { useLoading } from "../context/LoadingContext";
 import EyeIcon from "../components/EyeIcon";
-import ButtonSpinner from "../components/ButtonSpinner";
+import ButtonSpinner from "../components/spinner/ButtonSpinner";
 
 const Registration = () => {
   const navigate = useNavigate();

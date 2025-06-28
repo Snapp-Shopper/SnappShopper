@@ -1,11 +1,7 @@
-import React from "react";
 import {
   LuHouse,
-  LuMapPin,
   LuPhone,
   LuSave,
-  LuUser, // Re-added LuUser for Full Name
-  LuX,
 } from "react-icons/lu";
 import useAddressForm from "../../hooks/useAddressForm";
 
@@ -72,9 +68,8 @@ const AddressForm = ({
             name="address_line1"
             value={formData.address_line1}
             onChange={handleInputChange}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.address_line1 ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.address_line1 ? "border-red-500" : "border-gray-300"
+              }`}
             placeholder="House number, street name"
           />
           {errors.address_line1 && (
@@ -106,9 +101,8 @@ const AddressForm = ({
               name="city"
               value={formData.city}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.city ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.city ? "border-red-500" : "border-gray-300"
+                }`}
               placeholder="City"
             />
             {errors.city && (
@@ -124,9 +118,8 @@ const AddressForm = ({
               name="state"
               value={formData.state}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.state ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.state ? "border-red-500" : "border-gray-300"
+                }`}
               placeholder="State"
             />
             {errors.state && (
@@ -145,9 +138,8 @@ const AddressForm = ({
               name="zip_code"
               value={formData.zip_code}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.zipcode ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.zipcode ? "border-red-500" : "border-gray-300"
+                }`}
               placeholder="Enter zip code"
             />
             {errors.zip_code && (
@@ -163,9 +155,8 @@ const AddressForm = ({
               name="country"
               value={formData.country}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.country ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.country ? "border-red-500" : "border-gray-300"
+                }`}
               placeholder="Enter country"
             />
             {errors.country && (
@@ -184,9 +175,8 @@ const AddressForm = ({
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.phone ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.phone ? "border-red-500" : "border-gray-300"
+              }`}
             placeholder="+234 708 934 3298"
           />
           {errors.phone && (

@@ -1,5 +1,5 @@
 import React from "react";
-import { FiEdit3 } from "react-icons/fi";
+import { FiCheck, FiEdit3, FiMail, FiMapPin, FiPhone, FiTrash2 } from "react-icons/fi";
 import { LuMail, LuMapPin, LuPhone } from "react-icons/lu";
 
 const AddressCard = ({
@@ -10,68 +10,120 @@ const AddressCard = ({
   onDelete,
 }) => {
   return (
-    <div className="border border-gray-200 rounded-lg p-4 mb-4 hover:border-gray-300 transition-colors duration-200">
-      <div className="flex justify-between items-start mb-3">
-        <div className="flex items-center space-x-2">
-          <h3 className="font-medium text-gray-900">{address.name}</h3>
-          {isDefault && (
-            <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-              Default
-            </span>
+    <div className={`relative bg-white rounded-xl shadow-sm border-2 transition-all duration-300 hover:shadow-md group ${isDefault
+      ? 'border-green-200 bg-gradient-to-br from-green-50 to-emerald-50'
+      : 'border-gray-200 hover:border-blue-200'
+      }`}>
+      {/* Default Badge */}
+      {isDefault && (
+        <div className="absolute -top-2 -right-2 z-10">
+          <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1 shadow-lg">
+            <FiCheck className="w-3 h-3" />
+            <span>Default</span>
+          </div>
+        </div>
+      )}
+
+      <div className="p-6">
+        {/* Header Section */}
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex items-center space-x-3">
+            <div className={`p-2 rounded-lg ${isDefault ? 'bg-green-100' : 'bg-blue-100'
+              }`}>
+              <LuMapPin className={`w-5 h-5 ${isDefault ? 'text-green-600' : 'text-blue-600'
+                }`} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 text-lg">{address.name}</h3>
+              <p className="text-sm text-gray-500">Delivery Address</p>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <button
+              onClick={onEdit}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200 tooltip"
+              title="Edit Address"
+            >
+              <FiEdit3 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onDelete}
+              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 tooltip"
+              title="Delete Address"
+            >
+              <FiTrash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Address Details */}
+        <div className="space-y-3 mb-4">
+          {/* Full Address */}
+          <div className="flex items-start space-x-3">
+            <FiMapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-gray-700 leading-relaxed">
+              <p className="font-medium">{address.address_line1}</p>
+              {address.address_line2 && (
+                <p className="text-gray-600">{address.address_line2}</p>
+              )}
+              <p className="text-gray-600">
+                {address.city}, {address.state} {address.zip_code}
+              </p>
+              <p className="text-gray-600">{address.country}</p>
+            </div>
+          </div>
+
+          {/* Phone */}
+          {address.phone && (
+            <div className="flex items-center space-x-3">
+              <FiPhone className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <span className="text-sm text-gray-700">{address.phone}</span>
+            </div>
+          )}
+
+          {/* Email if available */}
+          {address.email && (
+            <div className="flex items-center space-x-3">
+              <FiMail className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <span className="text-sm text-gray-700">{address.email}</span>
+            </div>
           )}
         </div>
-        <div className="flex space-x-2">
-          <button
-            onClick={onEdit}
-            className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
-          >
-            <FiEdit3 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={onDelete}
-            className="text-red-500 hover:text-red-700 transition-colors duration-200"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+
+        {/* Action Section */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          {!isDefault ? (
+            <button
+              onClick={onSetDefault}
+              className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
-          </button>
+              <FiCheck className="w-4 h-4" />
+              <span>Set as Default</span>
+            </button>
+          ) : (
+            <div className="flex items-center space-x-2 text-green-600 text-sm font-medium">
+              <FiCheck className="w-4 h-4" />
+              <span>Primary Address</span>
+            </div>
+          )}
+
+          {/* Address Type Badge */}
+          <div className="flex items-center space-x-2">
+            <span className={`px-3 py-1 rounded-full text-xs font-medium ${isDefault
+              ? 'bg-green-100 text-green-700'
+              : 'bg-gray-100 text-gray-600'
+              }`}>
+              {address.type || 'Home'}
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="text-sm text-gray-600 space-y-1">
-        <p className="flex items-center">
-          <LuMapPin className="w-4 h-4 mr-2" />
-          {address.address_line1},
-          {address.address_line2 && <span>{address.address_line2}</span>}
-          {address.city}, {address.state},{address.country}
-        </p>
-        <p className="flex items-center">
-          <LuMail className="w-4 h-4 mr-2" />
-          {address.zip_code}
-        </p>
-        <p className="flex items-center">
-          <LuPhone className="w-4 h-4 mr-2" />
-          {address.phone}
-        </p>
-      </div>
-
-      {!isDefault && (
-        <button
-          onClick={onSetDefault}
-          className="mt-3 text-blue-600 text-sm hover:text-blue-800 transition-colors duration-200"
-        >
-          Set as Default
-        </button>
+      {/* Subtle gradient overlay for default cards */}
+      {isDefault && (
+        <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 rounded-xl pointer-events-none" />
       )}
     </div>
   );

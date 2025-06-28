@@ -60,7 +60,7 @@ const useAddressBook = () => {
     setIsConfirmModalOpen(false); // Close modal immediately
     setIsLoading(true);
     try {
-      await AddressService.deleteAddress(addressToDeleteId);
+      await AddressService.deleteAddress(Number(addressToDeleteId));
       // Optimistically update UI or re-fetch for accuracy
       setAddresses((prev) =>
         prev.filter((addr) => addr.id !== addressToDeleteId)

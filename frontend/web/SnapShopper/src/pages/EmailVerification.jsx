@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useLoading } from "../context/LoadingContext";
-import ButtonSpinner from "../components/ButtonSpinner";
+import ButtonSpinner from "../components/spinner/ButtonSpinner";
 import toast from "react-hot-toast";
 import ResendEmailButton from "../components/account/ResendEmailButton";
 

@@ -1,25 +1,9 @@
-import React, { useState } from "react";
 import Breadcrumb from "../components/Breadcrumb";
 import SideBar from "../components/profile/Sidebar";
-import PersonalInfo from "../components/profile/PersonalInfo";
-import Addressbook from "../components/profile/Addressbook";
-import AccountSecurity from "../components/profile/AccountSecurity";
+import { Outlet, useLocation } from "react-router-dom";
 
 const AccountPage = () => {
-  const [activeSection, setActiveSection] = useState("personal");
-
-  const renderActiveSection = () => {
-    switch (activeSection) {
-      case "personal":
-        return <PersonalInfo />;
-      case "addresses":
-        return <Addressbook />;
-      case "security":
-        return <AccountSecurity />;
-      default:
-        return <PersonalInfo />;
-    }
-  };
+  const location = useLocation();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -35,13 +19,10 @@ const AccountPage = () => {
 
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="w-full lg:w-80 flex-shrink-0">
-            <SideBar
-              activeSection={activeSection}
-              setActiveSection={setActiveSection}
-            />
+            <SideBar currentPathname={location.pathname} />
           </div>
 
-          <div className="flex-1">{renderActiveSection()}</div>
+          <div className="flex-1"><Outlet /></div>
         </div>
       </main>
     </div>

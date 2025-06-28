@@ -1,19 +1,19 @@
 import api from "../api/axiosInstance";
 
-class PersonalDetailsService {
+class UserService {
 
-    static async updatePersonalDetails(user) {
-        return await api.put("/users/update_users.php", user);
+    static async deleteUser(userId) {
+        return await api.post(`/users/delete.php`, { user_id: userId });
     }
 
-    // static async getAllUsers() {
-    //     return await api.get('/users/get.php');
-    // }
+    static async updateUser(user) {
+        return await api.post(`/users/update_users.php`, user);
+    }
 
-    static async getUserById(userid) {
+    static async getUserById(userid = null) {
         return await api.get(`/users/get.php?user_id=${userid}`);
     }
 
 }
 
-export default PersonalDetailsService;
+export default UserService;

@@ -4,9 +4,9 @@ import { FaCreditCard, FaFacebook, FaHeart, FaHistory, FaShoppingBag, FaShopping
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 
-const NavbarSignIn = ({ signInDropdownRef, authUser, handleLogout, loggingOut}) => {
+const NavbarSignIn = ({ signInDropdownRef, authUser, handleLogout, loggingOut }) => {
 
-    if (!authUser) {
+  if (!authUser) {
     return (
       <div
         ref={signInDropdownRef}
@@ -50,7 +50,7 @@ const NavbarSignIn = ({ signInDropdownRef, authUser, handleLogout, loggingOut}) 
     );
   }
 
-   return (
+  return (
     <div
       ref={signInDropdownRef}
       className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50 border border-gray-200"
@@ -81,7 +81,7 @@ const NavbarSignIn = ({ signInDropdownRef, authUser, handleLogout, loggingOut}) 
         </Link>
 
         <Link
-          to="/account/orders"
+          to="/account/profile/orders"
           className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <FaShoppingBag className="h-4 w-4 mr-3 text-gray-500" />
@@ -97,7 +97,7 @@ const NavbarSignIn = ({ signInDropdownRef, authUser, handleLogout, loggingOut}) 
         </Link>
 
         <Link
-          to="/account/favorites"
+          to="/account/profile/favorites"
           className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <FaHeart className="h-4 w-4 mr-3 text-gray-500" />
@@ -105,7 +105,7 @@ const NavbarSignIn = ({ signInDropdownRef, authUser, handleLogout, loggingOut}) 
         </Link>
 
         <Link
-          to="/account/payment-methods"
+          to="/account/profile/payment-methods"
           className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <FaCreditCard className="h-4 w-4 mr-3 text-gray-500" />
@@ -113,7 +113,7 @@ const NavbarSignIn = ({ signInDropdownRef, authUser, handleLogout, loggingOut}) 
         </Link>
 
         <Link
-          to="/account/browsing-history"
+          to="/account/profile/browsing-history"
           className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <FaHistory className="h-4 w-4 mr-3 text-gray-500" />
@@ -127,7 +127,7 @@ const NavbarSignIn = ({ signInDropdownRef, authUser, handleLogout, loggingOut}) 
         <button
           onClick={handleLogout}
           disabled={loggingOut}
-          className="flex items-center w-full px-4 py-3 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+          className="flex items-center w-full px-4 py-3 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
         >
           <FaSignOutAlt className="h-4 w-4 mr-3" />
           <span>{loggingOut ? 'Signing Out...' : 'Sign Out'}</span>
