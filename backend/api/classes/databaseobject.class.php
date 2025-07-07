@@ -62,11 +62,37 @@ class DatabaseObject
         return (int)($result['count'] ?? 0);
     }
 
-    // Save the current record (create)
+    // Save the current record (create or update)
     public function save(): bool
     {
-        return $this->create();
+        // If primary ID property is set → update
+        $primaryKey = static::getPrimaryKey();
+        return isset($this->$primaryKey) ? $this->update() : $this->create();
     }
+
+    // Update existing record
+    protected function update(): bool
+    {
+        $attributes = $this->sanitizedAttributes();
+        $attributePairs = [];
+
+        foreach ($attributes as $key => $value) {
+            $attributePairs[] = "{$key} = :{$key}";
+        }
+
+        $primaryKey = static::getPrimaryKey();
+        $sql = "UPDATE " . static::$table_name . " SET ";
+        $sql .= implode(', ', $attributePairs);
+        $sql .= " WHERE {$primaryKey} = :{$primaryKey}";
+
+        // Add primary key to params
+        $attributes[$primaryKey] = $this->$primaryKey;
+
+        $stmt = self::executeQuery($sql, $attributes);
+
+        return $stmt ? true : false;
+    }
+
 
     // Create a new record
     protected function create(): bool
@@ -138,4 +164,10 @@ class DatabaseObject
         }
         return $object;
     }
+    // Get the primary key for the table
+    protected static function getPrimaryKey(): string
+    {
+        return static::$primary_key ?? 'id'; // Default to 'id' if not set
+    }
+    
 }

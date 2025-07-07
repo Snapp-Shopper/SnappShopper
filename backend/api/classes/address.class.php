@@ -4,6 +4,7 @@ class address extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Addresses";
+    static protected $primary_key = 'address_id';
 
     // Database columns
     static protected $db_columns = [

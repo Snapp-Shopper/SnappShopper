@@ -4,6 +4,7 @@ class reviews extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Reviews";
+    static protected $primary_key = 'review_id';
 
     // Database columns
     static protected $db_columns = [

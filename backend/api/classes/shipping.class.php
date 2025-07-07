@@ -4,6 +4,7 @@ class shipping extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Shipping";
+    static protected $primary_key = 'shipping_id';
 
     // Database columns
     static protected $db_columns = [

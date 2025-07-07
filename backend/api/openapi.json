@@ -795,30 +795,22 @@
             }
         },
         "/categories/delete.php": {
-            "post": {
-                "summary": "Delete a category by ID",
+            "delete": {
+                "summary": "Permanently delete a category",
                 "tags": [
                     "Categories"
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "required": [
-                                    "category_id"
-                                ],
-                                "properties": {
-                                    "category_id": {
-                                        "type": "string",
-                                        "description": "The ID of the category to delete"
-                                    }
-                                }
-                            }
-                        }
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "category_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "ID of the category to delete"
                     }
-                },
+                ],
                 "responses": {
                     "200": {
                         "description": "Category deleted successfully",
@@ -828,10 +820,12 @@
                                     "type": "object",
                                     "properties": {
                                         "status": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "example": "success"
                                         },
                                         "message": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "example": "Category permanently deleted"
                                         }
                                     }
                                 }
@@ -839,34 +833,51 @@
                         }
                     },
                     "400": {
-                        "description": "Missing or invalid category_id"
+                        "description": "Missing or invalid category_id",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid category ID"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     },
-                    "404": {
-                        "description": "Category not found"
+                    "500": {
+                        "description": "Server error during deletion"
                     }
                 }
             }
         },
         "/categories/get.php": {
             "get": {
-                "summary": "Retrieve categories by ID or all categories if no ID is provided",
+                "summary": "Retrieve all categories or a specific category by ID",
                 "tags": [
                     "Categories"
                 ],
                 "parameters": [
                     {
                         "in": "query",
-                        "name": "category_id",
-                        "schema": {
-                            "type": "string"
-                        },
+                        "name": "id",
                         "required": false,
-                        "description": "The ID of the category to retrieve"
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "ID of a specific category to fetch"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Categories retrieved successfully",
+                        "description": "Categories data retrieved successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -874,46 +885,51 @@
                                         {
                                             "type": "object",
                                             "properties": {
-                                                "success": {
-                                                    "type": "boolean",
-                                                    "example": true
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "success"
                                                 },
-                                                "data": {
-                                                    "type": "object",
-                                                    "description": "Single category object"
-                                                }
-                                            }
-                                        },
-                                        {
-                                            "type": "object",
-                                            "properties": {
-                                                "success": {
-                                                    "type": "boolean",
-                                                    "example": true
-                                                },
-                                                "data": {
+                                                "categories": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "object"
-                                                    },
-                                                    "description": "List of all categories"
+                                                    }
                                                 }
                                             }
                                         },
                                         {
                                             "type": "object",
                                             "properties": {
-                                                "success": {
-                                                    "type": "boolean",
-                                                    "example": false
-                                                },
-                                                "message": {
+                                                "status": {
                                                     "type": "string",
-                                                    "example": "No data found"
+                                                    "example": "success"
+                                                },
+                                                "category": {
+                                                    "type": "object"
                                                 }
                                             }
                                         }
                                     ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category not found"
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -933,19 +949,15 @@
                         "application/json": {
                             "schema": {
                                 "type": "object",
+                                "required": [
+                                    "name"
+                                ],
                                 "properties": {
-                                    "category_name": {
+                                    "name": {
                                         "type": "string",
                                         "description": "Name of the category"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "description": "Optional description of the category"
                                     }
-                                },
-                                "required": [
-                                    "category_name"
-                                ]
+                                }
                             }
                         }
                     }
@@ -984,7 +996,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "No valid data received."
+                                            "example": "Validation failed"
                                         }
                                     }
                                 }
@@ -994,7 +1006,7 @@
                 }
             }
         },
-        "/categories/update_categories.php": {
+        "/categories/update.php": {
             "post": {
                 "summary": "Update an existing category",
                 "tags": [
@@ -1006,24 +1018,19 @@
                         "application/json": {
                             "schema": {
                                 "type": "object",
+                                "required": [
+                                    "category_id"
+                                ],
                                 "properties": {
                                     "category_id": {
                                         "type": "integer",
                                         "description": "ID of the category to update"
                                     },
-                                    "category_name": {
+                                    "name": {
                                         "type": "string",
-                                        "description": "Updated name of the category"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "description": "Updated description of the category"
+                                        "description": "New name of the category"
                                     }
-                                },
-                                "required": [
-                                    "category_id",
-                                    "category_name"
-                                ]
+                                }
                             }
                         }
                     }
@@ -1042,7 +1049,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Category updated successfully."
+                                            "example": "Category updated successfully"
                                         }
                                     }
                                 }
@@ -1050,7 +1057,7 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input data",
+                        "description": "Validation failed or category not found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1062,15 +1069,58 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "No valid data received."
+                                            "example": "Validation failed or Category not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/products/by-subcategory.php": {
+            "get": {
+                "summary": "Get products under a specific subcategory",
+                "tags": [
+                    "Products"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "sub_category_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "ID of the subcategory to fetch products from"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Products retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "products": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     },
-                    "405": {
-                        "description": "Invalid request method",
+                    "404": {
+                        "description": "No products found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1082,7 +1132,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Invalid request method."
+                                            "example": "No products found for this subcategory."
                                         }
                                     }
                                 }
@@ -1191,6 +1241,162 @@
                     },
                     "405": {
                         "description": "Method not allowed"
+                    }
+                }
+            }
+        },
+        "/products/external_image_search.php": {
+            "post": {
+                "summary": "Search external products using an image (Google Vision + SerpAPI)",
+                "description": "Accepts an uploaded image or image URL, extracts visual labels with Google Vision, and queries Google Shopping via SerpAPI.",
+                "tags": [
+                    "Products"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "search_image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "User-uploaded image to scan"
+                                    },
+                                    "image_url": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "URL of image to scan (alternative to file upload)"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Matching external products returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "query": {
+                                            "type": "string",
+                                            "example": "red nike sneakers"
+                                        },
+                                        "labels": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "source": {
+                                            "type": "string",
+                                            "enum": [
+                                                "upload",
+                                                "url"
+                                            ]
+                                        },
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "price": {
+                                                        "type": "string"
+                                                    },
+                                                    "link": {
+                                                        "type": "string"
+                                                    },
+                                                    "thumbnail": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No valid image provided"
+                    },
+                    "500": {
+                        "description": "API key or connection error"
+                    }
+                }
+            }
+        },
+        "/products/get_products.php": {
+            "get": {
+                "summary": "Retrieve products with optional filters",
+                "tags": [
+                    "Products"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "category_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Filter products by category ID"
+                    },
+                    {
+                        "in": "query",
+                        "name": "name",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Search products by name"
+                    },
+                    {
+                        "in": "query",
+                        "name": "product_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Fetch a single product by ID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Products retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "products": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or no product found"
+                    },
+                    "500": {
+                        "description": "Server error"
                     }
                 }
             }
@@ -1389,6 +1595,152 @@
                 }
             }
         },
+        "/subcategories/delete.php": {
+            "post": {
+                "summary": "Delete a subcategory",
+                "tags": [
+                    "Subcategories"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "sub_category_id"
+                                ],
+                                "properties": {
+                                    "sub_category_id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sub-category deleted successfully"
+                    },
+                    "404": {
+                        "description": "Sub-category not found"
+                    }
+                }
+            }
+        },
+        "/subcategories/get.php": {
+            "get": {
+                "summary": "Get subcategories by category ID or subcategory ID",
+                "tags": [
+                    "Subcategories"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "category_id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Category ID to filter subcategories"
+                    },
+                    {
+                        "in": "query",
+                        "name": "sub_category_id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Specific subcategory ID to fetch"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of subcategories or specific subcategory"
+                    },
+                    "404": {
+                        "description": "Subcategory not found"
+                    }
+                }
+            }
+        },
+        "/subcategories/save.php": {
+            "post": {
+                "summary": "Save a new subcategory",
+                "tags": [
+                    "Subcategories"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "category_id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sub-category saved successfully"
+                    },
+                    "400": {
+                        "description": "Validation failed"
+                    }
+                }
+            }
+        },
+        "/subcategories/update.php": {
+            "post": {
+                "summary": "Update the name of an existing subcategory",
+                "tags": [
+                    "Subcategories"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "sub_category_id",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "sub_category_id": {
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sub-category updated successfully"
+                    },
+                    "404": {
+                        "description": "Sub-category not found"
+                    }
+                }
+            }
+        },
         "/users/apple-login.php": {
             "post": {
                 "summary": "Apple login",
@@ -1456,10 +1808,61 @@
                 }
             }
         },
+        "/users/change_password.php": {
+            "post": {
+                "summary": "Change user password",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id",
+                                    "old_password",
+                                    "new_password"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "old_password": {
+                                        "type": "string"
+                                    },
+                                    "new_password": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password updated successfully"
+                    },
+                    "400": {
+                        "description": "Missing fields or invalid input"
+                    },
+                    "401": {
+                        "description": "Invalid old password"
+                    },
+                    "500": {
+                        "description": "Failed to update password"
+                    }
+                }
+            }
+        },
         "/users/delete.php": {
             "post": {
                 "summary": "Delete a user",
                 "description": "Deletes a user based on the provided user ID. Accepts either form-data or raw JSON.",
+                "tags": [
+                    "Users"
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1619,7 +2022,7 @@
                 }
             }
         },
-        "/users/forgotpassword.php": {
+        "/users/forgetpassword.php": {
             "post": {
                 "summary": "Forgot password",
                 "description": "Accepts an email address and initiates a password reset process.",
@@ -2155,9 +2558,13 @@
                                         "type": "integer",
                                         "example": 1
                                     },
-                                    "name": {
+                                    "first_name": {
                                         "type": "string",
-                                        "example": "John Doe"
+                                        "example": "John"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Doe"
                                     },
                                     "email": {
                                         "type": "string",
@@ -2167,10 +2574,6 @@
                                     "phone": {
                                         "type": "string",
                                         "example": "+123456789"
-                                    },
-                                    "address": {
-                                        "type": "string",
-                                        "example": "123 Example St, City"
                                     }
                                 }
                             }
@@ -2186,9 +2589,13 @@
                                         "type": "integer",
                                         "example": 1
                                     },
-                                    "name": {
+                                    "first_name": {
                                         "type": "string",
-                                        "example": "John Doe"
+                                        "example": "John"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Doe"
                                     },
                                     "email": {
                                         "type": "string",
@@ -2197,10 +2604,6 @@
                                     "phone": {
                                         "type": "string",
                                         "example": "+123456789"
-                                    },
-                                    "address": {
-                                        "type": "string",
-                                        "example": "123 Example St, City"
                                     }
                                 }
                             }
@@ -2464,6 +2867,139 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/wishlist/add.php": {
+            "post": {
+                "summary": "Add a product to the user's wishlist",
+                "tags": [
+                    "Wishlist"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id",
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "product_id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product added to wishlist"
+                    },
+                    "400": {
+                        "description": "Validation error or already exists"
+                    }
+                }
+            }
+        },
+        "/wishlist/check.php": {
+            "get": {
+                "summary": "Check if a product exists in the user's wishlist",
+                "tags": [
+                    "Wishlist"
+                ],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "product_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status of wishlist existence"
+                    }
+                }
+            }
+        },
+        "/wishlist/get.php": {
+            "get": {
+                "summary": "Get all products in a user's wishlist",
+                "tags": [
+                    "Wishlist"
+                ],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of wishlist items"
+                    },
+                    "404": {
+                        "description": "No wishlist found"
+                    }
+                }
+            }
+        },
+        "/wishlist/remove.php": {
+            "post": {
+                "summary": "Remove a product from the user's wishlist",
+                "tags": [
+                    "Wishlist"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id",
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "product_id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product removed from wishlist"
+                    },
+                    "400": {
+                        "description": "Validation error"
                     }
                 }
             }

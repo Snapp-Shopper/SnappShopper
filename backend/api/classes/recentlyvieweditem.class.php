@@ -4,6 +4,7 @@ class recentlyViewedItem extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Recently_Viewed_Items";
+    static protected $primary_key = 'view_id';
 
     // Database columns
     static protected $db_columns = [

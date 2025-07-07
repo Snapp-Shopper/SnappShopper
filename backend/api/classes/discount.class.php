@@ -4,6 +4,7 @@ class discount extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Discounts";
+    static protected $primary_key = 'discount_id';
 
     // Database columns
     static protected $db_columns = [

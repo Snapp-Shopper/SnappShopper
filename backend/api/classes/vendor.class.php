@@ -4,6 +4,7 @@ class Vendor extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Vendor";
+    static protected $primary_key = 'vendor_id';
 
     // Database columns
     static protected $db_columns = [

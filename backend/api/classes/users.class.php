@@ -4,6 +4,7 @@ class users extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Users";
+    static protected $primary_key = 'user_id';
 
     // Database columns
     static protected $db_columns = [
@@ -36,6 +37,7 @@ class users extends DatabaseObject
     public $reset_token_expires;
     public $is_verified;
     public $verification_token;
+    
 
     // Constructor
     public function __construct($args = [])
@@ -146,6 +148,31 @@ class users extends DatabaseObject
             : ['status' => 'error', 'message' => 'Failed to update user'];
     }
 
+    static public function changePassword($userId, $oldPassword, $newPassword)
+    {
+        // Find user by ID
+        $user = self::findUserById($userId);
+        if (!$user) {
+            return ['status' => 'error', 'message' => 'User not found'];
+        }
+
+        // Verify old password
+        $passwordHash = new passwordHash();
+        if (!$passwordHash->verify($oldPassword, $user->password_hash)) {
+            return ['status' => 'error', 'message' => 'Invalid old password'];
+        }
+
+        // Hash new password
+        $hashedNewPassword = $passwordHash->hash($newPassword);
+        $user->password_hash = $hashedNewPassword;
+        $user->updated_at = date('Y-m-d H:i:s');
+
+        if ($user->save()) {
+            return ['status' => 'success', 'message' => 'Password changed successfully'];
+        } else {
+            return ['status' => 'error', 'message' => 'Failed to change password'];
+        }
+    }
     static private function sendVerificationEmail($email, $token)
     {
         $subject = "Your SnappShopper Verification Code";
@@ -206,14 +233,15 @@ class users extends DatabaseObject
                 $tokenData = [
                     'user_id' => $user->user_id,
                     'first_name' => $user->first_name,
-                    'last_name' => $user->last_name
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
                 ];
                 $token = JWT::generateToken($tokenData);
 
                 return [
                     'status' => 'success',
                     'message' => 'Login successful',
-                    'user' => $user,
+                    'user' => $tokenData,
                     'token' => $token
                 ];
             } else {

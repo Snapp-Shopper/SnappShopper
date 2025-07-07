@@ -4,6 +4,7 @@ class inventory extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Inventory";
+    static protected $primary_key = 'inventory_id';
 
     // Database columns
     static protected $db_columns = [

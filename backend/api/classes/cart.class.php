@@ -4,6 +4,7 @@ class cart extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Cart";
+    static protected $primary_key = 'cart_id';
 
     // Database columns
     static protected $db_columns = [

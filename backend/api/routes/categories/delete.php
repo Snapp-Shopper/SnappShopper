@@ -2,22 +2,17 @@
 /**
  * @openapi
  * /categories/delete.php:
- *   post:
- *     summary: Delete a category by ID
+ *   delete:
+ *     summary: Permanently delete a category
  *     tags:
  *       - Categories
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - category_id
- *             properties:
- *               category_id:
- *                 type: string
- *                 description: The ID of the category to delete
+ *     parameters:
+ *       - in: query
+ *         name: category_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the category to delete
  *     responses:
  *       200:
  *         description: Category deleted successfully
@@ -28,13 +23,27 @@
  *               properties:
  *                 status:
  *                   type: string
+ *                   example: success
  *                 message:
  *                   type: string
+ *                   example: Category permanently deleted
  *       400:
  *         description: Missing or invalid category_id
- *       404:
- *         description: Category not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid category ID
+ *       500:
+ *         description: Server error during deletion
  */
+
 
 // Description: This endpoint deletes a category based on the category ID provided.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

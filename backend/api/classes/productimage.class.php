@@ -5,6 +5,7 @@ class productImage extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Product_Images";
+    static protected $primary_key = 'image_id';
 
     // Database columns
     static protected $db_columns = [

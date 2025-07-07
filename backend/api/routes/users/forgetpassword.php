@@ -1,7 +1,7 @@
 <?php
 /**
  * @openapi
- * /users/forgotpassword.php:
+ * /users/forgetpassword.php:
  *   post:
  *     summary: Forgot password
  *     description: Accepts an email address and initiates a password reset process.

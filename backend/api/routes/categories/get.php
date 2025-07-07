@@ -3,74 +3,82 @@
  * @openapi
  * /categories/get.php:
  *   get:
- *     summary: Retrieve categories by ID or all categories if no ID is provided
+ *     summary: Retrieve all categories or a specific category by ID
  *     tags:
  *       - Categories
  *     parameters:
  *       - in: query
- *         name: category_id
- *         schema:
- *           type: string
+ *         name: id
  *         required: false
- *         description: The ID of the category to retrieve
+ *         schema:
+ *           type: integer
+ *         description: ID of a specific category to fetch
  *     responses:
  *       200:
- *         description: Categories retrieved successfully
+ *         description: Categories data retrieved successfully
  *         content:
  *           application/json:
  *             schema:
  *               oneOf:
  *                 - type: object
  *                   properties:
- *                     success:
- *                       type: boolean
- *                       example: true
- *                     data:
- *                       type: object
- *                       description: Single category object
- *                 - type: object
- *                   properties:
- *                     success:
- *                       type: boolean
- *                       example: true
- *                     data:
+ *                     status:
+ *                       type: string
+ *                       example: success
+ *                     categories:
  *                       type: array
  *                       items:
  *                         type: object
- *                       description: List of all categories
  *                 - type: object
  *                   properties:
- *                     success:
- *                       type: boolean
- *                       example: false
- *                     message:
+ *                     status:
  *                       type: string
- *                       example: No data found
+ *                       example: success
+ *                     category:
+ *                       type: object
+ *       404:
+ *         description: Category not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Category not found
  */
 
-// Description: This endpoint retrieves categories based on the category ID provided or retrieves all categories if no ID is specified.
-require_once '../../initialize.php'; // Include the initialization file
+// Description: Retrieves all categories or a specific category by ID
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+require_once '../../initialize.php';
 
-    if ($_GET['category_id']) {
-        # code...
-        $categories = categories::findCategoryById($_GET['category_id']);
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
 
-        if ($categories) {
-            echo json_encode(['success' => true, 'data' => $categories]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'No data found']);
-        }
+$categoryId = $_GET['id'] ?? null;
+
+if ($categoryId) {
+    $category = categories::findCategoryById($categoryId);
+    if ($category) {
+        echo json_encode([
+            'status' => 'success',
+            'category' => $category
+        ]);
+    } else {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Category not found'
+        ]);
     }
-    else{    
-        $categories = categories::findAll();
-
-        if ($categories) {
-            echo json_encode(['success' => true, 'data' => $categories]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'No data found']);
-        }
-    }
+} else {
+    $all = categories::allCategories();
+    echo json_encode([
+        'status' => 'success',
+        'categories' => $all
+    ]);
 }
-?>
+
+exit;

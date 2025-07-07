@@ -1,7 +1,7 @@
 <?php
 /**
  * @openapi
- * /categories/update_categories.php:
+ * /categories/update.php:
  *   post:
  *     summary: Update an existing category
  *     tags:
@@ -12,19 +12,15 @@
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - category_id
  *             properties:
  *               category_id:
  *                 type: integer
  *                 description: ID of the category to update
- *               category_name:
+ *               name:
  *                 type: string
- *                 description: Updated name of the category
- *               description:
- *                 type: string
- *                 description: Updated description of the category
- *             required:
- *               - category_id
- *               - category_name
+ *                 description: New name of the category
  *     responses:
  *       200:
  *         description: Category updated successfully
@@ -38,9 +34,9 @@
  *                   example: success
  *                 message:
  *                   type: string
- *                   example: Category updated successfully.
+ *                   example: Category updated successfully
  *       400:
- *         description: Invalid input data
+ *         description: Validation failed or category not found
  *         content:
  *           application/json:
  *             schema:
@@ -51,20 +47,7 @@
  *                   example: error
  *                 message:
  *                   type: string
- *                   example: No valid data received.
- *       405:
- *         description: Invalid request method
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: error
- *                 message:
- *                   type: string
- *                   example: Invalid request method.
+ *                   example: Validation failed or Category not found
  */
 
 require_once '../../initialize.php'; // Include the initialization file

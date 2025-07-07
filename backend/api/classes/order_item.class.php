@@ -4,6 +4,7 @@ class order_Item extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Order_Items";
+    static protected $primary_key = 'order_item_id';
 
     // Database columns
     static protected $db_columns = [

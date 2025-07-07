@@ -12,15 +12,12 @@
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
  *             properties:
- *               category_name:
+ *               name:
  *                 type: string
  *                 description: Name of the category
- *               description:
- *                 type: string
- *                 description: Optional description of the category
- *             required:
- *               - category_name
  *     responses:
  *       200:
  *         description: Category saved successfully
@@ -47,8 +44,9 @@
  *                   example: error
  *                 message:
  *                   type: string
- *                   example: No valid data received.
+ *                   example: Validation failed
  */
+
 
 require_once '../../initialize.php'; // Include the initialization file
 

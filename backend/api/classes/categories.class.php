@@ -4,12 +4,12 @@ class categories extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Categories";
+    static protected $primary_key = 'category_id';
 
     // Database columns
     static protected $db_columns = [
         'category_id',
         'name',
-        'parent_category_id',
         'created_at',
         'updated_at'
     ];
@@ -17,7 +17,6 @@ class categories extends DatabaseObject
     // Class properties for each column
     public $category_id;
     public $name;
-    public $parent_category_id;
     public $created_at;
     public $updated_at;
 
@@ -26,7 +25,6 @@ class categories extends DatabaseObject
     {
         $this->category_id = $args['category_id'] ?? null;
         $this->name = $args['name'] ?? '';
-        $this->parent_category_id = $args['parent_category_id'] ?? null;
         $this->created_at = $args['created_at'] ?? null;
         $this->updated_at = $args['updated_at'] ?? date('Y-m-d H:i:s');
     }
@@ -34,24 +32,15 @@ class categories extends DatabaseObject
     // Create or update a category
     static public function saveCategory($data)
     {
-         // Instantiate the category object
         $category = new self($data);
-        if (isset($data['category_id']) && !empty($data['category_id'])) {
-            if (self::findCategoryById($data['category_id']) === false) {
-                return ['status' => 'error', 'message' => 'Category not found'];
-                # code...
-            }
-            $category->parent_category_id = $data['category_id'];
-        }
-        // Run validation on the instance
-        $errors = $category->validate();
 
+        $errors = $category->validate();
         if (!empty($errors)) {
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
-        $category->created_at = date('Y-m-d H:i:s'); // Set created_at to current time
-        // Save the category using the instance method
-        $saveQuery = $category->save(); // Assuming save() is inherited from DatabaseObject
+
+        $category->created_at = date('Y-m-d H:i:s');
+        $saveQuery = $category->save();
 
         return $saveQuery
             ? ['status' => 'success', 'message' => 'Category saved successfully']
@@ -60,7 +49,6 @@ class categories extends DatabaseObject
 
     static public function updateCategory($data)
     {
-        // Check if category_id is provided
         if (empty($data['category_id'])) {
             return ['status' => 'error', 'message' => 'category_id is required'];
         }
@@ -71,11 +59,8 @@ class categories extends DatabaseObject
             return ['status' => 'error', 'message' => 'Category not found for update'];
         }
 
-        // Assign data to the object
         $category->name = $data['name'] ?? $category->name;
-        $category->parent_category_id = $data['parent_category_id'] ?? null;
 
-        // Validate and save
         $errors = $category->validate();
         if (!empty($errors)) {
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
@@ -87,7 +72,6 @@ class categories extends DatabaseObject
             ? ['status' => 'success', 'message' => 'Category updated successfully']
             : ['status' => 'error', 'message' => 'Failed to update category'];
     }
-
 
     // Retrieve all categories
     static public function allCategories()
@@ -104,25 +88,6 @@ class categories extends DatabaseObject
         return $result ? static::instantiate($result) : false;
     }
 
-    // Find subcategories of a category
-    static public function findSubcategories($parent_category_id)
-    {
-        $sql = "SELECT * FROM " . static::$table_name . " WHERE parent_category_id = :parent_category_id";
-        $stmt = self::executeQuery($sql, ['parent_category_id' => $parent_category_id]);
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return array_map([static::class, 'instantiate'], $results);
-    }
-
-    // Get parent category
-    public function getParentCategory()
-    {
-        if ($this->parent_category_id) {
-            return self::findById($this->parent_category_id);
-        }
-        return null;
-    }
-
     public function categoryDelete()
     {
         $sql = "DELETE FROM " . static::$table_name . " WHERE category_id = :category_id LIMIT 1";
@@ -132,7 +97,6 @@ class categories extends DatabaseObject
             ? ['status' => 'success', 'message' => 'Category permanently deleted']
             : ['status' => 'error', 'message' => 'Failed to delete category'];
     }
-
 
     // Validation for category fields
     protected function validate()
@@ -145,21 +109,7 @@ class categories extends DatabaseObject
             $this->errors[] = "Name cannot exceed 100 characters.";
         }
 
-        if ($this->parent_category_id && !self::findCategoryById($this->parent_category_id)) {
-            $this->errors[] = "Invalid parent category ID.";
-        }
-
         return $this->errors;
-    }
-
-    // Retrieve all parent categories
-    static public function findParentCategories()
-    {
-        $sql = "SELECT * FROM " . static::$table_name . " WHERE parent_category_id IS NULL";
-        $stmt = self::executeQuery($sql);
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return array_map([static::class, 'instantiate'], $results);
     }
 
     // Helper functions

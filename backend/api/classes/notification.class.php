@@ -4,6 +4,7 @@ class notification extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Notifications";
+    static protected $primary_key = 'notification_id';
 
     // Database columns
     static protected $db_columns = [

@@ -4,6 +4,7 @@ class auditLog extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Audit_Logs";
+    static protected $primary_key = 'log_id';
 
     // Database columns
     static protected $db_columns = [

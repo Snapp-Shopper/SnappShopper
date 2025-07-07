@@ -19,9 +19,12 @@
  *               user_id:
  *                 type: integer
  *                 example: 1
- *               name:
+ *               first_name:
  *                 type: string
- *                 example: John Doe
+ *                 example: John
+ *               last_name:
+ *                 type: string
+ *                 example: Doe
  *               email:
  *                 type: string
  *                 format: email
@@ -29,9 +32,6 @@
  *               phone:
  *                 type: string
  *                 example: "+123456789"
- *               address:
- *                 type: string
- *                 example: "123 Example St, City"
  *         application/x-www-form-urlencoded:
  *           schema:
  *             type: object
@@ -41,18 +41,18 @@
  *               user_id:
  *                 type: integer
  *                 example: 1
- *               name:
+ *               first_name:
  *                 type: string
- *                 example: John Doe
+ *                 example: John
+ *               last_name:
+ *                 type: string
+ *                 example: Doe
  *               email:
  *                 type: string
  *                 example: john@example.com
  *               phone:
  *                 type: string
  *                 example: "+123456789"
- *               address:
- *                 type: string
- *                 example: "123 Example St, City"
  *     responses:
  *       200:
  *         description: User updated successfully

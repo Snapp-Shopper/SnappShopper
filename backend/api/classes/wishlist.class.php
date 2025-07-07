@@ -4,6 +4,7 @@ class wishlist extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Wishlist";
+    static protected $primary_key = 'wishlist_id';
 
     // Database columns
     static protected $db_columns = [

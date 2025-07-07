@@ -2,10 +2,11 @@
 
 class subCategory extends DatabaseObject
 {
-    // Table name
+    // Table and primary key
     static protected $table_name = "Sub_Category";
+    static protected $primary_key = 'sub_category_id';
 
-    // Database columns
+    // Table columns
     static protected $db_columns = [
         'sub_category_id',
         'name',
@@ -14,50 +15,52 @@ class subCategory extends DatabaseObject
         'updated_at'
     ];
 
-    // Class properties for each column
+    // Properties
     public $sub_category_id;
     public $name;
     public $category_id;
     public $created_at;
     public $updated_at;
 
-    // Constructor
     public function __construct($args = [])
     {
         $this->sub_category_id = $args['sub_category_id'] ?? null;
         $this->name = $args['name'] ?? '';
-        $this->category_id = $args['category_id'] ?? 0;
-        $this->created_at = $args['created_at'] ?? null;
-        $this->updated_at = $args['updated_at'] ?? null;
+        $this->category_id = $args['category_id'] ?? null;
+        $this->created_at = $args['created_at'] ?? date('Y-m-d H:i:s');
+        $this->updated_at = $args['updated_at'] ?? date('Y-m-d H:i:s');
     }
 
-    // Save the subcategory to the database
+    // Save or create subcategory
     public function saveSubCategory()
     {
-        // Validate the subcategory data
+        $this->updated_at = date('Y-m-d H:i:s');
+        if (!$this->sub_category_id) {
+            $this->created_at = date('Y-m-d H:i:s');
+        }
+
         $errors = $this->validate();
 
         if (!empty($errors)) {
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
 
-        $saveQuery = $this->save();
-
-        return $saveQuery
+        $saved = $this->save();
+        return $saved
             ? ['status' => 'success', 'message' => 'Sub-category saved successfully']
             : ['status' => 'error', 'message' => 'Failed to save sub-category'];
     }
 
-    // Validate the subcategory data
+    // Validation
     public function validate()
     {
         $errors = [];
 
-        if (empty($this->name)) {
+        if (empty(trim($this->name))) {
             $errors[] = "Sub-category name cannot be empty.";
         }
         if (empty($this->category_id)) {
-            $errors[] = "Category ID cannot be empty.";
+            $errors[] = "Category ID is required.";
         }
 
         return $errors;
@@ -66,34 +69,43 @@ class subCategory extends DatabaseObject
     // Find all subcategories by category ID
     public static function findByCategoryId($category_id)
     {
-        $sql = "SELECT * FROM " . self::$table_name . " WHERE category_id = :category_id";
-        $stmt = self::executeQuery($sql, ['category_id' => $category_id]);
-
-        $sub_categories = [];
-        foreach ($stmt as $row) {
-            $sub_categories[] = new self($row);
-        }
-
-        return $sub_categories;
+        $sql = "SELECT * FROM " . static::$table_name . " WHERE category_id = :category_id";
+        $stmt = static::executeQuery($sql, ['category_id' => $category_id]);
+        return array_map([static::class, 'instantiate'], $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
-    // Retrieve a specific subcategory by ID
+    // Find subcategory by ID
     public static function findSubById($sub_category_id)
     {
-        $sql = "SELECT * FROM " . self::$table_name . " WHERE sub_category_id = :sub_category_id LIMIT 1";
-        $stmt = self::executeQuery($sql, ['sub_category_id' => $sub_category_id]);
-
-        return $stmt ? new self($stmt[0]) : null;
+        $sql = "SELECT * FROM " . static::$table_name . " WHERE sub_category_id = :sub_category_id LIMIT 1";
+        $stmt = static::executeQuery($sql, ['sub_category_id' => $sub_category_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? static::instantiate($row) : null;
     }
 
-    // Update the subcategory name
+    // Update subcategory name
     public function updateName($new_name)
     {
         $this->name = $new_name;
+        $this->updated_at = date('Y-m-d H:i:s');
 
-        $sql = "UPDATE " . self::$table_name . " SET name = :name WHERE sub_category_id = :sub_category_id";
-        return self::executeQuery($sql, ['name' => $this->name, 'sub_category_id' => $this->sub_category_id]);
+        $sql = "UPDATE " . static::$table_name . " 
+                SET name = :name, updated_at = :updated_at 
+                WHERE sub_category_id = :sub_category_id";
+
+        return static::executeQuery($sql, [
+            'name' => $this->name,
+            'updated_at' => $this->updated_at,
+            'sub_category_id' => $this->sub_category_id
+        ]);
+    }
+
+    // Delete subcategory
+    public function deleteSubCategory()
+    {
+        $sql = "DELETE FROM " . static::$table_name . " WHERE sub_category_id = :id LIMIT 1";
+        return static::executeQuery($sql, ['id' => $this->sub_category_id])
+            ? ['status' => 'success', 'message' => 'Sub-category deleted']
+            : ['status' => 'error', 'message' => 'Failed to delete sub-category'];
     }
 }
-
-?>

@@ -4,6 +4,7 @@ class Payment extends DatabaseObject
 {
     // Table name
     static protected $table_name = "Payments";
+    static protected $primary_key = 'payment_id';
 
     // Database columns
     static protected $db_columns = [
