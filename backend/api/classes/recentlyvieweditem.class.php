@@ -91,6 +91,31 @@ class recentlyViewedItem extends DatabaseObject
         $sql = "DELETE FROM " . self::$table_name . " WHERE user_id = :user_id AND product_id = :product_id";
         return self::executeQuery($sql, ['user_id' => $user_id, 'product_id' => $product_id]);
     }
+
+    // Clear all recently viewed items for a user
+    public static function clearByUserId($user_id)
+    {
+        // Clear recently viewed items
+        $sql = "DELETE FROM " . self::$table_name . " WHERE user_id = :user_id";
+        $stmt = self::executeQuery($sql, ['user_id' => $user_id]);
+
+        $response = [
+            'status' => $stmt ? 'success' : 'error',
+            'message' => $stmt ? 'Recently viewed items cleared successfully' : 'Failed to clear recently viewed items'
+        ];
+
+        // Log the action if successful
+        if ($stmt) {
+            $log = new auditLog([
+            'user_id' => $user_id,
+            'action' => 'clear_recently_viewed',
+            'action_date' => date('Y-m-d H:i:s'),
+            'description' => 'User cleared all recently viewed items.'
+            ]);
+            $log->saveAuditLog();
+        }
+        return $response;
+    }
 }
 
 ?>

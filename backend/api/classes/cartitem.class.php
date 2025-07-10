@@ -32,7 +32,7 @@ class cartItem extends DatabaseObject
         $this->product_id = $args['product_id'] ?? null;
         $this->quantity = $args['quantity'] ?? 0;
         $this->price_at_addition = $args['price_at_addition'] ?? 0.00;
-        $this->added_date = $args['added_date'] ?? null;
+        $this->added_date = $args['added_date'] ?? date('Y-m-d H:i:s');
     }
 
     // Save the cart item to the database
@@ -47,6 +47,17 @@ class cartItem extends DatabaseObject
             'quantity' => $this->quantity,
             'price_at_addition' => $this->price_at_addition
         ]);
+
+        if ($stmt) {
+            // Log the addition of the product to the cart
+            $log = new auditLog([
+                'user_id' => $this->cart_id, // Assuming cart_id is linked to user_id
+                'action' => 'add_to_cart',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "Product ID {$this->product_id} added to cart ID {$this->cart_id}"
+            ]);
+            $log->saveAuditLog();
+        }
 
         return $stmt ? ['status' => 'success', 'message' => 'Product added to cart'] : ['status' => 'error', 'message' => 'Failed to add product to cart'];
     }

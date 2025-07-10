@@ -58,7 +58,16 @@ class address extends DatabaseObject
         }
 
         $saveQuery = $this->save();
-
+        if ($saveQuery) {
+            // Log the address creation or update
+            $log = new auditLog([
+                'user_id' => $this->user_id,
+                'action' => $this->address_id ? 'update_address' : 'create_address',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "Address ID {$this->address_id} saved for user ID {$this->user_id}"
+            ]);
+            $log->saveAuditLog();
+        }   
         return $saveQuery
             ? ['status' => 'success', 'message' => 'Address saved successfully']
             : ['status' => 'error', 'message' => 'Failed to save address'];
@@ -95,6 +104,12 @@ class address extends DatabaseObject
         // Now, set this address as the default
         $this->is_default = true;
         $this->save(); // Update the database
+        $log = new auditLog([
+            'user_id' => $this->user_id,
+            'action' => 'set_default_address',
+            'action_date' => date('Y-m-d H:i:s'),
+            'description' => "Address ID {$this->address_id} set as default for user ID {$this->user_id}"
+        ]);
     }
 
     // Retrieve all addresses for a user
@@ -132,7 +147,16 @@ class address extends DatabaseObject
     {
         $sql = "DELETE FROM " . static::$table_name . " WHERE address_id = :user_id LIMIT 1";
         $stmt = self::executeQuery($sql, ['address_id' => $this->address_id]);
-
+        if ($stmt) {
+            // Log the address deletion
+            $log = new auditLog([
+                'user_id' => $this->user_id,
+                'action' => 'delete_address',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "Address ID {$this->address_id} deleted for user ID {$this->user_id}"
+            ]);
+            $log->saveAuditLog();
+        }
         return $stmt
             ? ['status' => 'success', 'message' => 'Address permanently deleted']
             : ['status' => 'error', 'message' => 'Failed to delete address'];
@@ -168,7 +192,16 @@ class address extends DatabaseObject
         }
 
         $saved = $address->save();
-
+        if ($saved) {
+            // Log the address update
+            $log = new auditLog([
+                'user_id' => $address->user_id,
+                'action' => 'update_address',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "Address ID {$address->address_id} updated for user ID {$address->user_id}"
+            ]);
+            $log->saveAuditLog();
+        }
         return $saved
             ? ['status' => 'success', 'message' => 'Address updated successfully']
             : ['status' => 'error', 'message' => 'Failed to update address'];

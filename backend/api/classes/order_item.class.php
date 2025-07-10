@@ -67,6 +67,28 @@ class order_Item extends DatabaseObject
         return self::findById($order_item_id);
     }
 
+    public function updateItem($data = [])
+    {
+        // Update fields if provided
+        $this->quantity = $data['quantity'] ?? $this->quantity;
+        $this->price_at_purchase = $data['price_at_purchase'] ?? $this->price_at_purchase;
+        $this->updated_at = date('Y-m-d H:i:s');
+
+        // Validate
+        $errors = $this->validate();
+        if (!empty($errors)) {
+            return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
+        }
+
+        // Save
+        $saved = $this->save();
+
+        return $saved
+            ? ['status' => 'success', 'message' => 'Order item updated successfully']
+            : ['status' => 'error', 'message' => 'Failed to update order item'];
+    }
+
+
     // Validation for order item fields
     protected function validate()
     {

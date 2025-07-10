@@ -48,7 +48,16 @@ class orders extends DatabaseObject
         }
 
         $saveQuery = $this->save();
-
+        if ($saveQuery) {
+            // Log the order creation or update
+            $log = new auditLog([
+                'user_id' => $this->user_id,
+                'action' => $this->order_id ? 'update_order' : 'create_order',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "Order ID {$this->order_id} saved with status {$this->status}"
+            ]);
+            $log->saveAuditLog();
+        }
         return $saveQuery
             ? ['status' => 'success', 'message' => 'Order saved successfully']
             : ['status' => 'error', 'message' => 'Failed to save order'];
@@ -88,6 +97,12 @@ class orders extends DatabaseObject
         $this->status = $new_status;
 
         if ($this->save()) {
+            $log = new auditLog([
+                'user_id' => $this->user_id,
+                'action' => 'update_order_status',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "Order ID {$this->order_id} status updated to {$this->status}"
+            ]);
             return ['status' => 'success', 'message' => 'Order status updated successfully'];
         }
 
