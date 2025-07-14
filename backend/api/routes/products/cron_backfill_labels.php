@@ -14,7 +14,7 @@
  */
 
 require_once '../../initialize.php';
-require '../../vendor/autoload.php';
+require '../../../vendor/autoload.php';
 
 use Google\Cloud\Vision\V1\ImageAnnotatorClient;
 

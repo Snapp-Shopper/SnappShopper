@@ -11,51 +11,50 @@ class notification extends DatabaseObject
         'notification_id',
         'user_id',
         'message',
+        'type',
         'status',
         'created_at'
     ];
 
-    // Class properties for each column
+    // Properties
     public $notification_id;
     public $user_id;
     public $message;
-    public $status = 'Unseen';
+    public $type; // e.g. 'Order', 'Shipping', 'System'
+    public $status = 'Unseen'; // 'Unseen', 'Seen'
     public $created_at;
 
-    // Constructor
     public function __construct($args = [])
     {
         $this->notification_id = $args['notification_id'] ?? null;
-        $this->user_id = $args['user_id'] ?? null;
-        $this->message = $args['message'] ?? '';
-        $this->status = $args['status'] ?? 'Unseen';
-        $this->created_at = $args['created_at'] ?? null;
+        $this->user_id         = $args['user_id'] ?? null;
+        $this->message         = $args['message'] ?? '';
+        $this->type            = $args['type'] ?? 'System';
+        $this->status          = $args['status'] ?? 'Unseen';
+        $this->created_at      = $args['created_at'] ?? date('Y-m-d H:i:s');
     }
 
-    // Save the notification to the database
+    // Save notification
     public function saveNotification()
     {
-        // Validate the message and user_id
         $errors = $this->validate();
-
         if (!empty($errors)) {
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
 
-        $saveQuery = $this->save();
-
-        return $saveQuery
+        $saved = $this->save();
+        return $saved
             ? ['status' => 'success', 'message' => 'Notification saved successfully']
             : ['status' => 'error', 'message' => 'Failed to save notification'];
     }
 
-    // Validate the notification data
+    // Validation
     public function validate()
     {
         $errors = [];
 
         if (empty($this->user_id)) {
-            $errors[] = "User ID cannot be empty.";
+            $errors[] = "User ID is required.";
         }
         if (empty($this->message)) {
             $errors[] = "Message cannot be empty.";
@@ -64,35 +63,55 @@ class notification extends DatabaseObject
         return $errors;
     }
 
-    // Mark notification as seen
+    // Mark a notification as seen
     public function markAsSeen()
     {
         $this->status = 'Seen';
-        $this->save(); // Update the status in the database
+        return $this->save();
     }
 
-    // Retrieve notifications by user_id
-    public static function findNotificationsByUserId($user_id)
+    // Static: find by user
+    public static function findNotificationsByUserId($user_id, $limit = 20)
     {
-        $sql = "SELECT * FROM " . self::$table_name . " WHERE user_id = :user_id ORDER BY created_at DESC";
-        $stmt = self::executeQuery($sql, ['user_id' => $user_id]);
-
-        $notifications = [];
-        foreach ($stmt as $row) {
-            $notifications[] = new self($row);
-        }
-
-        return $notifications;
+        $sql = "SELECT * FROM " . self::$table_name . " 
+                WHERE user_id = :user_id 
+                ORDER BY created_at DESC 
+                LIMIT :limit";
+        $stmt = self::executeQuery($sql, [
+            'user_id' => $user_id,
+            'limit' => $limit
+        ]);
+        return array_map([self::class, 'instantiate'], $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
-    // Mark all notifications as seen for a user
+    // Static: mark all seen
     public static function markAllAsSeen($user_id)
     {
         $sql = "UPDATE " . self::$table_name . " SET status = 'Seen' WHERE user_id = :user_id";
         $stmt = self::executeQuery($sql, ['user_id' => $user_id]);
+        return $stmt
+            ? ['status' => 'success', 'message' => 'All notifications marked as seen']
+            : ['status' => 'error', 'message' => 'Failed to mark all as seen'];
+    }
 
-        return $stmt ? ['status' => 'success', 'message' => 'All notifications marked as seen'] : ['status' => 'error', 'message' => 'Failed to mark notifications as seen'];
+    // Static: count unseen
+    public static function countUnseen($user_id)
+    {
+        $sql = "SELECT COUNT(*) AS total FROM " . self::$table_name . " 
+                WHERE user_id = :user_id AND status = 'Unseen'";
+        $stmt = self::executeQuery($sql, ['user_id' => $user_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
+
+    // Static: create notification helper
+    public static function notify($user_id, $message, $type = 'System')
+    {
+        $notif = new self([
+            'user_id' => $user_id,
+            'message' => $message,
+            'type' => $type
+        ]);
+        return $notif->saveNotification();
     }
 }
-
-?>

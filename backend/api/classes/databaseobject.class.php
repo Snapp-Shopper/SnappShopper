@@ -1,6 +1,6 @@
 <?php
 
-class DatabaseObject
+class databaseObject
 {
     protected $errors = [];
     protected static $database; // PDO instance

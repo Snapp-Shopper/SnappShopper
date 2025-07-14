@@ -39,7 +39,14 @@ class wishlist extends DatabaseObject
         }
 
         $saveQuery = $this->save();
-
+        if ($saveQuery) {
+            $log = new auditLog([
+                'user_id' => $this->user_id,
+                'action' => 'Add to Wishlist',
+                'description' => "Product ID {$this->product_id} added to wishlist"
+            ]);
+            $log->saveAuditLog();
+        }
         return $saveQuery
             ? ['status' => 'success', 'message' => 'Product added to wishlist']
             : ['status' => 'error', 'message' => 'Failed to add product to wishlist'];
@@ -50,7 +57,14 @@ class wishlist extends DatabaseObject
     {
         $sql = "DELETE FROM " . static::$table_name . " WHERE user_id = :user_id AND product_id = :product_id";
         $stmt = self::executeQuery($sql, ['user_id' => $this->user_id, 'product_id' => $this->product_id]);
-
+        if ($stmt){
+            $log = new auditLog([
+                'user_id' => $this->user_id,
+                'action' => 'Remove from Wishlist',
+                'description' => "Product ID {$this->product_id} removed from wishlist"
+            ]);
+            $log->saveAuditLog();
+        }
         return $stmt
             ? ['status' => 'success', 'message' => 'Product removed from wishlist']
             : ['status' => 'error', 'message' => 'Failed to remove product from wishlist'];

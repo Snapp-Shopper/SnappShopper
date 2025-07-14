@@ -9,6 +9,7 @@ class orders extends DatabaseObject
     // Database columns
     static protected $db_columns = [
         'order_id',
+        'order_no', // <-- added
         'user_id',
         'order_date',
         'status',
@@ -19,6 +20,7 @@ class orders extends DatabaseObject
 
     // Class properties for each column
     public $order_id;
+    public $order_no; // <-- added
     public $user_id;
     public $order_date;
     public $status;
@@ -30,6 +32,7 @@ class orders extends DatabaseObject
     public function __construct($args = [])
     {
         $this->order_id = $args['order_id'] ?? null;
+        $this->order_no = $args['order_no'] ?? null; // <-- added
         $this->user_id = $args['user_id'] ?? null;
         $this->order_date = $args['order_date'] ?? null;
         $this->status = $args['status'] ?? 'Pending';
@@ -46,6 +49,13 @@ class orders extends DatabaseObject
         if (!empty($errors)) {
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
+
+        if (empty($this->order_no)) {
+            $this->order_no = self::generateUniqueOrderNo();
+        }
+        // Set created_at and updated_at to current timestamp if not set
+        $this->created_at = date('Y-m-d H:i:s');
+        $this->updated_at = date('Y-m-d H:i:s');
 
         $saveQuery = $this->save();
         if ($saveQuery) {
@@ -95,7 +105,7 @@ class orders extends DatabaseObject
         }
 
         $this->status = $new_status;
-
+        $this->updated_at = date('Y-m-d H:i:s');
         if ($this->save()) {
             $log = new auditLog([
                 'user_id' => $this->user_id,
@@ -103,6 +113,9 @@ class orders extends DatabaseObject
                 'action_date' => date('Y-m-d H:i:s'),
                 'description' => "Order ID {$this->order_id} status updated to {$this->status}"
             ]);
+            $log->saveAuditLog();
+            // Optionally, send a notification to the user
+            notification::notify($this->user_id, "Your order status has been updated to {$$this->status}.", 'Order');
             return ['status' => 'success', 'message' => 'Order status updated successfully'];
         }
 
@@ -143,6 +156,19 @@ class orders extends DatabaseObject
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return array_map([static::class, 'instantiate'], $results);
+    }
+
+    // Generate a unique order number
+    static protected function generateUniqueOrderNo()
+    {
+        do {
+            $random = 'ORD-' . strtoupper(uniqid());
+            $sql = "SELECT COUNT(*) FROM " . self::$table_name . " WHERE order_no = :order_no";
+            $stmt = self::executeQuery($sql, ['order_no' => $random]);
+            $count = $stmt->fetchColumn();
+        } while ($count > 0);
+
+        return $random;
     }
 }
 

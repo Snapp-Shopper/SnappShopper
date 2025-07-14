@@ -13,6 +13,8 @@ class Vendor extends DatabaseObject
         'email',
         'phone_number',
         'address',
+        'state',         
+        'country',       
         'created_at',
         'updated_at'
     ];
@@ -23,6 +25,8 @@ class Vendor extends DatabaseObject
     public $email;
     public $phone_number;
     public $address;
+    public $state;
+    public $country;
     public $created_at;
     public $updated_at;
 
@@ -34,6 +38,8 @@ class Vendor extends DatabaseObject
         $this->email = $args['email'] ?? '';
         $this->phone_number = $args['phone_number'] ?? '';
         $this->address = $args['address'] ?? '';
+        $this->state = $args['state'] ?? '';
+        $this->country = $args['country'] ?? '';
         $this->created_at = $args['created_at'] ?? null;
         $this->updated_at = $args['updated_at'] ?? null;
     }
@@ -47,7 +53,9 @@ class Vendor extends DatabaseObject
         if (!empty($errors)) {
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
-
+        
+        $this->created_at = date('Y-m-d H:i:s');
+        $this->updated_at = date('Y-m-d H:i:s');
         $saveQuery = $this->save();
 
         return $saveQuery
@@ -68,6 +76,14 @@ class Vendor extends DatabaseObject
             $errors[] = "Vendor email cannot be empty.";
         } elseif (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = "Invalid email format.";
+        }
+
+        if (empty($this->state)) {
+            $errors[] = "Vendor state is required.";
+        }
+
+        if (empty($this->country)) {
+            $errors[] = "Vendor country is required.";
         }
 
         return $errors;
@@ -106,13 +122,24 @@ class Vendor extends DatabaseObject
         if (!empty($errors)) {
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
-
+        $this->updated_at = date('Y-m-d H:i:s');
         $updateQuery = $this->update();
 
         return $updateQuery
             ? ['status' => 'success', 'message' => 'Vendor updated successfully']
             : ['status' => 'error', 'message' => 'Failed to update vendor'];
     }
+
+    public static function findVendorByProductId($product_id)
+    {
+        $link = productVendor::findByProductId($product_id);
+        if ($link && $link->vendor_id) {
+            return self::findVendorById($link->vendor_id);
+        }
+        return null;
+    }
+
+
 }
 
 ?>

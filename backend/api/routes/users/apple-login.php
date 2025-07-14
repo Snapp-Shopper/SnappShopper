@@ -48,7 +48,7 @@
  */
 
 require_once '../../initialize.php';
-require_once '../../vendor/autoload.php';
+require_once '../../../vendor/autoload.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\JWK;

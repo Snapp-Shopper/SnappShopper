@@ -57,6 +57,20 @@ if (empty($data)) {
     $data = json_decode($rawData, true);
 }
 
+// Check inventory BEFORE saving the order
+if (!empty($data['order_items'])) {
+    foreach ($data['order_items'] as $itemData) {
+        $inventory = inventory::findByProductId($itemData['product_id']);
+        if (!$inventory || $inventory->quantity_available < $itemData['quantity']) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => "Insufficient stock for product ID {$itemData['product_id']}"
+            ]);
+            exit;
+        }
+    }
+}
+
 $order = new orders($data);
 $response = $order->saveOrder();
 

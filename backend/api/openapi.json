@@ -794,6 +794,95 @@
                 }
             }
         },
+        "/auditlogs.php": {
+            "get": {
+                "summary": "Retrieve audit logs",
+                "description": "Fetch audit logs either by log ID, user ID, or all logs for admin.",
+                "tags": [
+                    "Audit Logs"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "log_id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Retrieve a specific log by ID"
+                    },
+                    {
+                        "in": "query",
+                        "name": "user_id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Retrieve logs for a specific user"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Audit logs retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "success"
+                                                },
+                                                "logs": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "success"
+                                                },
+                                                "log": {
+                                                    "type": "object"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Log not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Log not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/cart/add.php": {
             "post": {
                 "summary": "Add a product to the user's cart",
@@ -829,6 +918,67 @@
                 "responses": {
                     "200": {
                         "description": "Product added or updated in cart"
+                    }
+                }
+            }
+        },
+        "/cart/clear.php": {
+            "delete": {
+                "summary": "Clear all items from a user's cart",
+                "tags": [
+                    "Cart"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "user_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "The ID of the user whose cart should be cleared"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cart cleared successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cart cleared successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing user ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User ID is required"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -973,7 +1123,7 @@
         },
         "/cart/total.php": {
             "get": {
-                "summary": "Get total price of all items in user's cart",
+                "summary": "Get the total price of all items in a user's cart",
                 "tags": [
                     "Cart"
                 ],
@@ -984,20 +1134,46 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "description": "The ID of the user whose cart total is being requested"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Total cart price returned",
+                        "description": "Total price of cart items retrieved successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
                                         "total": {
                                             "type": "number",
-                                            "format": "float"
+                                            "format": "float",
+                                            "example": 1450.5
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing user ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User ID is required"
                                         }
                                     }
                                 }
@@ -2220,6 +2396,165 @@
                     },
                     "500": {
                         "description": "Server configuration error or Google credentials missing"
+                    }
+                }
+            }
+        },
+        "/recently_viewed/add.php": {
+            "post": {
+                "summary": "Add a recently viewed product",
+                "tags": [
+                    "RecentlyViewed"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id",
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "product_id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Recently viewed item added"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                }
+            }
+        },
+        "/recently_viewed/clear.php": {
+            "delete": {
+                "summary": "Clear all recently viewed items for a user",
+                "tags": [
+                    "RecentlyViewed"
+                ],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "The ID of the user whose recently viewed list should be cleared"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Recently viewed items cleared",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Recently viewed items cleared successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing user ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User ID is required"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/recently_viewed/delete.php": {
+            "delete": {
+                "summary": "Delete a recently viewed item by user and product",
+                "tags": [
+                    "RecentlyViewed"
+                ],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "product_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted successfully"
+                    },
+                    "400": {
+                        "description": "Missing parameters"
+                    }
+                }
+            }
+        },
+        "/recently_viewed/get.php": {
+            "get": {
+                "summary": "Get recently viewed items by user",
+                "tags": [
+                    "RecentlyViewed"
+                ],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of recently viewed items"
+                    },
+                    "400": {
+                        "description": "Missing user_id"
                     }
                 }
             }

@@ -8,6 +8,9 @@ require_once __DIR__ . '/src/db_functions.php';        // DB connection function
 require_once __DIR__ . '/src/validation_functions.php';// Validation helpers
 require_once __DIR__ . '/src/jwt_function.php';        // JWT helpers
 require_once __DIR__ . '/helpers/log_helper.php';       // Logging helpers
+require_once __DIR__ . '/helpers/DHLService.php';     // DHL API integration
+require_once __DIR__ . '/helpers/ShippingEstimator.php'; // Shipping estimator
+
 
 
 // === 2. Load Secure Config ===

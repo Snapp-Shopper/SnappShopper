@@ -50,12 +50,44 @@ class products extends DatabaseObject
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
 
+        $this->updated_at = date('Y-m-d H:i:s');
+
+        $isNew = is_null($this->product_id);
         $saveQuery = $this->save();
+
+        if ($saveQuery) {
+            // Sync inventory
+            $inventory = inventory::findByProductId($this->product_id);
+
+            if ($inventory) {
+                $inventory->quantity_available = $this->stock;
+                $inventory->last_updated = date('Y-m-d H:i:s');
+            } else {
+                $inventory = new inventory([
+                    'product_id' => $this->product_id,
+                    'quantity_available' => $this->stock,
+                    'quantity_sold' => 0,
+                    'last_updated' => date('Y-m-d H:i:s')
+                ]);
+            }
+
+            $inventory->save();
+
+            // Audit log
+            $log = new auditLog([
+                'user_id' => $_POST['user_id'] ?? 0,
+                'action' => $isNew ? 'product_create' : 'product_update',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "Product " . ($isNew ? "created" : "updated") . ": {$this->name}"
+            ]);
+            $log->saveAuditLog();
+        }
 
         return $saveQuery
             ? ['status' => 'success', 'message' => 'Product saved successfully']
             : ['status' => 'error', 'message' => 'Failed to save product'];
     }
+
 
     // Find a product by ID
     static public function findProductById($id)
@@ -86,13 +118,31 @@ class products extends DatabaseObject
         }
 
         $product->stock = $new_stock;
+        $product->updated_at = date('Y-m-d H:i:s');
+        $saved = $product->save();
 
-        if ($product->save()) {
+        if ($saved) {
+            $inventory = inventory::findByProductId($product_id);
+            if ($inventory) {
+                $inventory->quantity_available = $new_stock;
+                $inventory->last_updated = date('Y-m-d H:i:s');
+                $inventory->save();
+            }
+
+            $log = new auditLog([
+                'user_id' => $_POST['user_id'] ?? 0,
+                'action' => 'product_stock_update',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "Stock updated for product_id {$product_id} to {$new_stock}"
+            ]);
+            $log->saveAuditLog();
+
             return ['status' => 'success', 'message' => 'Stock updated successfully'];
         }
 
         return ['status' => 'error', 'message' => 'Failed to update stock'];
     }
+
 
     // Get recommended products (fallback)
     static public function getRecommended($limit = 6)

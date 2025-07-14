@@ -73,7 +73,7 @@
 // Description: This endpoint scans a user-uploaded image or URL using Google Vision API and matches labels/similar products
 
 require_once '../../initialize.php';
-require_once '../../vendor/autoload.php'; // Google Cloud Vision library
+require_once '../../../vendor/autoload.php'; // Google Cloud Vision library
 
 use Google\Cloud\Vision\V1\ImageAnnotatorClient;
 

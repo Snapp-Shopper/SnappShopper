@@ -44,7 +44,7 @@
  */
 
 require_once '../../initialize.php';
-require_once '../../vendor/autoload.php'; // Facebook SDK
+require_once '../../../vendor/autoload.php'; // Facebook SDK
 
 use Facebook\Facebook;
 

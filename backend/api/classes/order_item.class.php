@@ -35,6 +35,44 @@ class order_Item extends DatabaseObject
         $this->created_at = $args['created_at'] ?? null;
     }
 
+    // Sync inventory and stock after purchase
+    public static function syncStockAndInventory($product_id, $quantity)
+    {
+        $product = self::findById($product_id);
+        if (!$product) {
+            return ['status' => 'error', 'message' => 'Product not found'];
+        }
+
+        if ($product->stock < $quantity) {
+            return ['status' => 'error', 'message' => 'Insufficient stock for product ID ' . $product_id];
+        }
+
+        // Deduct stock from product
+        $product->stock -= $quantity;
+        $product->updated_at = date('Y-m-d H:i:s');
+        $product->save();
+
+        // Update or create inventory record
+        $inventory = inventory::findByProductId($product_id);
+        if ($inventory) {
+            $inventory->quantity_available -= $quantity;
+            $inventory->quantity_sold += $quantity;
+            $inventory->last_updated = date('Y-m-d H:i:s');
+            $inventory->save();
+        } else {
+            $inventory = new inventory([
+                'product_id' => $product_id,
+                'quantity_available' => 0,
+                'quantity_sold' => $quantity,
+                'last_updated' => date('Y-m-d H:i:s')
+            ]);
+            $inventory->save();
+        }
+
+        return ['status' => 'success', 'message' => 'Stock and inventory updated'];
+    }
+
+
     // Create or update an order item
     public function saveOrderItem()
     {
@@ -44,12 +82,30 @@ class order_Item extends DatabaseObject
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
 
+        // Check and sync product stock and inventory
+        $syncResult = products::syncStockAndInventory($this->product_id, $this->quantity);
+        if ($syncResult['status'] !== 'success') {
+            return $syncResult;
+        }
+
+        $this->created_at = date('Y-m-d H:i:s');
         $saveQuery = $this->save();
 
+        if ($saveQuery) {
+            $log = new auditLog([
+                'user_id' => $this->order_id,
+                'action' => $this->order_item_id ? 'update_order_item' : 'create_order_item',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "Order item saved. Product ID {$this->product_id} - Quantity {$this->quantity}"
+            ]);
+            $log->saveAuditLog();
+        }
+
         return $saveQuery
-            ? ['status' => 'success', 'message' => 'Order item saved successfully']
+            ? ['status' => 'success', 'message' => 'Order item saved and stock updated']
             : ['status' => 'error', 'message' => 'Failed to save order item'];
     }
+
 
     // Retrieve all order items for a specific order
     static public function findOrderItemsByOrderId($order_id)
@@ -82,6 +138,25 @@ class order_Item extends DatabaseObject
 
         // Save
         $saved = $this->save();
+        if ($saved) {
+            // Update inventory
+            $inventory = inventory::findByProductId($this->product_id);
+            if ($inventory) {
+                $inventory->quantity_available -= $this->quantity;
+                $inventory->quantity_sold += $this->quantity;
+                $inventory->last_updated = date('Y-m-d H:i:s');
+                $inventory->save();
+            } else {
+                // Create new inventory record if not exists
+                $inventory = new inventory([
+                    'product_id' => $this->product_id,
+                    'quantity_available' => 0,
+                    'quantity_sold' => 0,
+                    'last_updated' => date('Y-m-d H:i:s')
+                ]);
+                $inventory->save();
+            }
+        }
 
         return $saved
             ? ['status' => 'success', 'message' => 'Order item updated successfully']

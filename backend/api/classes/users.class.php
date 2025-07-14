@@ -37,7 +37,6 @@ class users extends DatabaseObject
     public $reset_token_expires;
     public $is_verified;
     public $verification_token;
-    
 
     // Constructor
     public function __construct($args = [])
@@ -69,7 +68,7 @@ class users extends DatabaseObject
             return ['status' => 'error', 'message' => 'Email already exists'];
         }
 
-        $verificationToken = random_int(1000, 9999); // Generates a 32-char token
+        $verificationToken = random_int(1000, 9999); // Generates a char token
 
         $data['password_hash'] = $hashedPassword;
         $data['is_verified'] = 0;
@@ -87,7 +86,15 @@ class users extends DatabaseObject
         if ($user->save()) {
             // Send verification email
             self::sendVerificationEmail($data["email"], $verificationToken);
-            return ['status' => 'success', 'message' => 'User registered. Check your email for the verification code.'];
+            // Log the registration action
+            $log = new auditLog([
+                'user_id' => $user->user_id,
+                'action' => 'register',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "User registered successfully"
+            ]); 
+            $log->saveAuditLog();
+            return ['status' => 'success', 'message' => 'User registered. Check your email for the verification code.', 'code' => $verificationToken];
         } else {
             return ['status' => 'error', 'message' => 'Registration failed'];
         }
@@ -107,9 +114,18 @@ class users extends DatabaseObject
         $user->verification_token = $code;
         $user->updated_at = date('Y-m-d H:i:s');
 
-        if ($user->save()) {
+        if ($user->update()) {
             self::sendVerificationEmail($user->email, $code);
-            return ['status' => 'success', 'message' => 'Verification code resent'];
+            // Log the resend action
+            $log = new auditLog([
+                'user_id' => $user->user_id,
+                'action' => 'resend_verification_code',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "Verification code resent successfully"
+            ]); 
+            $log->saveAuditLog();
+            // Return success response with the new code
+            return ['status' => 'success', 'message' => 'Verification code resent', 'code' => $code];
         } else {
             return ['status' => 'error', 'message' => 'Failed to resend code'];
         }
@@ -141,13 +157,24 @@ class users extends DatabaseObject
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
 
-        $saved = $user->save();
-
+        $saved = $user->update();
+        if ($saved) {
+            // Log the update action
+            $log = new auditLog([
+                'user_id' => $user->user_id,
+                'action' => 'update_user',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "User updated successfully"
+            ]);
+            $log->saveAuditLog();
+            // Optionally, send a notification to the user
+            notification::notify($user->user_id, "Your profile has been updated successfully.", 'Profile');
+        }
         return $saved
             ? ['status' => 'success', 'message' => 'User updated successfully']
             : ['status' => 'error', 'message' => 'Failed to update user'];
     }
-
+    
     static public function changePassword($userId, $oldPassword, $newPassword)
     {
         // Find user by ID
@@ -168,11 +195,22 @@ class users extends DatabaseObject
         $user->updated_at = date('Y-m-d H:i:s');
 
         if ($user->save()) {
+            // Log the password change action
+            $log = new auditLog([
+                'user_id' => $user->user_id,
+                'action' => 'change_password',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "User changed password successfully"
+            ]);
+            $log->saveAuditLog();
+            // Optionally, send a notification to the user
+            notification::notify($user->user_id, "Your password has been changed successfully.", 'Security');
             return ['status' => 'success', 'message' => 'Password changed successfully'];
         } else {
             return ['status' => 'error', 'message' => 'Failed to change password'];
         }
     }
+
     static private function sendVerificationEmail($email, $token)
     {
         $subject = "Your SnappShopper Verification Code";
@@ -202,7 +240,14 @@ class users extends DatabaseObject
             $user->is_verified = 1;
             $user->verification_token = null;
             $user->updated_at = date('Y-m-d H:i:s');
-            $user->save();
+            $user->update();
+            // Log the verification action
+            $log = new auditLog([
+                'user_id' => $user->user_id,
+                'action' => 'verify_email',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "User email verified successfully"
+            ]);
             return ['status' => 'success', 'message' => 'Email verified successfully'];
         }
 
@@ -224,7 +269,7 @@ class users extends DatabaseObject
 
                 // ✅ Update last_loggedIn timestamp
                 $updateSql = "UPDATE " . static::$table_name . " SET last_loggedIn = :last_loggedIn WHERE user_id = :user_id";
-                self::executeQuery($updateSql, [
+                $result = self::executeQuery($updateSql, [
                     'last_loggedIn' => date('Y-m-d H:i:s'),
                     'user_id' => $user->user_id
                 ]);
@@ -237,13 +282,19 @@ class users extends DatabaseObject
                     'email' => $user->email,
                 ];
                 $token = JWT::generateToken($tokenData);
-
-                return [
-                    'status' => 'success',
-                    'message' => 'Login successful',
-                    'user' => $tokenData,
-                    'token' => $token
-                ];
+                if ($result) {
+                    // Log the login action
+                    $log = new auditLog([
+                        'user_id' => $user->user_id,
+                        'action' => 'login',
+                        'action_date' => date('Y-m-d H:i:s'),
+                        'description' => "User logged in successfully"
+                    ]);
+                    $log->saveAuditLog();
+                }
+                return $result
+                    ? ['status' => 'success', 'message' => 'Login successful', 'user' => $tokenData, 'token' => $token]
+                    : ['status' => 'error', 'message' => 'Failed to update last login time'];
             } else {
                 return ['status' => 'error', 'message' => 'Invalid password'];
             }
@@ -268,23 +319,30 @@ class users extends DatabaseObject
 
             // Store token and expiry in DB
             $updateSql = "UPDATE " . static::$table_name . " SET reset_token = :token, reset_token_expires = :expires WHERE user_id = :user_id";
-            self::executeQuery($updateSql, [
+            $result = self::executeQuery($updateSql, [
                 'token' => $token,
                 'expires' => $expires,
                 'user_id' => $user->user_id
             ]);
 
             // Construct password reset link (change domain as needed)
-            $resetLink = "https://yourdomain.com/reset-password.php?token=" . urlencode($token);
+            $resetLink = "https://test.snappshopper.com/reset-password.php?token=" . urlencode($token);
 
             // Optionally: send email here with $resetLink (pseudo-code)
             // Mail::send($user->email, 'Password Reset', "Click here to reset: $resetLink");
-
-            return [
-                'status' => 'success',
-                'message' => 'Password reset link sent to your email.',
-                'reset_link' => $resetLink // Include this only for testing/dev
-            ];
+            if ($result) {
+                // Log the password reset request
+                $log = new auditLog([
+                    'user_id' => $user->user_id,
+                    'action' => 'forgot_password',
+                    'action_date' => date('Y-m-d H:i:s'),
+                    'description' => "Password reset link sent to user"
+                ]);
+                $log->saveAuditLog();
+            }
+            return $result
+                ? ['status' => 'success', 'message' => 'Password reset link sent to your email.', 'reset_link' => $resetLink] // Include this only for testing/dev
+                : ['status' => 'error', 'message' => 'Failed to send password reset link.'];
         }
 
         return ['status' => 'error', 'message' => 'No account found with that email.'];
@@ -315,16 +373,24 @@ class users extends DatabaseObject
                             updated_at = :updated_at
                         WHERE user_id = :user_id";
 
-            self::executeQuery($updateSql, [
+            $result = self::executeQuery($updateSql, [
                 'password_hash' => $hashedPassword,
                 'updated_at' => date('Y-m-d H:i:s'),
                 'user_id' => $user->user_id
             ]);
-
-            return [
-                'status' => 'success',
-                'message' => 'Password reset successfully.'
-            ];
+            if ($result) {
+                // Log the password reset action
+                $log = new auditLog([
+                    'user_id' => $user->user_id,
+                    'action' => 'reset_password',
+                    'action_date' => date('Y-m-d H:i:s'),
+                    'description' => "User password was reset"
+                ]);
+                $log->saveAuditLog();
+            }
+            return $result
+                ? ['status' => 'success', 'message' => 'Password reset successfully']
+                : ['status' => 'error', 'message' => 'Failed to reset password'];
         }
 
         return [
@@ -359,9 +425,17 @@ class users extends DatabaseObject
 
     public function userDelete()
     {
-        $sql = "DELETE FROM " . static::$table_name . " WHERE user_id = :user_id LIMIT 1";
+         $sql = "DELETE FROM " . static::$table_name . " WHERE user_id = :user_id LIMIT 1";
         $stmt = self::executeQuery($sql, ['user_id' => $this->user_id]);
-
+        if ($stmt){
+            $log = new auditLog([
+                'user_id' => $this->user_id,
+                'action' => 'delete_user',
+                'action_date' => date('Y-m-d H:i:s'),
+                'description' => "User was deleted"
+            ]);
+            $log->saveAuditLog();
+        }
         return $stmt
             ? ['status' => 'success', 'message' => 'User permanently deleted']
             : ['status' => 'error', 'message' => 'Failed to delete user'];

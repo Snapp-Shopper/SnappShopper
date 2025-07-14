@@ -14,6 +14,8 @@ class shipping extends DatabaseObject
         'shipping_date',
         'shipping_status',
         'tracking_number',
+        'estimated_delivery_start_date',
+        'estimated_delivery_end_date',
         'created_at'
     ];
 
@@ -24,6 +26,8 @@ class shipping extends DatabaseObject
     public $shipping_date;
     public $shipping_status;
     public $tracking_number;
+    public $estimated_delivery_start_date;
+    public $estimated_delivery_end_date;
     public $created_at;
 
     // Constructor
@@ -35,6 +39,8 @@ class shipping extends DatabaseObject
         $this->shipping_date = $args['shipping_date'] ?? null;
         $this->shipping_status = $args['shipping_status'] ?? 'Pending';
         $this->tracking_number = $args['tracking_number'] ?? '';
+        $this->estimated_delivery_start_date = $args['estimated_delivery_start_date'] ?? null;
+        $this->estimated_delivery_end_date = $args['estimated_delivery_end_date'] ?? null;
         $this->created_at = $args['created_at'] ?? null;
     }
 
@@ -46,7 +52,10 @@ class shipping extends DatabaseObject
         if (!empty($errors)) {
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
-
+        // Set created_at to current timestamp if not set
+        if (is_null($this->created_at)) {       
+            $this->created_at = date('Y-m-d H:i:s');
+        }
         $saveQuery = $this->save();
 
         return $saveQuery
@@ -102,6 +111,10 @@ class shipping extends DatabaseObject
             $this->errors[] = "Shipping status must be one of: Pending, Shipped, Delivered.";
         }
 
+        if (empty($this->estimated_delivery_start) || empty($this->estimated_delivery_end)) {
+            $this->errors[] = "Estimated delivery range is required.";
+        }
+
         return $this->errors;
     }
 
@@ -109,6 +122,16 @@ class shipping extends DatabaseObject
     public function getAddressDetails()
     {
         return Address::findAddressesByUserId($this->address_id);
+    }
+
+    // Helper function to retrieve order information for shipping
+    public static function findPendingWithoutTracking()
+    {
+        $sql = "SELECT * FROM " . static::$table_name . " WHERE shipping_status = 'Pending' AND (tracking_number IS NULL OR tracking_number = '')";
+        $stmt = self::executeQuery($sql);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map([static::class, 'instantiate'], $results);
     }
 }
 

@@ -44,7 +44,7 @@
  */
 
 require_once '../../initialize.php'; // Initialization
-require_once '../../vendor/autoload.php'; // Google SDK
+require_once '../../../vendor/autoload.php'; // Google SDK
 
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
