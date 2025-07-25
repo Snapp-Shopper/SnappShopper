@@ -1,8 +1,20 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # Crucial for proxying to a backend with virtual hosts (like yours)
+  ProxyPreserveHost On
+
+  # API Proxy Configuration
+  # This proxies requests from /api/(.*) to your backend API.
+  RewriteRule ^api/(.*)$ https://test.api.snappshopper.com/api/routes/$1 [P,L]
+
+  # React Router History Mode
+  # This serves index.html for all non-file/non-directory requests
+  # that are NOT for the /api path.
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/api/.*$
   RewriteRule . /index.html [L]
 </IfModule>

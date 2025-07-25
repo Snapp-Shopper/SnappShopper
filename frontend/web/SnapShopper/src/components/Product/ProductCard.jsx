@@ -85,10 +85,11 @@ const ProductCard = ({ product, isDiscounted = false }) => {
             isHovered ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
-          <button className="flex items-center space-x-2 bg-white/95 backdrop-blur-sm text-blue-600 px-4 py-2 rounded-lg shadow-lg hover:bg-white transition-all duration-300 hover:scale-105 active:scale-95">
+          <Link to={"/product/view"}
+          className="flex items-center space-x-2 bg-white/95 backdrop-blur-sm text-blue-600 px-4 py-2 rounded-lg shadow-lg hover:bg-white transition-all duration-300 hover:scale-105 active:scale-95">
             <LuEye className="w-4 h-4" />
             <span className="text-sm font-medium">Quick View</span>
-          </button>
+          </Link>
 
           <AddToCartButton product={product} size="md" />
         </div>

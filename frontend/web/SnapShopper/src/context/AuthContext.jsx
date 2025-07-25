@@ -70,6 +70,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("authToken", token);
 
         await syncCartToAPI(); // Sync local cart with API
+        console.log(response);
         return response.data;
       }
     } catch (error) {

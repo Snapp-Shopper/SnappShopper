@@ -11,11 +11,6 @@ export default defineConfig({
         changeOrigin: true,
         //rewrite: (path) => `/api/routes${path.replace(/^\/api/, '')}`,
         rewrite: (path) => path.replace(/^\/api/, '/api/routes'),
-        //  rewrite: (path) => {
-        //   console.log('Rewriting path:', path);
-        //   console.log(path.replace(/^\/api/, '/api/routes'))
-        //   return path.replace(/^\/api/, '/api/routes');
-        // },
         logLevel: "debug",
       },
     },

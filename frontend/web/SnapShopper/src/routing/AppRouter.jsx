@@ -18,6 +18,7 @@ import UserCart from "../components/profile/UserCart";
 import UserFavorites from "../components/profile/UserFavorites";
 import UserPaymentMethods from "../components/profile/UserPaymentMethods";
 import UserBrowsingHistory from "../components/profile/UserBrowsingHistory";
+import ProductDetails from "../pages/ProductDetails";
 
 export const AppRouter = () => {
   return (
@@ -27,10 +28,8 @@ export const AppRouter = () => {
         <Route path="account/registration" element={<Registration />} />
         <Route path="account/forgot-password" element={<ForgotPassword />} />
         <Route path="account/reset-password" element={<ResetPassword />} />
-        <Route
-          path="account/email-verification"
-          element={<EmailVerification />}
-        />
+        <Route path="account/email-verification" element={<EmailVerification />} />
+        <Route path="product/view" element={<ProductDetails />} />
 
         {/* <Route path="account/verification-success" element={<VerificationSuccess />} /> */}
         <Route index element={<Home />} />

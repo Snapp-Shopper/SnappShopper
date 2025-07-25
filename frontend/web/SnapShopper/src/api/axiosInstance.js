@@ -1,13 +1,12 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-
 //const BASE_URL = "https://test.api.snappshopper.com/api/routes";
 
-const BASE_URL = "/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const api = axios.create({
-    baseURL: BASE_URL,
+    baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -17,8 +16,6 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const token = sessionStorage.getItem('authToken');
-
-        // Attach token if it exists (but don't force it)
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -39,8 +36,6 @@ api.interceptors.response.use(
             sessionStorage.removeItem('authToken'); // Clear token on 401
             sessionStorage.removeItem('authUser');
             window.location.href = '/login'; // Redirect to login
-        } else {
-           // toast.error(errorMessage);
         }
 
         return Promise.reject(error);
