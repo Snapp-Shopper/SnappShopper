@@ -23,11 +23,11 @@ const useAddressBook = () => {
     setIsLoading(true);
     try {
       const response = await AddressService.getAllUserAddresses(userId);
-      // Assuming response.data.data contains the array of addresses
       setAddresses(response.data?.data || []);
     } catch (error) {
       console.error("Failed to fetch addresses:", error);
       toast.error("Failed to fetch addresses.");
+      setAddresses([]); // Clear addresses on error
     } finally {
       setIsLoading(false);
     }
@@ -36,6 +36,8 @@ const useAddressBook = () => {
   useEffect(() => {
     if (userId) {
       fetchAddresses();
+    } else {
+      setAddresses([]);
     }
   }, [userId, fetchAddresses]);
 
@@ -62,10 +64,11 @@ const useAddressBook = () => {
     try {
       await AddressService.deleteAddress(Number(addressToDeleteId));
       // Optimistically update UI or re-fetch for accuracy
-      setAddresses((prev) =>
-        prev.filter((addr) => addr.id !== addressToDeleteId)
-      );
+      // setAddresses((prev) =>
+      //   prev.filter((addr) => addr.address_id !== addressToDeleteId)
+      // );
       toast.success("Address deleted successfully!");
+      await fetchAddresses(); // Re-fetch addresses to ensure data consistency
     } catch (error) {
       console.error("Failed to delete address:", error);
       toast.error("Failed to delete address.");
@@ -73,7 +76,7 @@ const useAddressBook = () => {
       setIsLoading(false);
       setAddressToDeleteId(null); // Clear the ID after operation
     }
-  }, [addressToDeleteId, setIsLoading]);
+  }, [addressToDeleteId, setIsLoading, fetchAddresses]);
 
   const handleDeleteAddressCancel = useCallback(() => {
     setIsConfirmModalOpen(false);
@@ -86,13 +89,15 @@ const useAddressBook = () => {
       try {
         const response = await AddressService.setAsDedault(addressId);
         if (response.data.status === "success") {
-          setAddresses((prev) =>
-            prev.map((addr) => ({
-              ...addr,
-              is_default: addr.address_id === addressId,
-            }))
-          );
+          // setAddresses((prev) =>
+          //   prev.map((addr) => ({
+          //     ...addr,
+          //     is_default: addr.address_id === addressId,
+          //   }))
+          // );
           toast.success("Default address updated!");
+          await fetchAddresses();
+          return;
         } else {
           toast.error(
             response.data.message || "Failed to update default address."
@@ -105,7 +110,7 @@ const useAddressBook = () => {
         setIsLoading(false);
       }
     },
-    [setIsLoading]
+    [setIsLoading, fetchAddresses]
   );
 
   const handleFormSuccess = useCallback(async () => {

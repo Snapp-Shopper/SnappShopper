@@ -9,6 +9,7 @@ const AddressCard = ({
   onEdit,
   onDelete,
 }) => {
+
   return (
     <div className={`relative bg-white rounded-xl shadow-sm border-2 transition-all duration-300 hover:shadow-md group ${isDefault
       ? 'border-green-200 bg-gradient-to-br from-green-50 to-emerald-50'
@@ -97,7 +98,7 @@ const AddressCard = ({
           {!isDefault ? (
             <button
               onClick={onSetDefault}
-              className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+              className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200 cursor-pointer"
             >
               <FiCheck className="w-4 h-4" />
               <span>Set as Default</span>
@@ -110,14 +111,14 @@ const AddressCard = ({
           )}
 
           {/* Address Type Badge */}
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <span className={`px-3 py-1 rounded-full text-xs font-medium ${isDefault
               ? 'bg-green-100 text-green-700'
               : 'bg-gray-100 text-gray-600'
               }`}>
               {address.type || 'Home'}
             </span>
-          </div>
+          </div> */}
         </div>
       </div>
 

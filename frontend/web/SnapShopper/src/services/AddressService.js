@@ -5,7 +5,6 @@ class AddressService {
     return await api.post(`/address/delete.php`, { address_id });
   }
 
-
   static async getAllUserAddresses(user_id) {
     return await api.get(`/address/get.php?user_id=${user_id}`);
   }

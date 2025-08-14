@@ -15,11 +15,10 @@ const api = axios.create({
 // Request Interceptor: Attach Token If Available
 api.interceptors.request.use(
     (config) => {
-        const token = sessionStorage.getItem('authToken');
+        const token = localStorage.getItem('authToken');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-
         return config;
     },
     (error) => Promise.reject(error)
@@ -29,7 +28,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        const errorMessage = error.response?.data?.message || "An unexpected error occurred."; 
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred.";
 
         if (error.response && error.response?.status === 401) {
             toast.error("Unauthorized. Please log in again.");

@@ -11,7 +11,6 @@ const useAddressForm = ({ initialAddress, onSuccess, onClose }) => {
   const userId = authUser?.user_id;
 
   const [formData, setFormData] = useState({
-    //name: "",
     address_line1: "",
     address_line2: "",
     city: "",
@@ -27,7 +26,6 @@ const useAddressForm = ({ initialAddress, onSuccess, onClose }) => {
   useEffect(() => {
     if (initialAddress) {
       setFormData({
-        // name: initialAddress.name || "", // Re-added name
         address_line1: initialAddress.address_line1 || "",
         address_line2: initialAddress.address_line2 || "",
         city: initialAddress.city || "",
@@ -36,6 +34,7 @@ const useAddressForm = ({ initialAddress, onSuccess, onClose }) => {
         phone: initialAddress.phone || "",
         country: initialAddress.country || "",
         is_default: initialAddress.is_default || false,
+        address_id: initialAddress.address_id || null, // Include address_id for updates
       });
     } else {
       // Reset form for adding new address
@@ -123,33 +122,24 @@ const useAddressForm = ({ initialAddress, onSuccess, onClose }) => {
         let response;
         if (initialAddress) {
           response = await AddressService.updateAddress(
-            initialAddress.id,
+           // initialAddress.address_id,
             addressData
           );
-          if (response.data.status === "success") {
-            toast.success("Address updated successfully!");
-          } else {
-            toast.error(response.data.message || "Failed to update address");
-            return;
-          }
         } else {
-          response = await AddressService.saveAddress(addressData);
-          if (response.data.status === "success") {
-            toast.success("Address added successfully!");
-          } else {
-            toast.error(response.data.message || "Failed to add address");
-            return;
-          }
+          response = await AddressService.saveAddress(addressData); 
         }
 
-        onSuccess(); // Trigger parent's success callback (which will re-fetch addresses and close form)
+        if (response.data.status === "success") {
+           toast.success(`${initialAddress ? "Address updated" : "Address added"} successfully!`);
+          onSuccess();
+        } else {
+          toast.error(`Failed to ${initialAddress ? "update" : "add"} address`);
+        }
       } catch (error) {
         console.error("Error saving address:", error);
         toast.error(
-          error.response?.data?.message ||
-            `Failed to ${
-              initialAddress ? "update" : "add"
-            } address. Please try again.`
+          //error.response?.data?.message ||
+          `Failed to ${initialAddress ? "update" : "add"} address. Please try again.`
         );
       } finally {
         setIsLoading(false);

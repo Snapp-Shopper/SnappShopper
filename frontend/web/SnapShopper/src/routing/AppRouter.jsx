@@ -54,6 +54,8 @@ export const AppRouter = () => {
           <Route path="*" element={<PersonalInfo />} />
         </Route>
 
+        
+
       </Route>
     </Routes>
   );

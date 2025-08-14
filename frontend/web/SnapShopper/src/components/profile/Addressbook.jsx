@@ -2,7 +2,7 @@ import AddressCard from "./AddressCard";
 import { LuArrowLeft, LuMapPin, LuMapPinOff, LuPlus } from "react-icons/lu";
 import AddressForm from "./AddressForm";
 import useAddressBook from "../../hooks/useAddressbook";
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from "../ConfirmationModal";
 
 const Addressbook = () => {
   const {
@@ -64,7 +64,7 @@ const Addressbook = () => {
               <LuMapPin className="w-5 h-5 mr-2 text-blue-600" />
             )}
             {isFormOpen
-              ? addressToDeleteId
+              ? editingAddress
                 ? "Edit Address"
                 : "Add New Address"
               : "Address Book"}
@@ -82,19 +82,20 @@ const Addressbook = () => {
         </div>
 
         <div>
-          {isLoading ? (
+          {isLoading && addresses.length === 0 && !isFormOpen ? (
             // Loading state
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               <span className="ml-3 text-gray-600">Loading addresses...</span>
             </div>
-          ) : isFormOpen || addresses.length === 0 ? (
+          ) : isFormOpen ? (
             <AddressForm
-              isOpen={true}
               onClose={handleFormClose}
-              address={editingAddress}
-              onSuccess={handleFormSuccess}
+              address={editingAddress} 
+              onSuccess={handleFormSuccess} 
             />
+          ) : addresses.length === 0 ? (
+            <EmptyAddressState onAddClick={handleAddAddress} />
           ) : (
             <div className="space-y-4">
               {addresses.map((address) => (

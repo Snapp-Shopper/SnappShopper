@@ -48,10 +48,8 @@ export const AuthProvider = ({ children }) => {
         setAuthUser(null);
         setAuthToken(null);
       }
-
       setIsAuthLoading(false); // Done loading
     };
-
     loadStoredAuth();
   }, []);
 
@@ -181,11 +179,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    // if (!authUser || !authToken) {
-    //     console.warn("User is already logged out.");
-    //     return false;
-    // }
-
     setIsLoading(true);
     try {
       localStorage.removeItem("authUser");
@@ -194,11 +187,6 @@ export const AuthProvider = ({ children }) => {
       setAuthUser(null);
       setAuthToken(null);
       toast.success("Logged out successfully");
-
-      // // Reload the page after a short delay to simulate the spinner
-      // setTimeout(() => {
-      //   window.location.href = "/home"; // Redirects to the home page
-      // }, 3000); // 3 seconds delay to show spinner
     } catch (error) {
       //console.error("Logout Failed:", error);
       toast.error("Logout Failed");

@@ -38,25 +38,7 @@ const AddressForm = ({
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="p-6 -mt-6 -mx-6 space-y-4">
-        {/* <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <LuUser className="w-4 h-4 inline mr-1" />
-            Full Name
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.name ? "border-red-500" : "border-gray-300"
-            }`}
-            placeholder="Enter your full name"
-          />
-          {errors.name && (
-            <p className="text-red-500 text-sm mt-1">{errors.name}</p>
-          )}
-        </div> */}
+       
         {/* Street Address / Address Line 1 */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
