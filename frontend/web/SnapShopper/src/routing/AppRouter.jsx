@@ -1,4 +1,3 @@
-import React from "react";
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "../components/Layout/MainLayout";
 import EmailVerification from "../pages/EmailVerification";
@@ -19,6 +18,14 @@ import UserFavorites from "../components/profile/UserFavorites";
 import UserPaymentMethods from "../components/profile/UserPaymentMethods";
 import UserBrowsingHistory from "../components/profile/UserBrowsingHistory";
 import ProductDetails from "../pages/ProductDetails";
+import VendorAuthPage from "../pages/Vendor/VendorAuthPage";
+import VendorDashBoard from "../pages/Vendor/VendorDashBoard";
+import VendorLayout from "../components/Layout/VendorLayout";
+import VendorProducts from "../pages/Vendor/VendorProducts";
+import VendorProductForm from "../pages/Vendor/VendorProductForm";
+import VendorOrders from "../pages/Vendor/VendorOrders";
+import VendorAnalytics from "../pages/Vendor/VendorAnalytics";
+import VendorSettings from "../pages/Vendor/VendorSettings";
 
 export const AppRouter = () => {
   return (
@@ -53,9 +60,20 @@ export const AppRouter = () => {
           {/* Fallback for unknown sub-paths under /account/profile */}
           <Route path="*" element={<PersonalInfo />} />
         </Route>
+      </Route>
 
-        
-
+      {/* Vendor Routes */}
+      <Route path="vendor/auth" element={<VendorAuthPage />} />
+      <Route path="vendor" element={<VendorLayout />}>
+        <Route index element={<VendorDashBoard />} />
+        <Route path="dashboard" element={<VendorDashBoard />} />
+        <Route path="products" element={<VendorProducts />} />
+        <Route path="products/add" element={<VendorProductForm mode="add" />} />
+        <Route path="products/edit/:id" element={<VendorProductForm mode="edit" />} />
+        <Route path="products/view/:id" element={<VendorProductForm mode="view" />} />
+        <Route path="orders" element={<VendorOrders />} />
+        <Route path="analytics" element={<VendorAnalytics />} />
+        <Route path="settings" element={<VendorSettings />} />
       </Route>
     </Routes>
   );
