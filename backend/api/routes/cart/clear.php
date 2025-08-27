@@ -44,10 +44,6 @@
 
 require_once '../../initialize.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: DELETE');
-header('Content-Type: application/json');
-
 $user_id = $_GET['user_id'] ?? null;
 
 if (!$user_id) {
@@ -69,6 +65,6 @@ if (!$cart) {
 }
 
 $items = $cart->getItemsInCart();
-$response = cart::clearCart($items);
+$response = cart::clearCart($items, $user_id);
 echo json_encode($response);
 exit;

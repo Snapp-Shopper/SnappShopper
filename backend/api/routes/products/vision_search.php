@@ -93,12 +93,25 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // === 1. Determine Input Source ===
 $imageData = null;
 $imageSourceType = null;
+$data = $_POST;
+if (empty($data)) {
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
+}
 
 if (isset($_FILES['search_image']) && $_FILES['search_image']['error'] === UPLOAD_ERR_OK) {
     $imageData = file_get_contents($_FILES['search_image']['tmp_name']);
     $imageSourceType = 'upload';
-} elseif (!empty($_POST['image_url']) && filter_var($_POST['image_url'], FILTER_VALIDATE_URL)) {
-    $imageData = @file_get_contents($_POST['image_url']);
+} elseif (!empty($data['image_url']) && filter_var($data['image_url'], FILTER_VALIDATE_URL)) {
+    $imageData = @file_get_contents($data['image_url']);
     if ($imageData !== false) {
         $imageSourceType = 'url';
     }

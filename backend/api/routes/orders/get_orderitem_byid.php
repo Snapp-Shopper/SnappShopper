@@ -20,7 +20,6 @@
  */
 require_once '../../initialize.php';
 
-header('Content-Type: application/json');
 $id = $_GET['order_item_id'] ?? null;
 
 if (!$id) {

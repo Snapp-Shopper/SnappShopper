@@ -28,9 +28,20 @@
  *         description: Validation error
  */
 require_once '../../initialize.php';
-header('Content-Type: application/json');
 
-$data = json_decode(file_get_contents('php://input'), true);
+$data = $_POST;
+if (empty($data)) {
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
+}
 if (empty($data)) {
     echo json_encode(['status' => 'error', 'message' => 'No data received']);
     exit;
@@ -43,12 +54,6 @@ $inventory->last_updated = date('Y-m-d H:i:s');
 
 $response = $inventory->saveInventory();
 if ($response['status'] === 'success') {
-    $log = new auditLog([
-        'user_id' => $_POST['user_id'] ?? 0, // or get from token/session if available
-        'action' => 'inventory_save',
-        'action_date' => date('Y-m-d H:i:s'),
-        'description' => "Inventory saved for product_id {$inventory->product_id}"
-    ]);
-    $log->saveAuditLog();
+    auditLog::audit($data["user_id"] ?? 0, 'inventory_save', "Saved inventory for product ID {$data['product_id']}", $data);
 }
 echo json_encode($response);

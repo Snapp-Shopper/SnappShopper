@@ -76,8 +76,6 @@
 // Description: This endpoint sets the default address based on the address ID provided.
 require_once '../../initialize.php'; // Include the initialization file
 
-require_once '../../src/header.php'; // Include the header model
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Try to get form-data first
@@ -109,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Proceed with setting default address
         
     // Find address by ID
-    $address = address::findAddressById($data['address_id']);
+    $address = address::getById($data['address_id']);
     // Check if address exists
     if (!$address) {
         echo json_encode(['status' => 'error', 'message' => 'Address not found']);
@@ -117,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     
     // Set it as default
-    $address->setDefaultAddress();
+    $address->setAsDefault();
     
     echo json_encode([
         'status' => 'success',

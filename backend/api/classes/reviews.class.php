@@ -46,7 +46,9 @@ class reviews extends DatabaseObject
         if (!empty($errors)) {
             return ['status' => 'error', 'message' => 'Validation failed', 'errors' => $errors];
         }
-
+        // Set created_at and updated_at to current timestamp if not set
+        $this->created_at = date('Y-m-d H:i:s');
+        $this->updated_at = date('Y-m-d H:i:s');
         $saveQuery = $this->save();
 
         return $saveQuery
@@ -74,12 +76,61 @@ class reviews extends DatabaseObject
         return array_map([static::class, 'instantiate'], $results);
     }
 
+    // Retrieve reviews by product ID and user ID
+    static public function findReviewByUserAndProduct($user_id, $product_id)
+    {
+        $sql = "SELECT * FROM " . static::$table_name . " WHERE user_id = :user_id AND product_id = :product_id LIMIT 1";
+        $stmt = self::executeQuery($sql, ['user_id' => $user_id, 'product_id' => $product_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result ? new static($result) : null;
+    }
+
     // Update review text or rating
     public function updateReview($rating, $review_text)
     {
         $this->rating = $rating;
         $this->review_text = $review_text;
         return $this->saveReview();
+    }
+
+    public static function hasReviewed($user_id, $product_id)
+    {
+        $sql = "SELECT COUNT(*) FROM " . static::$table_name . " WHERE user_id = :user_id AND product_id = :product_id";
+        $stmt = self::executeQuery($sql, ['user_id' => $user_id, 'product_id' => $product_id]);
+        return $stmt->fetchColumn() > 0;
+    }
+
+    public static function getAverageRating($product_id)
+    {
+        $sql = "SELECT AVG(rating) as avg_rating FROM " . static::$table_name . " WHERE product_id = :product_id";
+        $stmt = self::executeQuery($sql, ['product_id' => $product_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return round($result['avg_rating'], 1); // e.g., 4.3
+    }
+
+    public static function getSummaryByProductId($product_id)
+    {
+        $sql = "SELECT COUNT(*) as total_reviews, AVG(rating) as average_rating 
+                FROM " . static::$table_name . " 
+                WHERE product_id = :product_id";
+        
+        $stmt = self::executeQuery($sql, ['product_id' => $product_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return [
+            'total_reviews' => (int) $result['total_reviews'],
+            'average_rating' => round((float) $result['average_rating'], 1)
+        ];
+    }
+
+
+    // Delete a review by ID
+    public static function deleteReviewById($review_id)
+    {
+        $sql = "DELETE FROM " . static::$table_name . " WHERE review_id = :review_id";
+        $stmt = self::executeQuery($sql, ['review_id' => $review_id]);
+        return $stmt->rowCount() > 0;
     }
 
     // Validation for review fields

@@ -52,10 +52,6 @@
 
 require_once '../../initialize.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Content-Type: application/json');
-
 // Allow only POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode([
@@ -69,16 +65,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $data = $_POST;
 
 if (empty($data)) {
-    $rawData = file_get_contents('php://input');
-    $data = json_decode($rawData, true);
-}
-
-if (empty($data)) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'No valid data received.'
-    ]);
-    exit;
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
 }
 
 if (empty($data['email'])) {

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/deviceToken.class.php';
+
 class notification extends DatabaseObject
 {
     // Table name
@@ -43,6 +45,18 @@ class notification extends DatabaseObject
         }
 
         $saved = $this->save();
+        if ($saved && $this->user_id) {
+            // Optionally send push notification
+            $deviceToken = DeviceToken::getTokenByUserId($this->user_id);
+            if ($deviceToken) {
+                PushNotifier::sendToDevice(
+                    $deviceToken,
+                    "New Notification",
+                    $this->message,
+                    ['type' => $this->type, 'notification_id' => $this->notification_id]
+                );
+            }
+        }
         return $saved
             ? ['status' => 'success', 'message' => 'Notification saved successfully']
             : ['status' => 'error', 'message' => 'Failed to save notification'];

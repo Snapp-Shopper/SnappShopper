@@ -55,9 +55,6 @@
 
 require_once '../../initialize.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
-
 $categoryId = $_GET['id'] ?? null;
 
 if ($categoryId) {

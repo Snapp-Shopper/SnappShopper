@@ -67,11 +67,19 @@
 
 require_once '../../initialize.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: PUT');
-header('Content-Type: application/json');
-
-$data = json_decode(file_get_contents('php://input'), true);
+$data = $_POST;
+if (empty($data)) {
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
+}
 
 $user_id = $data['user_id'] ?? null;
 $product_id = $data['product_id'] ?? null;

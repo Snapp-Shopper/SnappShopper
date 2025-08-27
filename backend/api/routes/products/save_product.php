@@ -3,7 +3,7 @@
  * @openapi
  * /products/save_product.php:
  *   post:
- *     summary: Save or update a product with optional multiple image uploads
+ *     summary: Save or update a product with optional multiple image uploads and vendor association
  *     tags:
  *       - Products
  *     requestBody:
@@ -16,6 +16,9 @@
  *               product_id:
  *                 type: integer
  *                 description: Product ID for update; omit or null for new product
+ *               vendor_id:
+ *                 type: integer
+ *                 description: Vendor ID to associate with product
  *               name:
  *                 type: string
  *                 description: Product name
@@ -34,7 +37,7 @@
  *               - name
  *     responses:
  *       200:
- *         description: Product saved successfully with image upload results
+ *         description: Product saved successfully with image and vendor association results
  *         content:
  *           application/json:
  *             schema:
@@ -45,6 +48,8 @@
  *                 message:
  *                   type: string
  *                 product_id:
+ *                   type: integer
+ *                 vendor_id:
  *                   type: integer
  *                 images:
  *                   type: array
@@ -61,10 +66,6 @@ require_once '../../initialize.php';
 require_once '../../../vendor/autoload.php';
 require_once '../../helpers/ImageHelper.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Content-Type: application/json');
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
     exit;
@@ -73,8 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Support JSON or form-data POST
 $data = $_POST;
 if (empty($data)) {
-    $raw = file_get_contents('php://input');
-    $data = json_decode($raw, true);
+    $rawInput = file_get_contents('php://input');
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        $data = fixBrokenJson($rawInput);
+    }
 }
 
 if (empty($data)) {
@@ -96,7 +103,18 @@ if ($productResult['status'] !== 'success') {
     exit;
 }
 
-// === Step 2: Handle multiple image uploads ===
+// === Step 2: Handle vendor association if vendor_id is provided ===
+$vendorResult = null;
+if (!empty($data['vendor_id'])) {
+    $productVendor = new productVendor([
+        'product_id' => $product->product_id,
+        'vendor_id'  => $data['vendor_id'],
+        'created_at' => date('Y-m-d H:i:s')
+    ]);
+    $vendorResult = $productVendor->saveProductVendor();
+}
+
+// === Step 3: Handle multiple image uploads ===
 $uploadedImages = [];
 $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 $maxSize = 5 * 1024 * 1024; // 5MB
@@ -136,8 +154,8 @@ if (!empty($_FILES['image']) && is_array($_FILES['image']['name'])) {
             $relativePath = str_replace('../../', '', $destination);
             $image = new productImage([
                 'product_id' => $product->product_id,
-                'image_url' => $relativePath,
-                'alt_text' => $product->name
+                'image_url'  => $relativePath,
+                'alt_text'   => $product->name
             ]);
             $imageResult = $image->saveImage();
             $uploadedImages[] = $imageResult;
@@ -148,10 +166,12 @@ if (!empty($_FILES['image']) && is_array($_FILES['image']['name'])) {
 }
 
 $response = [
-    'status' => 'success',
-    'message' => 'Product saved successfully',
+    'status'     => 'success',
+    'message'    => 'Product saved successfully',
     'product_id' => $product->product_id,
-    'images' => $uploadedImages
+    'vendor_id'  => $data['vendor_id'] ?? null,
+    'vendor'     => $vendorResult,
+    'images'     => $uploadedImages
 ];
 
 echo json_encode($response);

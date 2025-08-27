@@ -85,8 +85,6 @@
 // Description: This endpoint saves addresses for a user, and can set to default address if provided.
 require_once '../../initialize.php'; // Include the initialization file
 
-require_once '../../src/header.php'; // Include the header model
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Try to get form-data first
@@ -127,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // If address is to be set as default
     if ($response['status'] === 'success' && $address->is_default) {
-        $address->setDefaultAddress(); // Will automatically update others to non-default
+        $address->setAsDefault(); // Will automatically update others to non-default
     }
 
     // Return response

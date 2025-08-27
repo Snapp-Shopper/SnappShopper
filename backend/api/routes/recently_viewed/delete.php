@@ -24,7 +24,6 @@
  *         description: Missing parameters
  */
 require_once '../../initialize.php';
-header('Content-Type: application/json');
 
 $user_id = $_GET['user_id'] ?? null;
 $product_id = $_GET['product_id'] ?? null;

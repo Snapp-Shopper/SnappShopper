@@ -51,12 +51,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Get form-data or JSON body
 $data = $_POST;
-
 if (empty($data)) {
-    $rawData = file_get_contents('php://input');
-    $data = json_decode($rawData, true);
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
 }
-
 // Check inventory BEFORE saving the order
 if (!empty($data['order_items'])) {
     foreach ($data['order_items'] as $itemData) {

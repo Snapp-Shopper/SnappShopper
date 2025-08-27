@@ -64,26 +64,31 @@
 require_once '../../initialize.php'; // Include the initialization file
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    if ($_GET['action'] == 'getDefault' && $_GET['user_id']) {
-        # code...
-        $address = address::findDefaultAddressByUserId($_GET['user_id']);    
-        
-        if ($address) {
-            echo json_encode(['success' => true, 'data' => $address]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'No data found']);
-        }
+    $user_id = $_GET['user_id'] ?? null;
+    $action = $_GET['action'] ?? null;
+
+    if (!$user_id) {
+        echo json_encode(['success' => false, 'message' => 'user_id parameter is required']);
+        exit;
     }
-    else if ($_GET['user_id']) {
-        # code...
-        $address = address::findAddressesByUserId($_GET['user_id']);
+
+    if ($action === 'getDefault') {
+        $address = address::getDefaultByUserId($user_id);
 
         if ($address) {
             echo json_encode(['success' => true, 'data' => $address]);
         } else {
             echo json_encode(['success' => false, 'message' => 'No data found']);
         }
+    } else {
+        $addresses = address::getByUserId($user_id);
+
+        if ($addresses) {
+            echo json_encode(['success' => true, 'data' => $addresses]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No data found']);
+        }
     }
-    
 }
+
 ?>

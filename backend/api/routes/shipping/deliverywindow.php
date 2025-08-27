@@ -66,11 +66,23 @@
 
 require_once '../../initialize.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
-
 // Parse request
-$input = json_decode(file_get_contents("php://input"), true);
+
+
+$data = $_POST;
+if (empty($data)) {
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
+}
+
 $user_id = $input['user_id'] ?? null;
 $address_id = $input['address_id'] ?? null;
 $order_items = $input['items'] ?? [];
@@ -84,7 +96,7 @@ if (!$user_id || !$address_id || empty($order_items)) {
 }
 
 // Load shipping address
-$shipping_address = address::findAddressById($address_id);
+$shipping_address = address::getById($address_id);
 if (!$shipping_address) {
     echo json_encode([
         'status' => 'error',

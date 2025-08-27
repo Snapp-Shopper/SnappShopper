@@ -28,9 +28,20 @@
  *         description: Invalid input
  */
 require_once '../../initialize.php';
-header('Content-Type: application/json');
 
-$data = json_decode(file_get_contents('php://input'), true);
+$data = $_POST;
+if (empty($data)) {
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
+}
 $product_id = $data['product_id'] ?? null;
 $change = $data['change'] ?? 0;
 
@@ -47,13 +58,7 @@ if (!$inventory) {
 
 $success = $inventory->adjustQuantity($change);
 if ($success) {
-    $log = new auditLog([
-        'user_id' => $_POST['user_id'] ?? 0, // or get from token/session if available
-        'action' => 'inventory_adjust',
-        'action_date' => date('Y-m-d H:i:s'),
-        'description' => "Adjusted inventory for product_id {$product_id} by {$change}"
-    ]);
-    $log->saveAuditLog();
+    auditLog::audit($data["user_id"] ?? 0, 'inventory_adjust', "Adjusted inventory for product ID $product_id by $change", $change);
 }
 
 echo json_encode($success

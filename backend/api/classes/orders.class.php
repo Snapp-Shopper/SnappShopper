@@ -60,13 +60,7 @@ class orders extends DatabaseObject
         $saveQuery = $this->save();
         if ($saveQuery) {
             // Log the order creation or update
-            $log = new auditLog([
-                'user_id' => $this->user_id,
-                'action' => $this->order_id ? 'update_order' : 'create_order',
-                'action_date' => date('Y-m-d H:i:s'),
-                'description' => "Order ID {$this->order_id} saved with status {$this->status}"
-            ]);
-            $log->saveAuditLog();
+            auditLog::audit($this->user_id, $this->order_id ? 'update_order' : 'create_order', "Order ID {$this->order_id} " . ($this->order_id ? 'updated' : 'created'));
         }
         return $saveQuery
             ? ['status' => 'success', 'message' => 'Order saved successfully']
@@ -107,15 +101,20 @@ class orders extends DatabaseObject
         $this->status = $new_status;
         $this->updated_at = date('Y-m-d H:i:s');
         if ($this->save()) {
-            $log = new auditLog([
-                'user_id' => $this->user_id,
-                'action' => 'update_order_status',
-                'action_date' => date('Y-m-d H:i:s'),
-                'description' => "Order ID {$this->order_id} status updated to {$this->status}"
-            ]);
-            $log->saveAuditLog();
+            auditLog::audit($this->user_id, 'update_order_status', "Order ID {$this->order_id} status updated to {$this->status}");
             // Optionally, send a notification to the user
             notification::notify($this->user_id, "Your order status has been updated to {$$this->status}.", 'Order');
+            // Optionally, send a push notification
+            $deviceToken = DeviceToken::getTokenByUserId($this->user_id);
+            if ($deviceToken) {
+                PushNotifier::sendToDevice(
+                    $deviceToken,
+                    "Order Status Update",
+                    "Your order status has been updated to {$this->status}.",
+                    ['order_id' => $this->order_id, 'status' => $this->status]
+                );
+            }
+            // Return success response
             return ['status' => 'success', 'message' => 'Order status updated successfully'];
         }
 

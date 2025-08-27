@@ -82,8 +82,16 @@ $data = $_POST;
 
 // If form-data is empty, try JSON input
 if (empty($data)) {
-    $rawData = file_get_contents('php://input');
-    $data = json_decode($rawData, true);
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
 }
 
 if (empty($data)) {

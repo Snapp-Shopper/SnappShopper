@@ -794,95 +794,6 @@
                 }
             }
         },
-        "/auditlogs.php": {
-            "get": {
-                "summary": "Retrieve audit logs",
-                "description": "Fetch audit logs either by log ID, user ID, or all logs for admin.",
-                "tags": [
-                    "Audit Logs"
-                ],
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "log_id",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "description": "Retrieve a specific log by ID"
-                    },
-                    {
-                        "in": "query",
-                        "name": "user_id",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "description": "Retrieve logs for a specific user"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Audit logs retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "oneOf": [
-                                        {
-                                            "type": "object",
-                                            "properties": {
-                                                "status": {
-                                                    "type": "string",
-                                                    "example": "success"
-                                                },
-                                                "logs": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        {
-                                            "type": "object",
-                                            "properties": {
-                                                "status": {
-                                                    "type": "string",
-                                                    "example": "success"
-                                                },
-                                                "log": {
-                                                    "type": "object"
-                                                }
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Log not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Log not found"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/cart/add.php": {
             "post": {
                 "summary": "Add a product to the user's cart",
@@ -1564,6 +1475,462 @@
                 }
             }
         },
+        "/auditlogs.php": {
+            "get": {
+                "summary": "Retrieve audit logs",
+                "description": "Fetch audit logs either by log ID, user ID, or all logs for admin.",
+                "tags": [
+                    "Audit Logs"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "log_id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Retrieve a specific log by ID"
+                    },
+                    {
+                        "in": "query",
+                        "name": "user_id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Retrieve logs for a specific user"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Audit logs retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "success"
+                                                },
+                                                "logs": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "success"
+                                                },
+                                                "log": {
+                                                    "type": "object"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Log not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Log not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/discounts/apply-discount.php": {
+            "post": {
+                "summary": "Apply a discount code to an order amount",
+                "tags": [
+                    "Discounts"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "code",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "description": "Discount code to apply"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "description": "Total order amount before discount"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Discount applied successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "original_amount": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 5000
+                                        },
+                                        "discount_percentage": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 10
+                                        },
+                                        "discounted_amount": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 4500
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or expired discount code",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid discount code"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/inventory/adjust.php": {
+            "patch": {
+                "summary": "Adjust inventory quantity for a product",
+                "tags": [
+                    "Inventory"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "product_id",
+                                    "change"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer"
+                                    },
+                                    "change": {
+                                        "type": "number",
+                                        "description": "Quantity to add/subtract from available inventory"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Quantity adjusted"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "/inventory/all.php": {
+            "get": {
+                "summary": "Get all inventory records",
+                "tags": [
+                    "Inventory"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of inventory records"
+                    }
+                }
+            }
+        },
+        "/inventory/get.php": {
+            "get": {
+                "summary": "Get inventory details by product ID",
+                "tags": [
+                    "Inventory"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "product_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inventory retrieved"
+                    },
+                    "404": {
+                        "description": "Inventory not found"
+                    }
+                }
+            }
+        },
+        "/inventory/save.php": {
+            "post": {
+                "summary": "Create or update inventory record",
+                "tags": [
+                    "Inventory"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer"
+                                    },
+                                    "quantity_available": {
+                                        "type": "number"
+                                    },
+                                    "quantity_sold": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "product_id"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Inventory saved successfully"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/notifications/index.php": {
+            "get": {
+                "summary": "Get user notifications",
+                "tags": [
+                    "Notifications"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "user_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": false,
+                        "default": 20
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of user notifications"
+                    }
+                }
+            }
+        },
+        "/notifications/mark-all-seen.php": {
+            "post": {
+                "summary": "Mark all user notifications as seen",
+                "tags": [
+                    "Notifications"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Notifications marked as seen"
+                    }
+                }
+            }
+        },
+        "/notifications/register-device.php": {
+            "post": {
+                "summary": "Register device token for push notifications",
+                "description": "Stores the device token (from Firebase or other push provider) for a specific user to enable sending push notifications.",
+                "tags": [
+                    "Notifications"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id",
+                                    "device_token"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 101
+                                    },
+                                    "device_token": {
+                                        "type": "string",
+                                        "example": "fcm_token_abc123xyz"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Device token registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Device registered"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing user_id or device_token"
+                    }
+                }
+            }
+        },
+        "/notifications/send.php": {
+            "post": {
+                "summary": "Send a custom notification to user(s)",
+                "tags": [
+                    "Notifications"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "message"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "description": "ID of the user to send the notification to (optional if multiple_users is set)"
+                                    },
+                                    "multiple_users": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "description": "List of user IDs to notify"
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Notification(s) sent successfully"
+                    }
+                }
+            }
+        },
         "/orders/by_daterange.php": {
             "get": {
                 "summary": "Get orders within a date range",
@@ -1789,6 +2156,92 @@
                     },
                     "500": {
                         "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/orders/process-payment.php": {
+            "post": {
+                "summary": "Process payment and create the order after successful payment",
+                "tags": [
+                    "Orders"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id",
+                                    "total_amount",
+                                    "payment_method",
+                                    "payment_status",
+                                    "order_items"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "total_amount": {
+                                        "type": "number"
+                                    },
+                                    "discount_code": {
+                                        "type": "string"
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Credit Card",
+                                            "PayPal",
+                                            "Bank Transfer"
+                                        ]
+                                    },
+                                    "payment_status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    "address_id": {
+                                        "type": "integer"
+                                    },
+                                    "estimated_delivery_start_date": {
+                                        "type": "string"
+                                    },
+                                    "estimated_delivery_end_date": {
+                                        "type": "string"
+                                    },
+                                    "order_items": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "product_id",
+                                                "quantity",
+                                                "price_at_purchase"
+                                            ],
+                                            "properties": {
+                                                "product_id": {
+                                                    "type": "integer"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer"
+                                                },
+                                                "price_at_purchase": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Order and payment saved successfully"
                     }
                 }
             }
@@ -2400,6 +2853,162 @@
                 }
             }
         },
+        "/product_vendor/create.php": {
+            "post": {
+                "summary": "Create a new product vendor association",
+                "tags": [
+                    "ProductVendor"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "product_id",
+                                    "vendor_id"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer"
+                                    },
+                                    "vendor_id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product vendor association created successfully"
+                    },
+                    "400": {
+                        "description": "Invalid data provided"
+                    }
+                }
+            }
+        },
+        "/product_vendor/delete.php": {
+            "get": {
+                "summary": "Delete a product vendor association",
+                "tags": [
+                    "ProductVendor"
+                ],
+                "parameters": [
+                    {
+                        "name": "product_vendor_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product vendor association deleted successfully"
+                    },
+                    "400": {
+                        "description": "Invalid product_vendor_id provided"
+                    }
+                }
+            }
+        },
+        "/product_vendor/get-by-product.php": {
+            "get": {
+                "summary": "Get vendor by product ID",
+                "tags": [
+                    "ProductVendor"
+                ],
+                "parameters": [
+                    {
+                        "name": "product_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vendor found for the product"
+                    },
+                    "400": {
+                        "description": "Missing product_id"
+                    }
+                }
+            }
+        },
+        "/product_vendor/get-by-vendor.php": {
+            "get": {
+                "summary": "Get product by vendor ID",
+                "tags": [
+                    "ProductVendor"
+                ],
+                "parameters": [
+                    {
+                        "name": "vendor_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product found for the vendor"
+                    },
+                    "400": {
+                        "description": "Missing vendor_id"
+                    }
+                }
+            }
+        },
+        "/product_vendor/update.php": {
+            "post": {
+                "summary": "Update an existing product vendor association",
+                "tags": [
+                    "ProductVendor"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "product_vendor_id"
+                                ],
+                                "properties": {
+                                    "product_vendor_id": {
+                                        "type": "integer"
+                                    },
+                                    "product_id": {
+                                        "type": "integer"
+                                    },
+                                    "vendor_id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product vendor association updated successfully"
+                    },
+                    "400": {
+                        "description": "Invalid data provided"
+                    }
+                }
+            }
+        },
         "/recently_viewed/add.php": {
             "post": {
                 "summary": "Add a recently viewed product",
@@ -2555,6 +3164,313 @@
                     },
                     "400": {
                         "description": "Missing user_id"
+                    }
+                }
+            }
+        },
+        "/reviews/product.php": {
+            "get": {
+                "summary": "Get all reviews for a specific product",
+                "tags": [
+                    "Reviews"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "product_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of reviews"
+                    }
+                }
+            }
+        },
+        "/reviews/submit.php": {
+            "post": {
+                "summary": "Submit or update a product review",
+                "tags": [
+                    "Reviews"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id",
+                                    "product_id",
+                                    "rating"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "product_id": {
+                                        "type": "integer"
+                                    },
+                                    "rating": {
+                                        "type": "number",
+                                        "minimum": 1,
+                                        "maximum": 5
+                                    },
+                                    "review_text": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Review saved successfully"
+                    }
+                }
+            }
+        },
+        "/reviews/summary.php": {
+            "get": {
+                "summary": "Get review summary stats for a product",
+                "tags": [
+                    "Reviews"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "product_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review summary returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "product_id": {
+                                            "type": "integer"
+                                        },
+                                        "total_reviews": {
+                                            "type": "integer"
+                                        },
+                                        "average_rating": {
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/shipping/deliverywindow.php": {
+            "post": {
+                "summary": "Estimate delivery window for user's cart during checkout",
+                "tags": [
+                    "Shipping"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user_id",
+                                    "address_id",
+                                    "items"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "address_id": {
+                                        "type": "integer"
+                                    },
+                                    "items": {
+                                        "type": "array",
+                                        "description": "List of items with product_id and quantity",
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "product_id",
+                                                "quantity"
+                                            ],
+                                            "properties": {
+                                                "product_id": {
+                                                    "type": "integer"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Estimated delivery window generated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "estimated_range": {
+                                                    "type": "string",
+                                                    "example": "3 - 5 days"
+                                                },
+                                                "start": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "end": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "level_summary": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "regional"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/shipping/initiate-dhl.php": {
+            "post": {
+                "summary": "Initiate DHL shipping for a paid order",
+                "tags": [
+                    "Shipping"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "order_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "DHL shipping created successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    },
+                    "500": {
+                        "description": "DHL shipping failed"
+                    }
+                }
+            }
+        },
+        "/shipping/track.php": {
+            "get": {
+                "summary": "Get shipping details by order ID",
+                "tags": [
+                    "Shipping"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "order_id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Shipping record found"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/shipping/update-status.php": {
+            "put": {
+                "summary": "Update shipping status for an order",
+                "tags": [
+                    "Shipping"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "order_id",
+                                    "shipping_status"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "type": "integer"
+                                    },
+                                    "shipping_status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Pending",
+                                            "Shipped",
+                                            "Delivered"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Shipping status updated"
                     }
                 }
             }
@@ -3299,6 +4215,9 @@
                                     },
                                     "last_name": {
                                         "type": "string"
+                                    },
+                                    "phone_number": {
+                                        "type": "string"
                                     }
                                 }
                             }
@@ -3831,6 +4750,173 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/vendor/delete.php": {
+            "delete": {
+                "summary": "Delete a vendor",
+                "tags": [
+                    "Vendor"
+                ],
+                "parameters": [
+                    {
+                        "name": "vendor_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vendor deleted successfully"
+                    },
+                    "400": {
+                        "description": "Invalid vendor_id provided"
+                    }
+                }
+            }
+        },
+        "/vendor/login.php": {
+            "post": {
+                "summary": "Vendor login",
+                "tags": [
+                    "Vendor"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful"
+                    },
+                    "400": {
+                        "description": "Missing or invalid data"
+                    }
+                }
+            }
+        },
+        "/vendor/register.php": {
+            "post": {
+                "summary": "Register a new vendor",
+                "tags": [
+                    "Vendor"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "phone_number",
+                                    "state",
+                                    "country"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "phone_number": {
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "state": {
+                                        "type": "string"
+                                    },
+                                    "country": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vendor registered successfully"
+                    },
+                    "400": {
+                        "description": "Missing or invalid data"
+                    }
+                }
+            }
+        },
+        "/vendor/update.php": {
+            "post": {
+                "summary": "Update vendor profile",
+                "tags": [
+                    "Vendor"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "vendor_id": {
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "phone_number": {
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "state": {
+                                        "type": "string"
+                                    },
+                                    "country": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vendor updated successfully"
                     }
                 }
             }

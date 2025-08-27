@@ -25,9 +25,6 @@
  */
 require_once '../../initialize.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      // Try to get form-data first
      $data = $_POST;

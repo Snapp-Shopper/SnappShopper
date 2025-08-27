@@ -1,1 +1,11 @@
 1. alter table Product_Images and add column vision_labels (TEXT DEFAULT NULL) {check migrations folder for sql code}
+2. Create Device_Token
+CREATE TABLE Device_Tokens (
+    device_token_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    device_token VARCHAR(512) NOT NULL,
+    platform VARCHAR(20) DEFAULT 'web',
+    last_seen DATETIME,
+    created_at DATETIME,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+);

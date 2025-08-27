@@ -106,13 +106,7 @@ class recentlyViewedItem extends DatabaseObject
 
         // Log the action if successful
         if ($stmt) {
-            $log = new auditLog([
-            'user_id' => $user_id,
-            'action' => 'clear_recently_viewed',
-            'action_date' => date('Y-m-d H:i:s'),
-            'description' => 'User cleared all recently viewed items.'
-            ]);
-            $log->saveAuditLog();
+            auditLog::audit($user_id, 'clear_recently_viewed', "All recently viewed items cleared for user ID {$user_id}");
         }
         return $response;
     }

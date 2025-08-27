@@ -53,12 +53,18 @@ require_once '../../initialize.php'; // Include the initialization file
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      // Try to get form-data first
      $data = $_POST;
-
-     // If $_POST is empty, try to decode raw JSON input
-     if (empty($data)) {
-         $rawData = file_get_contents('php://input');
-         $data = json_decode($rawData, true);
-     }
+    if (empty($data)) {
+        $rawInput = file_get_contents('php://input');
+        // Try to decode JSON
+        $decoded = json_decode($rawInput, true);
+        
+        if (json_last_error() === JSON_ERROR_NONE) {
+            $data = $decoded;
+        } else {
+            // Try to auto-fix bad JSON (unquoted keys)
+        $data = fixBrokenJson($rawData);
+        }
+    }
 
      if (empty($data)) {
          // Still empty? Then it's invalid input

@@ -19,7 +19,6 @@
  *         description: Missing user_id
  */
 require_once '../../initialize.php';
-header('Content-Type: application/json');
 
 $user_id = $_GET['user_id'] ?? null;
 

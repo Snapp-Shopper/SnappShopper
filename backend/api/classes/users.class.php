@@ -1,5 +1,4 @@
 <?php
-
 class users extends DatabaseObject
 {
     // Table name
@@ -87,13 +86,7 @@ class users extends DatabaseObject
             // Send verification email
             self::sendVerificationEmail($data["email"], $verificationToken);
             // Log the registration action
-            $log = new auditLog([
-                'user_id' => $user->user_id,
-                'action' => 'register',
-                'action_date' => date('Y-m-d H:i:s'),
-                'description' => "User registered successfully"
-            ]); 
-            $log->saveAuditLog();
+            auditLog::audit($user->user_id, 'register', "User registered with email {$data['email']}");
             return ['status' => 'success', 'message' => 'User registered. Check your email for the verification code.', 'code' => $verificationToken];
         } else {
             return ['status' => 'error', 'message' => 'Registration failed'];
@@ -117,13 +110,7 @@ class users extends DatabaseObject
         if ($user->update()) {
             self::sendVerificationEmail($user->email, $code);
             // Log the resend action
-            $log = new auditLog([
-                'user_id' => $user->user_id,
-                'action' => 'resend_verification_code',
-                'action_date' => date('Y-m-d H:i:s'),
-                'description' => "Verification code resent successfully"
-            ]); 
-            $log->saveAuditLog();
+            auditLog::audit($user->user_id, 'resend_verification_code', "Verification code resent to user {$user->email}");
             // Return success response with the new code
             return ['status' => 'success', 'message' => 'Verification code resent', 'code' => $code];
         } else {
@@ -160,13 +147,7 @@ class users extends DatabaseObject
         $saved = $user->update();
         if ($saved) {
             // Log the update action
-            $log = new auditLog([
-                'user_id' => $user->user_id,
-                'action' => 'update_user',
-                'action_date' => date('Y-m-d H:i:s'),
-                'description' => "User updated successfully"
-            ]);
-            $log->saveAuditLog();
+            auditLog::audit($user->user_id, 'update_user', "User ID {$user->user_id} updated successfully");
             // Optionally, send a notification to the user
             notification::notify($user->user_id, "Your profile has been updated successfully.", 'Profile');
         }
@@ -196,13 +177,7 @@ class users extends DatabaseObject
 
         if ($user->save()) {
             // Log the password change action
-            $log = new auditLog([
-                'user_id' => $user->user_id,
-                'action' => 'change_password',
-                'action_date' => date('Y-m-d H:i:s'),
-                'description' => "User changed password successfully"
-            ]);
-            $log->saveAuditLog();
+            auditLog::audit($user->user_id, 'change_password', "User password changed successfully");
             // Optionally, send a notification to the user
             notification::notify($user->user_id, "Your password has been changed successfully.", 'Security');
             return ['status' => 'success', 'message' => 'Password changed successfully'];
@@ -242,12 +217,7 @@ class users extends DatabaseObject
             $user->updated_at = date('Y-m-d H:i:s');
             $user->update();
             // Log the verification action
-            $log = new auditLog([
-                'user_id' => $user->user_id,
-                'action' => 'verify_email',
-                'action_date' => date('Y-m-d H:i:s'),
-                'description' => "User email verified successfully"
-            ]);
+            auditLog::audit($user->user_id, 'verify_email', "User email verified successfully");
             return ['status' => 'success', 'message' => 'Email verified successfully'];
         }
 
@@ -284,13 +254,7 @@ class users extends DatabaseObject
                 $token = JWT::generateToken($tokenData);
                 if ($result) {
                     // Log the login action
-                    $log = new auditLog([
-                        'user_id' => $user->user_id,
-                        'action' => 'login',
-                        'action_date' => date('Y-m-d H:i:s'),
-                        'description' => "User logged in successfully"
-                    ]);
-                    $log->saveAuditLog();
+                    auditLog::audit($user->user_id, 'user_login', "User logged in successfully");
                 }
                 return $result
                     ? ['status' => 'success', 'message' => 'Login successful', 'user' => $tokenData, 'token' => $token]
@@ -332,13 +296,7 @@ class users extends DatabaseObject
             // Mail::send($user->email, 'Password Reset', "Click here to reset: $resetLink");
             if ($result) {
                 // Log the password reset request
-                $log = new auditLog([
-                    'user_id' => $user->user_id,
-                    'action' => 'forgot_password',
-                    'action_date' => date('Y-m-d H:i:s'),
-                    'description' => "Password reset link sent to user"
-                ]);
-                $log->saveAuditLog();
+                auditLog::audit($user->user_id, 'forgot_password', "Password reset requested for user");
             }
             return $result
                 ? ['status' => 'success', 'message' => 'Password reset link sent to your email.', 'reset_link' => $resetLink] // Include this only for testing/dev
@@ -380,13 +338,7 @@ class users extends DatabaseObject
             ]);
             if ($result) {
                 // Log the password reset action
-                $log = new auditLog([
-                    'user_id' => $user->user_id,
-                    'action' => 'reset_password',
-                    'action_date' => date('Y-m-d H:i:s'),
-                    'description' => "User password was reset"
-                ]);
-                $log->saveAuditLog();
+                auditLog::audit($user->user_id, 'reset_password', "User password reset successfully");
             }
             return $result
                 ? ['status' => 'success', 'message' => 'Password reset successfully']
@@ -409,6 +361,7 @@ class users extends DatabaseObject
     // Retrieve user by ID
     static public function findUserById($id)
     {
+        auditLog::audit($id,'find_user_by_id', "User ID {$id} retrieved");
         $sql = "SELECT * FROM " . static::$table_name . " WHERE user_id = :id LIMIT 1";
         $stmt = self::executeQuery($sql, ['id' => $id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -428,13 +381,8 @@ class users extends DatabaseObject
          $sql = "DELETE FROM " . static::$table_name . " WHERE user_id = :user_id LIMIT 1";
         $stmt = self::executeQuery($sql, ['user_id' => $this->user_id]);
         if ($stmt){
-            $log = new auditLog([
-                'user_id' => $this->user_id,
-                'action' => 'delete_user',
-                'action_date' => date('Y-m-d H:i:s'),
-                'description' => "User was deleted"
-            ]);
-            $log->saveAuditLog();
+            auditLog::audit($this->user_id, 'delete_user', "User ID {$this->user_id} deleted");
+            // Optionally, delete related data like addresses, orders, etc.
         }
         return $stmt
             ? ['status' => 'success', 'message' => 'User permanently deleted']

@@ -29,9 +29,30 @@
  */
 // routes/cart/add.php
 require_once '../../initialize.php';
-header('Content-Type: application/json');
 
-$data = json_decode(file_get_contents("php://input"), true);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Invalid request method.'
+    ]);
+    exit;
+}
+
+// Parse input (JSON or form-data)
+$data = $_POST;
+if (empty($data)) {
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
+}
+// Validate required fields
 if (empty($data['user_id']) || empty($data['product_id']) || empty($data['quantity'])) {
     echo json_encode(['status' => 'error', 'message' => 'Missing required fields.']);
     exit;

@@ -43,9 +43,6 @@
  */
 require_once '../../initialize.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
-
 $start = $_GET['start'] ?? null;
 $end   = $_GET['end'] ?? null;
 

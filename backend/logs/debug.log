@@ -1,0 +1,4 @@
+#0 C:\xampp\htdocs\SnappShopper\backend\api\initialize.php(70): include()
+#1 C:\xampp\htdocs\SnappShopper\backend\api\classes\users.class.php(411): my_autoload()
+#2 C:\xampp\htdocs\SnappShopper\backend\api\routes\users\get.php(69): users::findUserById()
+

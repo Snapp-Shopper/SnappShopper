@@ -83,7 +83,7 @@ class order_Item extends DatabaseObject
         }
 
         // Check and sync product stock and inventory
-        $syncResult = products::syncStockAndInventory($this->product_id, $this->quantity);
+        $syncResult = self::syncStockAndInventory($this->product_id, $this->quantity);
         if ($syncResult['status'] !== 'success') {
             return $syncResult;
         }
@@ -92,13 +92,7 @@ class order_Item extends DatabaseObject
         $saveQuery = $this->save();
 
         if ($saveQuery) {
-            $log = new auditLog([
-                'user_id' => $this->order_id,
-                'action' => $this->order_item_id ? 'update_order_item' : 'create_order_item',
-                'action_date' => date('Y-m-d H:i:s'),
-                'description' => "Order item saved. Product ID {$this->product_id} - Quantity {$this->quantity}"
-            ]);
-            $log->saveAuditLog();
+            auditLog::audit($this->order_id, 'create_order_item', "Order Item ID {$this->order_item_id} created for Order ID {$this->order_id}");
         }
 
         return $saveQuery

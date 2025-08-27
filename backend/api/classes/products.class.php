@@ -74,13 +74,7 @@ class products extends DatabaseObject
             $inventory->save();
 
             // Audit log
-            $log = new auditLog([
-                'user_id' => $_POST['user_id'] ?? 0,
-                'action' => $isNew ? 'product_create' : 'product_update',
-                'action_date' => date('Y-m-d H:i:s'),
-                'description' => "Product " . ($isNew ? "created" : "updated") . ": {$this->name}"
-            ]);
-            $log->saveAuditLog();
+            auditLog::audit($this->user_id, $isNew ? 'create_product' : 'update_product', "Product ID {$this->product_id} " . ($isNew ? 'created' : 'updated'));
         }
 
         return $saveQuery
@@ -129,14 +123,7 @@ class products extends DatabaseObject
                 $inventory->save();
             }
 
-            $log = new auditLog([
-                'user_id' => $_POST['user_id'] ?? 0,
-                'action' => 'product_stock_update',
-                'action_date' => date('Y-m-d H:i:s'),
-                'description' => "Stock updated for product_id {$product_id} to {$new_stock}"
-            ]);
-            $log->saveAuditLog();
-
+            auditLog::audit($product->user_id, 'update_product_stock', "Product ID {$product_id} stock updated to {$new_stock}");
             return ['status' => 'success', 'message' => 'Stock updated successfully'];
         }
 

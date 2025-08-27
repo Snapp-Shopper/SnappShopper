@@ -59,10 +59,35 @@
 
 require_once '../../initialize.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Invalid request method.'
+    ]);
+    exit;
+}
 
-$data = json_decode(file_get_contents('php://input'), true);
+// Parse input (JSON or form-data)
+$data = $_POST;
+if (empty($data)) {
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
+}
+if (empty($data)) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'No valid data received.'
+    ]);
+    exit;
+}
 
 // === Extract & Validate Input ===
 $user_id         = $data['user_id'] ?? null;
@@ -220,6 +245,15 @@ $log = new auditLog([
 $log->saveAuditLog();
 // send notification to user
 notification::notify($user_id, "Your order #{$order->order_id} has been placed successfully.", 'Order');
+$deviceToken = DeviceToken::getTokenByUserId($user_id);
+if ($deviceToken) {
+    PushNotifier::sendToDevice(
+        $deviceToken,
+        "Order Confirmation",
+        "Your order #{$order->order_id} has been placed successfully.",
+        ['order_id' => $order->order_id, 'status' => 'Pending']
+    );
+}
 echo json_encode([
     'status' => 'success',
     'message' => 'Order placed and payment recorded',

@@ -46,13 +46,7 @@ class cart extends DatabaseObject
             // If the product is already in the cart, update the quantity
             $result = $existingItem->updateQuantity($quantity);
             if ($result) {
-                $log = new auditLog([
-                    'user_id' => $this->user_id,
-                    'action' => 'update_cart_quantity',
-                    'action_date' => date('Y-m-d H:i:s'),
-                    'description' => "User updated quantity for product ID $product_id in cart"
-                ]);
-                $log->saveAuditLog();
+                auditLog::audit($this->user_id, 'update_cart_quantity', "User updated quantity for product ID $product_id in cart");
             }
             return $result;
         } else {
@@ -66,13 +60,7 @@ class cart extends DatabaseObject
             ]);
             $saveResult = $cartItem->save();
             if ($saveResult) {
-                $log = new auditLog([
-                    'user_id' => $this->user_id,
-                    'action' => 'add_to_cart',
-                    'action_date' => date('Y-m-d H:i:s'),
-                    'description' => "User added product ID $product_id to cart with quantity $quantity"
-                ]);
-                $log->saveAuditLog();
+                auditLog::audit($this->user_id, 'add_to_cart', "Product ID $product_id added to cart");
             }
             return $saveResult
                 ? ['status' => 'success', 'message' => 'Product added to cart']
@@ -86,13 +74,7 @@ class cart extends DatabaseObject
         $sql = "DELETE FROM Cart_Items WHERE cart_id = :cart_id AND product_id = :product_id";
         $stmt = self::executeQuery($sql, ['cart_id' => $this->cart_id, 'product_id' => $product_id]);
         if ($stmt) {
-            $log = new auditLog([
-            'user_id' => $this->user_id,
-            'action' => 'remove_from_cart',
-            'action_date' => date('Y-m-d H:i:s'),
-            'description' => "User removed product ID $product_id from cart"
-            ]);
-            $log->saveAuditLog();
+            auditLog::audit($this->user_id, 'remove_from_cart', "Product ID $product_id removed from cart");
         }
         return $stmt
             ? ['status' => 'success', 'message' => 'Product removed from cart']
@@ -113,13 +95,7 @@ class cart extends DatabaseObject
         if ($cartItem) {
             $result = $cartItem->updateQuantity($quantity);
             if ($result) {
-                $log = new auditLog([
-                    'user_id' => $this->user_id,
-                    'action' => 'update_cart_quantity',
-                    'action_date' => date('Y-m-d H:i:s'),
-                    'description' => "User updated quantity for product ID $product_id in cart"
-                ]);
-                $log->saveAuditLog();
+                auditLog::audit($this->user_id, 'update_cart_quantity', "User updated quantity for product ID $product_id in cart");
             }
             return $result
                 ? ['status' => 'success', 'message' => 'Product quantity updated in cart']
@@ -170,13 +146,7 @@ class cart extends DatabaseObject
                 $success = false;
             }
             if ($success) {
-            $log = new auditLog([
-                    'user_id' => $user_id,
-                    'action' => 'clear_cart',
-                    'action_date' => date('Y-m-d H:i:s'),
-                    'description' => "User cleared the cart"
-                ]);
-                $log->saveAuditLog();
+            auditLog::audit($user_id, 'clear_cart', "User cleared cart with ID {$item->cart_id}");
             }
             return [
                 'status' => $success ? 'success' : 'error',

@@ -47,9 +47,6 @@
 
 require_once '../../initialize.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
-
 $subCategoryId = $_GET['sub_category_id'] ?? null;
 
 if (!$subCategoryId || !is_numeric($subCategoryId)) {

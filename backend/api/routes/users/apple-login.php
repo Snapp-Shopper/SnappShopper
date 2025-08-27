@@ -53,12 +53,22 @@ require_once '../../../vendor/autoload.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\JWK;
 
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
-
 // Parse JSON input
-$rawData = file_get_contents("php://input");
-$data = json_decode($rawData, true);
+
+$data = $_POST;
+if (empty($data)) {
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
+}
+
 
 if (!isset($data['identity_token'])) {
     http_response_code(400);

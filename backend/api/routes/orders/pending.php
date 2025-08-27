@@ -26,9 +26,6 @@
  */
 require_once '../../initialize.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
-
 $pendingOrders = orders::findPendingOrders();
 echo json_encode([
     'status' => 'success',

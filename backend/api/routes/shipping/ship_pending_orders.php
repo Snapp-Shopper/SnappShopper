@@ -4,13 +4,7 @@ define('APP_INITIALIZED', true);
 require_once __DIR__ . '../../initialize.php';
 
 echo "=== Starting DHL Shipment Batch Job ===\n";
-$log = new auditLog([
-    'user_id' => 0, // System job
-    'action' => 'dhl_shipment_batch',
-    'action_date' => date('Y-m-d H:i:s'),
-    'description' => 'DHL shipment batch job started'
-]);
-$log->saveAuditLog();
+auditLog::audit(0, 'dhl_shipment_batch_start', 'DHL shipment batch job started');
 
 $pendingShipments = shipping::findPendingWithoutTracking();
 
@@ -22,7 +16,7 @@ if (empty($pendingShipments)) {
 foreach ($pendingShipments as $shipping) {
     $order = orders::findOrderById($shipping->order_id);
     $user = users::findById($order->user_id);
-    $address = address::findAddressById($shipping->address_id);
+    $address = address::getById($shipping->address_id);
     $orderItems = order_Item::findOrderItemsByOrderId($order->order_id);
 
     $payload = [
@@ -56,32 +50,14 @@ foreach ($pendingShipments as $shipping) {
         $shipping->shipping_date = date('Y-m-d H:i:s');
         $shipping->save();
 
-        $log = new auditLog([
-            'user_id' => $user->user_id,
-            'action' => 'dhl_shipment_auto',
-            'action_date' => date('Y-m-d H:i:s'),
-            'description' => "Auto-shipment created for order #{$order->order_id}"
-        ]);
-        $log->saveAuditLog();
+        auditLog::audit($user->user_id, 'dhl_shipment', "Order #{$order->order_id} shipped via DHL - Tracking: {$dhlResult['tracking_number']}");
 
         echo "✅ Order #{$order->order_id} shipped via DHL - Tracking: {$dhlResult['tracking_number']}\n";
     } else {
         echo "❌ Failed to ship order #{$order->order_id}: {$dhlResult['message']}\n";
-        $log = new auditLog([
-            'user_id' => $user->user_id,
-            'action' => 'dhl_shipment_failed',
-            'action_date' => date('Y-m-d H:i:s'),
-            'description' => "DHL shipment failed for order #{$order->order_id}: {$dhlResult['message']}"
-        ]);
-        $log->saveAuditLog();
+        auditLog::audit($user->user_id, 'dhl_shipment_failed', "Order #{$order->order_id} shipment failed: {$dhlResult['message']}");
     }
 }
 
 echo "=== DHL Shipment Batch Complete ===\n";
-$log = new auditLog([
-    'user_id' => 0,
-    'action' => 'dhl_shipment_batch_complete',
-    'action_date' => date('Y-m-d H:i:s'),
-    'description' => 'DHL shipment batch job completed'
-]);
-$log->saveAuditLog();
+auditLog::audit(0, 'dhl_shipment_batch_complete', 'DHL shipment batch job completed');

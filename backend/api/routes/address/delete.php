@@ -48,6 +48,7 @@
  */
 
 // Description: This endpoint handles the deletion of an address by its ID.
+require_once '../../initialize.php'; // Include the initialization file
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
      // Try to get form-data first
@@ -73,13 +74,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $address = address::findAddressById($data['address_id']);
+    $address = address::getById($data['address_id']);
     if (!$address) {
         echo json_encode(['status' => 'error', 'message' => 'Address not found']);
         exit;
     }
 
-    $response = $address->addressDelete();
+    $response = $address->deleteAddress();
     echo json_encode($response);
     exit;
 }

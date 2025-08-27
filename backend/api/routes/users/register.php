@@ -26,6 +26,8 @@
  *                 type: string
  *               last_name:
  *                 type: string
+ *               phone_number:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Successful registration
@@ -33,44 +35,39 @@
  *         description: Missing or invalid data
  */
 
-// Description: This endpoint handles user registration by accepting user info and returning a status message.
-
 require_once '../../initialize.php';
-
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Content-Type: application/json');
 
 // Allow only POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
     echo json_encode([
         'status' => 'error',
-        'message' => 'Invalid request method.'
+        'message' => 'Invalid request method. Only POST allowed.'
     ]);
     exit;
 }
 
-// Parse input (JSON or form-data)
+// Handle both JSON and FormData
 $data = $_POST;
 
 if (empty($data)) {
-    $rawData = file_get_contents('php://input');
-    $data = json_decode($rawData, true);
-}
-
-if (empty($data)) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'No valid data received.'
-    ]);
-    exit;
+    $rawInput = file_get_contents('php://input');
+    // Try to decode JSON
+    $decoded = json_decode($rawInput, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $data = $decoded;
+    } else {
+        // Try to auto-fix bad JSON (unquoted keys)
+       $data = fixBrokenJson($rawData);
+    }
 }
 
 // Validate required fields
-if (empty($data['email']) || empty($data['password'])) {
+if (empty($data['email']) || empty($data['password']) || empty($data['first_name']) || empty($data['last_name'])) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'Email and password are required.'
+        'message' => 'Required fields: email, password, first_name, last_name'
     ]);
     exit;
 }
